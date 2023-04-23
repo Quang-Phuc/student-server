@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS `home_title`;
+CREATE TABLE `home_title`  (
+  `id` int(0) NOT NULL AUTO_INCREMENT,
+   `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+    `create_date` datetime(0) NULL DEFAULT NULL,
+     `updated_date` datetime(0) NULL DEFAULT NULL,
+    `created_id` int(0) NOT NULL,
+     `update_id` int(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+);
