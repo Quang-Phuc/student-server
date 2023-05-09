@@ -57,9 +57,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User registryUser(UserAccountDTO accountDTO) {
 
-        if(!captchaService.isValidCaptcha(accountDTO.getClientId(), accountDTO.getCaptchaId(), accountDTO.getCaptcha())){
-            throw new BusinessHandleException("SS001");
-        }
         User existingUser = findUserByEmail(accountDTO.getEmail());
         if (existingUser != null) {
             throw new BusinessHandleException("SS002");
