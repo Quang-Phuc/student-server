@@ -18,11 +18,5 @@ public class UserAccountDTO {
     private String fullName;
     @NotBlank
     private String rePassword;
-    @NotBlank
-    String captchaId;
-    @NotBlank
-    String captcha;
-    @NotBlank
-    String clientId;
 
 }
