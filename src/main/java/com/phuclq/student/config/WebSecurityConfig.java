@@ -120,6 +120,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/api/momo/payment").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/captcha/generate").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/captcha/valid").permitAll()
+				.antMatchers(HttpMethod.POST, "/api/file/top8").permitAll()
 				.and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 				.antMatchers("/", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/configuration/**",

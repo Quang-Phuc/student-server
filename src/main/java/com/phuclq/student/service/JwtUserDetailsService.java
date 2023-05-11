@@ -3,6 +3,7 @@ package com.phuclq.student.service;
 import com.phuclq.student.domain.UserRole;
 import com.phuclq.student.repository.UserRepository;
 import com.phuclq.student.repository.UserRoleRepository;
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -28,6 +29,9 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         com.phuclq.student.domain.User user = userRepository.findUserByEmailAndIsDeleted(email,false);
+     if(Objects.isNull(user)){
+         throw new UsernameNotFoundException("User not found with email: " + email);
+     }
         Optional<UserRole> userRoleOptional = userRoleRepository.findById(user.getRoleId());
         UserRole userRole = new UserRole();
         if (userRoleOptional.isPresent()) {
