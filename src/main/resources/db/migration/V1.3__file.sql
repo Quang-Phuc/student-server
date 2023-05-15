@@ -1,12 +1,12 @@
 DROP TABLE IF EXISTS `file`;
 CREATE TABLE `file`  (
   `id` int(0) NOT NULL,
-  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `file_cut` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `description` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `image` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
-  `attachment` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4  NOT NULL,
+  `file` varchar(255) CHARACTER SET utf8mb4  NOT NULL,
+  `file_cut` varchar(255) CHARACTER SET utf8mb4  NOT NULL,
+  `description` varchar(4000) CHARACTER SET utf8mb4  NULL DEFAULT NULL,
+  `image` varchar(500) CHARACTER SET utf8mb4  NULL DEFAULT NULL,
+  `attachment` varchar(500) CHARACTER SET utf8mb4  NULL DEFAULT NULL,
   `author_id` int(0) NOT NULL,
   `approver_id` int(0) NULL DEFAULT NULL,
   `delete_id` int(0) NULL DEFAULT NULL,
