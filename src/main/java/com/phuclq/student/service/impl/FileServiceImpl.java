@@ -377,48 +377,15 @@ public class FileServiceImpl implements FileService {
 		Page<Category> listCategory = categoryRepository.findAll(pageable);
 		List<FileHomeDoFilterDTO> listFile = new ArrayList<FileHomeDoFilterDTO>();
 		boolean checkVip = request.getIsVip() == null || request.getIsVip() == false;
+
 		listCategory.getContent().forEach(category -> {
 			FileHomeDoFilterDTO file = new FileHomeDoFilterDTO();
 			file.setCategory(category.getCategory());
 			file.setId(category.getId());
-			List<Object> objList = null;
-			
-			StoredProcedureQuery query = entityManager.createStoredProcedureQuery("searchDocument"); 
-
-	        //Declare the parameters in the same order
-	        query.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
-	        query.registerStoredProcedureParameter(2, Integer.class, ParameterMode.IN);
-	        query.registerStoredProcedureParameter(3, Integer.class, ParameterMode.IN);
-	        query.registerStoredProcedureParameter(4, Float.class, ParameterMode.IN);
-	        query.registerStoredProcedureParameter(5, Boolean.class, ParameterMode.IN);
-	        query.registerStoredProcedureParameter(6, Integer.class, ParameterMode.IN);
-	        query.registerStoredProcedureParameter(7, String.class, ParameterMode.IN);
-	        query.registerStoredProcedureParameter(8, Integer.class, ParameterMode.IN);
-
-	        //Pass the parameter values
-	        query.setParameter(1, request.getTitle());
-	        query.setParameter(2, request.getIndustry());
-	        query.setParameter(3, request.getSchool());
-	        query.setParameter(4, request.getPriceFrom());
-	        query.setParameter(5, request.getIsVip());
-	        query.setParameter(6, category.getId());
-	        query.setParameter(7, request.getPriceOrder());
-	        query.setParameter(8, request.getOrderBy());
-
-	        //Execute query
-	        query.execute();
-
-	        //Get output parameters
-	        objList = query.getResultList();
-	        List<FileResult> list = new ArrayList<>();
-	        for (Object obj : objList) {
-				FileResult result = new FileResult((Object[]) obj);
-				list.add(result);
-			}
-	        
-			file.setListFile(list);
+			file.setListFile( searchfileCategory(request, category.getId(), pageable));
 			listFile.add(file);
-		});
+				});
+
 		Page<FileHomeDoFilterDTO> pageTotal = new PageImpl<FileHomeDoFilterDTO>(listFile, pageable, listCategory.getTotalElements());
 		return pageTotal;
 	}
@@ -438,39 +405,39 @@ public class FileServiceImpl implements FileService {
 				+ "where f.approver_id is not null ");
 		sqlStatement.append(" and f.category_id = ? ");
 		listParam.add(categoryId);
-		if (request.getIndustry() != null) {
-			if (request.getIndustry() == 0) {
-				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-					sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
-					sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
-					sqlStatement.append(" or LOWER(u.user_name) like LOWER(?)) ");
-					listParam.add("%"+request.getTitle()+"&");
-					listParam.add("%"+request.getTitle()+"&");
-					listParam.add("%"+request.getTitle()+"&");
-				}
-			}
-			
-			if (request.getIndustry() == 1) {
-				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-					sqlStatement.append(" and LOWER(i.value) like LOWER(?) ");
-					listParam.add("%"+request.getTitle()+"&");
-				}
-			}
-			
-			if (request.getIndustry() == 2) {
-				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-					sqlStatement.append(" and LOWER(u.user_name) like LOWER(?) ");
-					listParam.add("%"+request.getTitle()+"&");
-				}
-			}
-			
-			if (request.getIndustry() == 3) {
-				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-					sqlStatement.append(" and LOWER(f.title) like LOWER(?) ");
-					listParam.add("%"+request.getTitle()+"&");
-				}
-			}
-		}
+//		if (request.getIndustry() != null) {
+//			if (request.getIndustry() == 0) {
+//				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
+//					sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
+//					sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
+//					sqlStatement.append(" or LOWER(u.user_name) like LOWER(?)) ");
+//					listParam.add("%"+request.getTitle()+"&");
+//					listParam.add("%"+request.getTitle()+"&");
+//					listParam.add("%"+request.getTitle()+"&");
+//				}
+//			}
+//
+//			if (request.getIndustry() == 1) {
+//				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
+//					sqlStatement.append(" and LOWER(i.value) like LOWER(?) ");
+//					listParam.add("%"+request.getTitle()+"&");
+//				}
+//			}
+//
+//			if (request.getIndustry() == 2) {
+//				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
+//					sqlStatement.append(" and LOWER(u.user_name) like LOWER(?) ");
+//					listParam.add("%"+request.getTitle()+"&");
+//				}
+//			}
+//
+//			if (request.getIndustry() == 3) {
+//				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
+//					sqlStatement.append(" and LOWER(f.title) like LOWER(?) ");
+//					listParam.add("%"+request.getTitle()+"&");
+//				}
+//			}
+//		}
 		
 		Float priceType = request.getPriceFrom();
 		if (priceType != null) {

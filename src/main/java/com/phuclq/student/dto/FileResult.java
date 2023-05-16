@@ -8,7 +8,7 @@ public class FileResult {
 	private String title;
 	private Integer view;
 	private Integer download;
-	private Double price;
+	private Float price;
 	private String image;
 	private String createDate;
 	private String fileHashCode;
@@ -17,7 +17,7 @@ public class FileResult {
 		this.title = (String) obj[1];
 		this.view = (Integer) obj[2];
 		this.download = (Integer) obj[3];
-		this.price = (Double) obj[4];
+		this.price = (Float) obj[4];
 		this.image = (String) obj[5];
 		this.createDate = (String) obj[6];
 	}
