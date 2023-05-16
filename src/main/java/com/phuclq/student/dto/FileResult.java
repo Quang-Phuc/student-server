@@ -12,6 +12,8 @@ public class FileResult {
 	private String image;
 	private String createDate;
 	private String fileHashCode;
+	private Integer totalComment;
+	private String category;
 	public FileResult(Object[] obj) {
 		this.id = (Integer) obj[0];
 		this.title = (String) obj[1];
@@ -20,6 +22,8 @@ public class FileResult {
 		this.price = (Float) obj[4];
 		this.image = (String) obj[5];
 		this.createDate = (String) obj[6];
+		this.totalComment = (Integer) obj[7];
+		this.category = (String) obj[8];
 	}
 	
 	public FileResult() {

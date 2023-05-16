@@ -390,7 +390,7 @@ public class FileServiceImpl implements FileService {
 		List<Object> objList = null;
 		StringBuilder sqlStatement = new StringBuilder();
 		List<Object> listParam = new ArrayList<Object>();
-		sqlStatement.append("from file f inner join file_price fp on f.id = fp.file_id "
+		sqlStatement.append("from file f inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
 				+ "inner join industry i on f.industry_id = i.id "
 				+ "inner join user u on f.author_id = u.id "
 				+ "where f.approver_id is not null ");
@@ -435,7 +435,7 @@ public class FileServiceImpl implements FileService {
 			}
 		}
 		Query query = entityManager.createNativeQuery(" select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-				+ "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate " + sqlStatement.toString());
+				+ "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category " + sqlStatement.toString());
 		for (int i = 0; i < listParam.size(); i++) {
 			query.setParameter(i+1, listParam.get(i));
 		}
@@ -456,7 +456,7 @@ public class FileServiceImpl implements FileService {
 
 		StringBuilder sqlStatement = new StringBuilder();
 		List<Object> listParam = new ArrayList<Object>();
-		sqlStatement.append("from file f inner join file_price fp on f.id = fp.file_id "
+		sqlStatement.append("from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
 				+ "inner join industry i on f.industry_id = i.id "
 				+ "inner join user u on f.author_id = u.id "
 				+ "where f.approver_id is not null ");
@@ -512,7 +512,7 @@ public class FileServiceImpl implements FileService {
 
 
 		Query query = entityManager.createNativeQuery(" select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-				+ "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate " + sqlStatement.toString());
+				+ "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate, f.total_comment as totalComment ,c.category as category " + sqlStatement.toString());
 		for (int i = 0; i < listParam.size(); i++) {
 			query.setParameter(i+1, listParam.get(i));
 		}

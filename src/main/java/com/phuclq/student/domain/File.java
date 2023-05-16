@@ -33,6 +33,7 @@ public class File {
     private String file;
     private String fileCut;
     private String fileHashcode;
+    private Integer totalComment;
     @Column(name = "delete_id")
     private Integer deleteId;
     @Column(name = "delete_date")
@@ -257,6 +258,16 @@ public class File {
 
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
+    }
+
+    @Basic
+    @Column(name = "total_comment")
+    public Integer getTotalComment() {
+        return totalComment;
+    }
+
+    public void setTotalComment(Integer totalComment) {
+        this.totalComment = totalComment;
     }
 
     @Basic

@@ -15,6 +15,7 @@ CREATE TABLE `file`  (
   `rating` float NULL DEFAULT NULL,
   `reading` int(0) NULL DEFAULT NULL,
   `dowloading` int(0) NULL DEFAULT NULL,
+  `total_comment` int(0) NULL DEFAULT NULL,
   `view` int(0) NULL DEFAULT NULL,
   `start_page_number` int(0) NULL DEFAULT NULL,
   `end_page_number` int(0) NULL DEFAULT NULL,
