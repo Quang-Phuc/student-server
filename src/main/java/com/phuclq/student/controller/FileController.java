@@ -241,7 +241,8 @@ public class FileController {
 
 	@PostMapping("/file/page-home")
 	public ResponseEntity<?> fileHomePage(@RequestBody FileHomePageRequest request) {
-		List<FileHomeDoFilterDTO> result = fileService.filesPage(request);
+		Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+		Page<FileHomeDoFilterDTO> result = fileService.filesPage(request,pageable);
 		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
 	}
 
