@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
@@ -370,102 +371,115 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Page<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request, Pageable pageable) {
+	public List<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request) {
 		
-		Page<Category> listCategory = categoryRepository.findAll(pageable);
+		List<Category> listCategory = categoryRepository.findAll();
 		List<FileHomeDoFilterDTO> listFile = new ArrayList<FileHomeDoFilterDTO>();
-		boolean checkVip = request.getIsVip() == null || request.getIsVip() == false;
-
-		listCategory.getContent().forEach(category -> {
+		listCategory.forEach(category -> {
 			FileHomeDoFilterDTO file = new FileHomeDoFilterDTO();
 			file.setCategory(category.getCategory());
 			file.setId(category.getId());
-			file.setListFile( searchfileCategory(request, category.getId(), pageable));
+			file.setListFile(searchFileInCategory(request, category.getId()));
 			listFile.add(file);
 				});
 
-		Page<FileHomeDoFilterDTO> pageTotal = new PageImpl<FileHomeDoFilterDTO>(listFile, pageable, listCategory.getTotalElements());
-		return pageTotal;
+		return listFile;
 	}
 
-	@Override
-	public List<FileResult> searchfileCategory(FileHomePageRequest request, Integer categoryId,
-			Pageable pageable) {
+	public List<FileResult> searchFileInCategory(FileHomePageRequest request, Integer categoryId) {
 		List<Object> objList = null;
-		
 		StringBuilder sqlStatement = new StringBuilder();
 		List<Object> listParam = new ArrayList<Object>();
-//		sqlStatement.append(" select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-//				+ "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate ");
 		sqlStatement.append("from file f inner join file_price fp on f.id = fp.file_id "
 				+ "inner join industry i on f.industry_id = i.id "
 				+ "inner join user u on f.author_id = u.id "
 				+ "where f.approver_id is not null ");
 		sqlStatement.append(" and f.category_id = ? ");
 		listParam.add(categoryId);
-//		if (request.getIndustry() != null) {
-//			if (request.getIndustry() == 0) {
-//				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-//					sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
-//					sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
-//					sqlStatement.append(" or LOWER(u.user_name) like LOWER(?)) ");
-//					listParam.add("%"+request.getTitle()+"&");
-//					listParam.add("%"+request.getTitle()+"&");
-//					listParam.add("%"+request.getTitle()+"&");
-//				}
-//			}
-//
-//			if (request.getIndustry() == 1) {
-//				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-//					sqlStatement.append(" and LOWER(i.value) like LOWER(?) ");
-//					listParam.add("%"+request.getTitle()+"&");
-//				}
-//			}
-//
-//			if (request.getIndustry() == 2) {
-//				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-//					sqlStatement.append(" and LOWER(u.user_name) like LOWER(?) ");
-//					listParam.add("%"+request.getTitle()+"&");
-//				}
-//			}
-//
-//			if (request.getIndustry() == 3) {
-//				if (request.getTitle() != null && !request.getTitle().isEmpty()) {
-//					sqlStatement.append(" and LOWER(f.title) like LOWER(?) ");
-//					listParam.add("%"+request.getTitle()+"&");
-//				}
-//			}
-//		}
-		
-		Float priceType = request.getPriceFrom();
-		if (priceType != null) {
-			if (priceType == 1) {
-				sqlStatement.append(" and fp.price <= 50000 ");
+		if (request.getSearch() != null && !request.getSearch().isEmpty()) {
+			sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
+			sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
+			sqlStatement.append(" or LOWER(u.user_name) like LOWER(?)) ");
+			listParam.add("%" + request.getSearch() + "&");
+			listParam.add("%" + request.getSearch() + "&");
+			listParam.add("%" + request.getSearch() + "&");
+		}
+		if(Objects.nonNull(request.getPriceStart())){
+			sqlStatement.append(" and f.price >= ? ");
+			listParam.add(request.getPriceStart());
+		}
+
+		if(Objects.nonNull(request.getPriceEnd())){
+			sqlStatement.append(" and f.price <= ? ");
+			listParam.add(request.getPriceEnd());
+		}
+
+		if (request.getPriceOrder() != null) {
+			if (request.getPriceOrder().equals("desc")) {
+				sqlStatement.append(" order by fp.price desc ");
+			} else {
+				sqlStatement.append(" order by fp.price asc ");
 			}
-			if (priceType == 2) {
-				sqlStatement.append(" and fp.price >= 50000 ");
-				sqlStatement.append(" and fp.price <= 200000 ");
-			}
-			if (priceType == 3) {
-				sqlStatement.append(" and fp.price >= 200000 ");
-				sqlStatement.append(" and fp.price <= 500000 ");
-			}
-			if (priceType == 4) {
-				sqlStatement.append(" and fp.price >= 500000 ");
+		} else {
+			sqlStatement.append(" order by null ");
+		}
+		if (request.getOrderBy() != null) {
+			if (request.getOrderBy() == 1) {
+				sqlStatement.append(" , f.created_date desc ");
+			} else if (request.getOrderBy() == 2) {
+				sqlStatement.append(" , f.dowloading desc ");
+			} else if (request.getOrderBy() == 3) {
+				sqlStatement.append(" , f.view desc ");
+			} else {
+				sqlStatement.append(" , null ");
 			}
 		}
-		
-		if (request.getIsVip() != null) {
-			sqlStatement.append(" and f.is_vip = ? ");
-			listParam.add(request.getIsVip());
-		}
-		
-		Query queryCount = entityManager.createNativeQuery(" select count(f.id) " + sqlStatement.toString());
+		Query query = entityManager.createNativeQuery(" select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
+				+ "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate " + sqlStatement.toString());
 		for (int i = 0; i < listParam.size(); i++) {
-			queryCount.setParameter(i+1, listParam.get(i));
+			query.setParameter(i+1, listParam.get(i));
 		}
-		Integer count = ((Number) queryCount.getSingleResult()).intValue();
-		
+		objList = query.getResultList();
+		List<FileResult> list = new ArrayList<>();
+		for (Object obj : objList) {
+			FileResult result = new FileResult((Object[]) obj);
+			list.add(result);
+		}
+
+		return list;
+	}
+
+	@Override
+	public Page<FileResult> searchFileCategory(FileHomePageRequest request, Integer categoryId,
+			Pageable pageable) {
+		List<Object> objList = null;
+
+		StringBuilder sqlStatement = new StringBuilder();
+		List<Object> listParam = new ArrayList<Object>();
+		sqlStatement.append("from file f inner join file_price fp on f.id = fp.file_id "
+				+ "inner join industry i on f.industry_id = i.id "
+				+ "inner join user u on f.author_id = u.id "
+				+ "where f.approver_id is not null ");
+		sqlStatement.append(" and f.category_id = ? ");
+		listParam.add(categoryId);
+		if (request.getSearch() != null && !request.getSearch().isEmpty()) {
+			sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
+			sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
+			sqlStatement.append(" or LOWER(u.user_name) like LOWER(?)) ");
+			listParam.add("%" + request.getSearch() + "&");
+			listParam.add("%" + request.getSearch() + "&");
+			listParam.add("%" + request.getSearch() + "&");
+		}
+		if(Objects.nonNull(request.getPriceStart())){
+			sqlStatement.append(" and f.price >= ? ");
+			listParam.add(request.getPriceStart());
+		}
+
+		if(Objects.nonNull(request.getPriceEnd())){
+			sqlStatement.append(" and f.price <= ? ");
+			listParam.add(request.getPriceEnd());
+		}
+
 		if (request.getPriceOrder() != null) {
 			if (request.getPriceOrder().equals("desc")) {
 				sqlStatement.append(" order by fp.price desc ");
@@ -489,21 +503,33 @@ public class FileServiceImpl implements FileService {
 		sqlStatement.append("LIMIT ? OFFSET ?");
 		listParam.add(request.getSize());
 		listParam.add(request.getSize()*request.getPage());
+
+		Query queryCount = entityManager.createNativeQuery(" select count(f.id) " + sqlStatement.toString());
+		for (int i = 0; i < listParam.size(); i++) {
+			queryCount.setParameter(i+1, listParam.get(i));
+		}
+		Integer count = ((Number) queryCount.getSingleResult()).intValue();
+
+
 		Query query = entityManager.createNativeQuery(" select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
 				+ "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate " + sqlStatement.toString());
-        for (int i = 0; i < listParam.size(); i++) {
+		for (int i = 0; i < listParam.size(); i++) {
 			query.setParameter(i+1, listParam.get(i));
 		}
-        objList = query.getResultList();
-        List<FileResult> list = new ArrayList<>();
-        for (Object obj : objList) {
+		objList = query.getResultList();
+		List<FileResult> list = new ArrayList<>();
+		for (Object obj : objList) {
 			FileResult result = new FileResult((Object[]) obj);
 			list.add(result);
 		}
-	
-//		Page<FileResult> pageTotal = new PageImpl<FileResult>(list, pageable, count);
-		return list;
+
+
+		Page<FileResult> pageTotal = new PageImpl<FileResult>(list, pageable, count);
+		return pageTotal;
 	}
+
+
+
 
 	@Override
 	public Page<FileApprove> getFileUnApprove(Pageable pageable) {

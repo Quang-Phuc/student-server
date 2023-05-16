@@ -241,15 +241,14 @@ public class FileController {
 
 	@PostMapping("/file/page-home")
 	public ResponseEntity<?> fileHomePage(@RequestBody FileHomePageRequest request) {
-		Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-		Page<FileHomeDoFilterDTO> result = fileService.filesPage(request, pageable);
+		List<FileHomeDoFilterDTO> result = fileService.filesPage(request);
 		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
 	}
 
 	@PostMapping("/file/category/search")
 	public ResponseEntity<?> searchFileByCategory(@RequestBody FileHomePageRequest request) {
 		Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-		List<FileResult> result = fileService.searchfileCategory(request, request.getCategoryId(), pageable);
+		Page<FileResult> result = fileService.searchFileCategory(request, request.getCategoryId(), pageable);
 		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
 	}
 
@@ -276,7 +275,8 @@ public class FileController {
     public static class FileHomePageRequest {
     	private String title;
     	private Boolean isVip;
-    	private Float priceFrom;
+    	private Integer priceStart;
+    	private Integer priceEnd;
     	private Integer priceTo;
     	private Integer school;
     	private Integer industry;
@@ -285,5 +285,6 @@ public class FileController {
     	private String priceOrder;
     	private Integer orderBy;
     	private Integer categoryId;
+    	private String search;
     }
 }

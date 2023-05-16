@@ -35,9 +35,10 @@ public interface FileService {
     public List<CategoryHomeDTO> getCategoriesHome() ;
     
     File updateFile(FileUploadRequest fileUploadRequest, Storage storage, String bucketName) throws IOException;
-    Page<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request,Pageable pageable);
-    List<FileResult> searchfileCategory(FileHomePageRequest request, Integer categoryId,Pageable pageable);
-    
+    List<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request);
+
+   Page <FileResult> searchFileCategory(FileHomePageRequest request, Integer categoryId, Pageable pageable);
+
     Page<FileApprove> getFileUnApprove(Pageable pageable);
     
     File getFileDownload(String fileHashcode);
