@@ -36,7 +36,7 @@ public interface FileService {
     
     File updateFile(FileUploadRequest fileUploadRequest, Storage storage, String bucketName) throws IOException;
     Page<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request,Pageable pageable);
-    Page<FileResult> searchfileCategory(FileHomePageRequest request, Integer categoryId,Pageable pageable);
+    List<FileResult> searchfileCategory(FileHomePageRequest request, Integer categoryId,Pageable pageable);
     
     Page<FileApprove> getFileUnApprove(Pageable pageable);
     

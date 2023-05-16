@@ -13,10 +13,8 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.ParameterMode;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.StoredProcedureQuery;
 
 import com.phuclq.student.domain.*;
 import org.apache.commons.io.FileUtils;
@@ -391,7 +389,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Page<FileResult> searchfileCategory(FileHomePageRequest request, Integer categoryId,
+	public List<FileResult> searchfileCategory(FileHomePageRequest request, Integer categoryId,
 			Pageable pageable) {
 		List<Object> objList = null;
 		
@@ -503,8 +501,8 @@ public class FileServiceImpl implements FileService {
 			list.add(result);
 		}
 	
-		Page<FileResult> pageTotal = new PageImpl<FileResult>(list, pageable, count);
-		return pageTotal;
+//		Page<FileResult> pageTotal = new PageImpl<FileResult>(list, pageable, count);
+		return list;
 	}
 
 	@Override

@@ -249,7 +249,7 @@ public class FileController {
 	@PostMapping("/file/category/search")
 	public ResponseEntity<?> searchFileByCategory(@RequestBody FileHomePageRequest request) {
 		Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-		Page<FileResult> result = fileService.searchfileCategory(request, request.getCategoryId(), pageable);
+		List<FileResult> result = fileService.searchfileCategory(request, request.getCategoryId(), pageable);
 		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
 	}
 
