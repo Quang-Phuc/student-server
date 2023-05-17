@@ -17,6 +17,8 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     Category findAllById(int id);
 
+    List<Category> findAllByIdIn(List<Integer> id);
+
     @Query(value = "select category.id as id,category.category as name, file.count as countCategory   from category left join (select category_id,count(*) as count from file group by category_id) file on category.id = file.category_id ", nativeQuery = true)
     List<CategoryHomeResult> getCategoriesHome();
 

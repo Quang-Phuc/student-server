@@ -286,5 +286,6 @@ public class FileController {
     	private Integer orderBy;
     	private Integer categoryId;
     	private String search;
+    	private List<Integer> categoryIds;
     }
 }
