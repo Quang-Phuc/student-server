@@ -414,6 +414,11 @@ public class FileServiceImpl implements FileService {
 			sqlStatement.append(" and f.price <= ? ");
 			listParam.add(request.getPriceEnd());
 		}
+		if(Objects.nonNull(request.getIsVip())){
+
+			sqlStatement.append(" and f.is_vip <= ? ");
+			listParam.add(request.getIsVip()?1:0);
+		}
 
 		if (request.getPriceOrder() != null) {
 			if (request.getPriceOrder().equals("desc")) {
@@ -479,6 +484,11 @@ public class FileServiceImpl implements FileService {
 		if(Objects.nonNull(request.getPriceEnd())){
 			sqlStatement.append(" and f.price <= ? ");
 			listParam.add(request.getPriceEnd());
+		}
+		if(Objects.nonNull(request.getIsVip())){
+
+			sqlStatement.append(" and f.is_vip <= ? ");
+			listParam.add(request.getIsVip()?1:0);
 		}
 
 		if (request.getPriceOrder() != null) {
