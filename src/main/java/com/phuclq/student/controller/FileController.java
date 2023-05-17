@@ -259,7 +259,7 @@ public class FileController {
 		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
 	}
 
-	@GetMapping("/suggest")
+	@GetMapping("/file/category/suggest")
 	public ResponseEntity<List<File>> getSuggestByCategory(@PathParam("categoryId") Integer categoryId) {
 		List<String> strings = Arrays.asList("Tài liệu học tập","Bài tập cuối kỳ");
 		HttpStatus status = HttpStatus.OK;
