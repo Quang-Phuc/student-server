@@ -22,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -259,6 +260,7 @@ public class FileController {
 		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
 	}
 
+	@CrossOrigin(origins = "*")
 	@GetMapping("/file/category/suggest")
 	public ResponseEntity<List<File>> getSuggestByCategory(@PathParam("categoryId") Integer categoryId) {
 		List<String> strings = Arrays.asList("Tài liệu học tập","Bài tập cuối kỳ");
