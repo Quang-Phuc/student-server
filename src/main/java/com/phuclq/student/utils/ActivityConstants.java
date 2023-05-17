@@ -8,4 +8,5 @@ public class ActivityConstants {
     public static final Integer PAY = 5;
     public static final Integer TOP_UP = 6;
     public static final Integer UPDATE_FILE = 7;
+    public static final Integer CARD = 8;
 }

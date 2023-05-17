@@ -1,9 +1,11 @@
 package com.phuclq.student.controller;
 
+import java.awt.SystemTray;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.websocket.server.PathParam;
@@ -231,6 +233,37 @@ public class FileController {
 		userHistoryService.deleteActivityByUser(user.getId(), fileId, ActivityConstants.LIKE);
 		String result = "Tài liệu đã được loại bỏ khỏi danh sách yêu thích";
 		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
+	}
+
+	@GetMapping("/file/{fileId}/card")
+	public ResponseEntity<String> cardDocument(@PathVariable("fileId") Integer fileId) {
+		String result;
+		HttpStatus status;
+		User user = userService.getUserLogin();
+		UserHistory historyFile = userHistoryService.activateFileHistory(user.getId(), fileId, ActivityConstants.CARD);
+		if (historyFile == null) {
+			status = HttpStatus.ACCEPTED;
+			result = "Tài liệu đã được thêm vào giỏ hàng ";
+		} else {
+			status = HttpStatus.OK;
+			result = "Tài liệu đã được thêm vào giỏ hàn";
+		}
+		return restEntityRes.setHttpStatus(status).setDataResponse(result).getResponse();
+	}
+
+	@DeleteMapping("/file/{fileId}/uncard")
+	public ResponseEntity<?> unCardDocument(@PathVariable("fileId") Integer fileId) {
+		User user = userService.getUserLogin();
+		userHistoryService.deleteActivityByUser(user.getId(), fileId, ActivityConstants.CARD);
+		String result = "Tài liệu đã được xóa vào giỏ hàng ";
+		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
+	}
+
+	@GetMapping("/suggest")
+	public ResponseEntity<List<File>> getSuggestByCategory(@PathParam("categoryId") Integer categoryId) {
+		List<String> strings = Arrays.asList("Tài liệu học tập","Bài tập cuối kỳ");
+		HttpStatus status = HttpStatus.OK;
+		return restEntityRes.setHttpStatus(status).setDataResponse(strings).getResponse();
 	}
 
 	@GetMapping("/file/category/home")
