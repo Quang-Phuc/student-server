@@ -371,12 +371,12 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Page<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request,Pageable pageable) {
+	public List<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request) {
 		
-		Page<Category> listCategory = categoryRepository.findAll(pageable);
+		List<Category> listCategory = categoryRepository.findAll();
 		int count = categoryRepository.findAll().size();
 		List<FileHomeDoFilterDTO> listFile = new ArrayList<FileHomeDoFilterDTO>();
-		listCategory.getContent().forEach(category -> {
+		listCategory.forEach(category -> {
 			FileHomeDoFilterDTO file = new FileHomeDoFilterDTO();
 			file.setCategory(category.getCategory());
 			file.setId(category.getId());
@@ -384,8 +384,7 @@ public class FileServiceImpl implements FileService {
 			listFile.add(file);
 				});
 
-		Page<FileHomeDoFilterDTO> pageTotal = new PageImpl<FileHomeDoFilterDTO>(listFile, pageable, count);
-		return pageTotal;
+		return listFile;
 	}
 
 	public List<FileResult> searchFileInCategory(FileHomePageRequest request, Integer categoryId) {
