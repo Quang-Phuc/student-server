@@ -455,7 +455,7 @@ public class FileServiceImpl implements FileService {
     }
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-            + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category "
+            + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
@@ -539,7 +539,7 @@ public class FileServiceImpl implements FileService {
 
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-            + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate, f.total_comment as totalComment ,c.category as category "
+            + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate, f.total_comment as totalComment ,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard  "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));

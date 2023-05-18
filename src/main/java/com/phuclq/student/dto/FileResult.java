@@ -13,6 +13,9 @@ public class FileResult {
 	private String createDate;
 	private String fileHashCode;
 	private Integer totalComment;
+	private Integer totalLike;
+	private Boolean isLike;
+	private Boolean isCard;
 	private String category;
 	public FileResult(Object[] obj) {
 		this.id = (Integer) obj[0];
@@ -24,6 +27,9 @@ public class FileResult {
 		this.createDate = (String) obj[6];
 		this.totalComment = (Integer) obj[7];
 		this.category = (String) obj[8];
+		this.totalLike = (Integer) obj[9];
+		this.isLike = (Boolean) obj[10];
+		this.isCard = (Boolean) obj[11];
 	}
 	
 	public FileResult() {

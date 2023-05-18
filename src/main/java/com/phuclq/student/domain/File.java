@@ -34,6 +34,9 @@ public class File {
     private String fileCut;
     private String fileHashcode;
     private Integer totalComment;
+    private Integer totalLike;
+    private Boolean isLike;
+    private Boolean isCard;
     @Column(name = "delete_id")
     private Integer deleteId;
     @Column(name = "delete_date")
@@ -268,6 +271,36 @@ public class File {
 
     public void setTotalComment(Integer totalComment) {
         this.totalComment = totalComment;
+    }
+
+    @Basic
+    @Column(name = "total_like")
+    public Integer getTotalLike() {
+        return totalLike;
+    }
+
+    public void setTotalLike(Integer totalLike) {
+        this.totalLike = totalLike;
+    }
+
+    @Basic
+    @Column(name = "is_like")
+    public Boolean getLike() {
+        return isLike;
+    }
+
+    public void setLike(Boolean like) {
+        isLike = like;
+    }
+
+    @Basic
+    @Column(name = "is_card")
+    public Boolean getCard() {
+        return isCard;
+    }
+
+    public void setCard(Boolean card) {
+        isCard = card;
     }
 
     @Basic
