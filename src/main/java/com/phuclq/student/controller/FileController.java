@@ -212,6 +212,7 @@ public class FileController {
 		return restEntityRes.setHttpStatus(status).setDataResponse(result).getResponse();
 	}
 
+	@CrossOrigin(origins = "*")
 	@GetMapping("/file/{fileId}/like")
 	public ResponseEntity<String> likeDocument(@PathVariable("fileId") Integer fileId) {
 		String result;
@@ -228,6 +229,7 @@ public class FileController {
 		return restEntityRes.setHttpStatus(status).setDataResponse(result).getResponse();
 	}
 
+	@CrossOrigin(origins = "*")
 	@DeleteMapping("/file/{fileId}/unlike")
 	public ResponseEntity<?> unLikeDocument(@PathVariable("fileId") Integer fileId) {
 		User user = userService.getUserLogin();
@@ -236,6 +238,7 @@ public class FileController {
 		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
 	}
 
+	@CrossOrigin(origins = "*")
 	@GetMapping("/file/{fileId}/card")
 	public ResponseEntity<String> cardDocument(@PathVariable("fileId") Integer fileId) {
 		String result;
@@ -252,6 +255,7 @@ public class FileController {
 		return restEntityRes.setHttpStatus(status).setDataResponse(result).getResponse();
 	}
 
+	@CrossOrigin(origins = "*")
 	@DeleteMapping("/file/{fileId}/uncard")
 	public ResponseEntity<?> unCardDocument(@PathVariable("fileId") Integer fileId) {
 		User user = userService.getUserLogin();
