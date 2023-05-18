@@ -229,7 +229,6 @@ public class FileController {
 		return restEntityRes.setHttpStatus(status).setDataResponse(result).getResponse();
 	}
 
-	@CrossOrigin(origins = "http://localhost:3000")
 	@DeleteMapping("/file/{fileId}/unlike")
 	public ResponseEntity<?> unLikeDocument(@PathVariable("fileId") Integer fileId) {
 		User user = userService.getUserLogin();
