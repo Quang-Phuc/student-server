@@ -17,6 +17,7 @@ public class FileResult {
 	private Boolean isLike;
 	private Boolean isCard;
 	private String category;
+	private Boolean isVip;
 	public FileResult(Object[] obj) {
 		this.id = (Integer) obj[0];
 		this.title = (String) obj[1];
@@ -30,6 +31,7 @@ public class FileResult {
 		this.totalLike = (Integer) obj[9];
 		this.isLike = (Boolean) obj[10];
 		this.isCard = (Boolean) obj[11];
+		this.isVip = (Boolean) obj[12];
 	}
 	
 	public FileResult() {

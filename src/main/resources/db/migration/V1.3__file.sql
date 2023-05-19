@@ -10,7 +10,7 @@ CREATE TABLE `file`  (
   `author_id` int(0) NOT NULL,
   `approver_id` int(0) NULL DEFAULT NULL,
   `delete_id` int(0) NULL DEFAULT NULL,
-  `is_vip` tinyint(0) NULL DEFAULT NULL,
+  `is_vip` BOOLEAN,
   `is_deleted` tinyint(0) NULL DEFAULT NULL,
   `rating` float NULL DEFAULT NULL,
   `reading` int(0) NULL DEFAULT NULL,
