@@ -2,6 +2,7 @@ package com.phuclq.student.domain;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import org.joda.time.DateTime;
 
 @Entity
 public class User {
@@ -15,6 +16,7 @@ public class User {
     private Integer roleId;
     private Boolean isEnable;
     private Timestamp createdDate;
+    private Timestamp birthDay;
 //    private String image;
 
     @Id
@@ -90,6 +92,16 @@ public class User {
 
     @OneToOne(mappedBy = "user")
     private ConfirmationToken confirmationToken;
+
+    @Basic
+    @Column(name = "birth_day")
+    public Timestamp getBirthDay() {
+        return birthDay;
+    }
+
+    public void setBirthDay(Timestamp birthDay) {
+        this.birthDay = birthDay;
+    }
 
     @Override
     public boolean equals(Object o) {

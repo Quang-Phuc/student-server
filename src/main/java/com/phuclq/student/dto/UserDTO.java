@@ -1,5 +1,6 @@
 package com.phuclq.student.dto;
 
+import java.sql.Timestamp;
 import javax.validation.constraints.NotBlank;
 
 import com.phuclq.student.domain.User;
@@ -7,6 +8,7 @@ import com.phuclq.student.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 
 @Data
 @AllArgsConstructor
@@ -25,7 +27,8 @@ public class UserDTO {
     private Integer roleId;
     private Boolean isEnable;
     private Double totalCoin;
-    
+	private Timestamp birthDay;
+
 	public UserDTO(User user) {
 		this.id = user.getId();
 		this.userName = user.getUserName();
@@ -34,6 +37,8 @@ public class UserDTO {
 		this.isDeleted = user.getIsDeleted();
 		this.roleId = user.getRoleId();
 		this.isEnable = user.getIsEnable();
+		this.birthDay = user.getBirthDay();
+
 	}
     
     

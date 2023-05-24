@@ -10,6 +10,7 @@ CREATE TABLE `user`  (
   `role_id` int(0) NULL DEFAULT NULL,
   `created_date` datetime(0) NULL DEFAULT NULL,
   `industry_id` int(0) NOT NULL,
+  `birth_day` datetime(0) NULL DEFAULT NULL,
 --   `image` varchar(5000) ,
   PRIMARY KEY (`id`) USING BTREE
 --   UNIQUE INDEX `user_name_UNIQUE`(`user_name`) USING BTREE,

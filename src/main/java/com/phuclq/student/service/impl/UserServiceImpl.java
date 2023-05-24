@@ -226,11 +226,11 @@ public class UserServiceImpl implements UserService {
         UserDTO user =  new UserDTO();
         user.setId(userResult.getId());
         user.setUserName(userResult.getUser_name());
-        //user.setPassword(userResult.getPassword());
-		user.setEmail(userResult.getEmail()); 
+		user.setEmail(userResult.getEmail());
 		user.setPhone(userResult.getPhone());
 		user.setRoleId(userResult.getRole_id());
 		user.setTotalCoin(userResult.getTotal_coin());
+    user.setBirthDay(userResult.getBirthDay());
         return user;
 	}
 
