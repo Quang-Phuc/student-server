@@ -20,5 +20,8 @@ public class FileUploadRequest {
     private MultipartFile attachment;
     private MultipartFile file;
     private Boolean isVip;
+    private String urlAttachment;
+    private String urlFile;
+    private String urlAvatar;
 
 }
