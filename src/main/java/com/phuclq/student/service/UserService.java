@@ -16,6 +16,7 @@ import java.util.Optional;
 
 public interface UserService {
     User registryUser(UserAccountDTO accountDTO);
+    User save(User accountDTO);
 
     User findUserByEmail(String email);
     

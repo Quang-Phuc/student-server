@@ -106,5 +106,11 @@ public class UserController {
         return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(data).getResponse();
 
     }
+    @PostMapping("/save")
+    public ResponseEntity<?> save(@RequestBody User accountDTO) {
+
+        User user = userService.save(accountDTO);
+        return restEntityRes.setHttpStatus(HttpStatus.CREATED).setDataResponse(user.getUserName()).getResponse();
+    }
 
 }

@@ -269,4 +269,10 @@ public class UserServiceImpl implements UserService {
 		return new UserDTO(user);
 	}
 
+  @Override
+  public User save(User accountDTO) {
+    User userLogin = getUserLogin();
+    BeanUtils.copyProperties(accountDTO,userLogin );
+    return  userRepository.save(accountDTO);
+  }
 }
