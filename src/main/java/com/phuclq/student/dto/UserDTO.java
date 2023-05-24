@@ -34,6 +34,7 @@ public class UserDTO {
 	private String gender;
 	private String address;
 	private String introduction;
+	private Integer industryId;
 
 	public UserDTO(User user) {
 		this.id = user.getId();

@@ -33,7 +33,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findUserByEmail(String email);
     User findUserByEmailAndIsDeleted(String email,Boolean isDelete);
 
-    @Query(value = "select u.*,u.birth_day as birthDay, uc.total_coin from user u left join user_coin uc on uc.user_id = u.id where u.email ="
+    @Query(value = "select u.*,u.birth_day as birthDay,u.industry_id as industryId,  uc.total_coin from user u left join user_coin uc on uc.user_id = u.id where u.email ="
     		+ " ?1", nativeQuery = true)
     UserResult findUserResultByEmail(String email);
 
