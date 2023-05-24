@@ -1,5 +1,6 @@
 package com.phuclq.student.dto;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import org.joda.time.DateTime;
 
@@ -14,7 +15,7 @@ public interface UserResult {
      Boolean getIs_enable();
      Timestamp getCreated_date();
      Double getTotal_coin();
-     Timestamp getBirthDay();
+     Date getBirthDay();
       String getFullName();
       String getGender();
       String getAddress();

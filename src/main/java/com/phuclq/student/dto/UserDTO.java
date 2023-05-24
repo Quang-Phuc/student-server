@@ -1,5 +1,6 @@
 package com.phuclq.student.dto;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 import javax.validation.constraints.NotBlank;
 
@@ -27,7 +28,7 @@ public class UserDTO {
     private Integer roleId;
     private Boolean isEnable;
     private Double totalCoin;
-	private Timestamp birthDay;
+	private Date birthDay;
 
 	private String fullName;
 	private String gender;

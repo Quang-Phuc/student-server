@@ -1,5 +1,6 @@
 package com.phuclq.student.domain;
 
+import java.sql.Date;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import org.joda.time.DateTime;
@@ -16,7 +17,7 @@ public class User {
     private Integer roleId;
     private Boolean isEnable;
     private Timestamp createdDate;
-    private Timestamp birthDay;
+    private Date birthDay;
     private String fullName;
     private String gender;
     private String address;
@@ -99,11 +100,11 @@ public class User {
 
     @Basic
     @Column(name = "birth_day")
-    public Timestamp getBirthDay() {
+    public Date getBirthDay() {
         return birthDay;
     }
 
-    public void setBirthDay(Timestamp birthDay) {
+    public void setBirthDay(Date birthDay) {
         this.birthDay = birthDay;
     }
 

@@ -10,7 +10,7 @@ CREATE TABLE `user`  (
   `role_id` int(0) NULL DEFAULT NULL,
   `created_date` datetime(0) NULL DEFAULT NULL,
   `industry_id` int(0) NOT NULL,
-  `birth_day` datetime(0) NULL DEFAULT NULL,
+  `birth_day` DATE NULL DEFAULT NULL,
   `fullName` varchar(500) CHARACTER SET utf8  NULL DEFAULT NULL,
   `gender` varchar(500) CHARACTER SET utf8  NULL DEFAULT NULL,
   `address` varchar(500) CHARACTER SET utf8  NULL DEFAULT NULL,

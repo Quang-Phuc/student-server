@@ -232,9 +232,6 @@ public class UserServiceImpl implements UserService {
     user.setRoleId(userResult.getRole_id());
     user.setTotalCoin(userResult.getTotal_coin());
     user.setBirthDay(userResult.getBirthDay());
-    user.setBirthDay(userResult.getBirthDay());
-    user.setBirthDay(userResult.getBirthDay());
-    user.setBirthDay(userResult.getBirthDay());
     user.setFullName(userResult.getFullName());
     user.setGender(userResult.getGender());
     user.setIntroduction(userResult.getIntroduction());
