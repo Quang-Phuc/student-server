@@ -15,4 +15,8 @@ public interface UserResult {
      Timestamp getCreated_date();
      Double getTotal_coin();
      Timestamp getBirthDay();
+      String getFullName();
+      String getGender();
+      String getAddress();
+      String getIntroduction();
 }

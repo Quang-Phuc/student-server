@@ -29,6 +29,11 @@ public class UserDTO {
     private Double totalCoin;
 	private Timestamp birthDay;
 
+	private String fullName;
+	private String gender;
+	private String address;
+	private String introduction;
+
 	public UserDTO(User user) {
 		this.id = user.getId();
 		this.userName = user.getUserName();
