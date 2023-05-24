@@ -53,7 +53,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     
     List<User> findUserByRoleIdAndIsDeleted(Integer roleId, Boolean isDeleted);
 
-  @Query(value ="SELECT u.id as id,u.image as image FROM user u order by id desc LIMIT 9  " , nativeQuery = true)
-    List<User> findTop10OrderByIdDesc();
+  @Query(value ="SELECT u.id as id FROM user u order by id desc LIMIT 9  " , nativeQuery = true)
+    List<UserInfoResult> findTop10OrderByIdDesc();
     
 }

@@ -6,6 +6,7 @@ import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.ChangePasswordDTO;
 import com.phuclq.student.dto.UserAccountDTO;
 import com.phuclq.student.dto.UserDTO;
+import com.phuclq.student.dto.UserInfoResult;
 import com.phuclq.student.dto.UsersSearchRequest;
 import com.phuclq.student.service.ConfirmationTokenService;
 import com.phuclq.student.service.EmailSenderService;
@@ -102,7 +103,7 @@ public class UserController {
     }
     @GetMapping("/user/gettop")
     public ResponseEntity<?>  findTop10OrderByIdDesc() {
-        List<User> data = userService.findTop10OrderByIdDesc();
+        List<UserInfoResult> data = userService.findTop10OrderByIdDesc();
         return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(data).getResponse();
 
     }

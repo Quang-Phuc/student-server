@@ -254,7 +254,7 @@ public class UserServiceImpl implements UserService {
 	}
 
     @Override
-    public List<User> findTop10OrderByIdDesc() {
+    public List<UserInfoResult> findTop10OrderByIdDesc() {
         return userRepository.findTop10OrderByIdDesc();
     }
 

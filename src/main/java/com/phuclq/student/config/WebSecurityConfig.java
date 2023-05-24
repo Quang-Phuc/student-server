@@ -124,6 +124,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/api/category/home").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/file/search").permitAll()
 				.antMatchers(HttpMethod.GET, "/api/file/category/suggest").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/user/gettop").permitAll()
 				.and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
 				.antMatchers("/", "/v2/api-docs", "/webjars/**", "/swagger-resources/**", "/configuration/**",

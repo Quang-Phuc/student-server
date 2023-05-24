@@ -7,6 +7,7 @@ import com.phuclq.student.dto.AdminRoleDTO;
 import com.phuclq.student.dto.UserAccountDTO;
 import com.phuclq.student.dto.UserDTO;
 import com.phuclq.student.dto.UserInfoDTO;
+import com.phuclq.student.dto.UserInfoResult;
 import com.phuclq.student.dto.UsersSearchRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,6 +49,6 @@ public interface UserService {
     
     UserDTO changeRole(AdminRoleDTO adminRoleDTO);
 
-    List<User> findTop10OrderByIdDesc();
+    List<UserInfoResult> findTop10OrderByIdDesc();
     
 }
