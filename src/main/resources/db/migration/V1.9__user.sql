@@ -11,6 +11,11 @@ CREATE TABLE `user`  (
   `created_date` datetime(0) NULL DEFAULT NULL,
   `industry_id` int(0) NOT NULL,
   `birth_day` datetime(0) NULL DEFAULT NULL,
+  `fullName` varchar(500) CHARACTER SET utf8  NULL DEFAULT NULL,
+  `gender` varchar(500) CHARACTER SET utf8  NULL DEFAULT NULL,
+  `address` varchar(500) CHARACTER SET utf8  NULL DEFAULT NULL,
+  `introduction` varchar(500) CHARACTER SET utf8  NULL DEFAULT NULL,
+
 --   `image` varchar(5000) ,
   PRIMARY KEY (`id`) USING BTREE
 --   UNIQUE INDEX `user_name_UNIQUE`(`user_name`) USING BTREE,

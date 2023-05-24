@@ -17,6 +17,10 @@ public class User {
     private Boolean isEnable;
     private Timestamp createdDate;
     private Timestamp birthDay;
+    private String fullName;
+    private String gender;
+    private String address;
+    private String introduction;
 //    private String image;
 
     @Id
@@ -101,6 +105,46 @@ public class User {
 
     public void setBirthDay(Timestamp birthDay) {
         this.birthDay = birthDay;
+    }
+
+    @Basic
+    @Column(name = "fullName")
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    @Basic
+    @Column(name = "gender")
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    @Basic
+    @Column(name = "address")
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    @Basic
+    @Column(name = "introduction")
+    public String getIntroduction() {
+        return introduction;
+    }
+
+    public void setIntroduction(String introduction) {
+        this.introduction = introduction;
     }
 
     @Override
