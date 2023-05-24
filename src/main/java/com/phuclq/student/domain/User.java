@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 @Entity
 public class User {
     private Integer id;
+    private Integer industryId;
     private String userName;
     private String password;
     private String email;
@@ -146,5 +147,15 @@ public class User {
 
     public void setCreatedDate(Timestamp createdDate) {
         this.createdDate = createdDate;
+    }
+
+    @Basic
+    @Column(name = "industry_id")
+    public Integer getIndustryId() {
+        return industryId;
+    }
+
+    public void setIndustryId(Integer industryId) {
+        this.industryId = industryId;
     }
 }
