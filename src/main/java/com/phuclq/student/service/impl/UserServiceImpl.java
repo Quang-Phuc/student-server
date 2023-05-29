@@ -30,10 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -279,7 +276,24 @@ public class UserServiceImpl implements UserService {
   @Override
   public User save(User accountDTO) {
     User userLogin = getUserLogin();
-    BeanUtils.copyProperties(accountDTO, userLogin);
+    if(Objects.nonNull(accountDTO.getBirthDay())){
+      userLogin.setBirthDay(accountDTO.getBirthDay());
+    }
+    if(Objects.nonNull(accountDTO.getFullName())){
+      userLogin.setFullName(accountDTO.getFullName());
+    }
+    if(Objects.nonNull(accountDTO.getGender())){
+      userLogin.setGender(accountDTO.getGender());
+    }
+    if(Objects.nonNull(accountDTO.getAddress())){
+      userLogin.setAddress(accountDTO.getAddress());
+    }
+    if(Objects.nonNull(accountDTO.getIndustryId())){
+      userLogin.setIndustryId(accountDTO.getIndustryId());
+    }
+    if(Objects.nonNull(accountDTO.getIntroduction())){
+      userLogin.setIntroduction(accountDTO.getIntroduction());
+    }
     return userRepository.save(accountDTO);
   }
 }
