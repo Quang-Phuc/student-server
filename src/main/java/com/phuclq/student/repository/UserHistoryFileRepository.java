@@ -1,13 +1,13 @@
 package com.phuclq.student.repository;
 
-import java.util.List;
-
+import com.phuclq.student.domain.UserHistoryFile;
+import com.phuclq.student.dto.UserHistoryDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.phuclq.student.domain.UserHistoryFile;
+import java.util.List;
 
 @Repository
 public interface UserHistoryFileRepository extends JpaRepository<UserHistoryFile, Integer> {
@@ -19,6 +19,10 @@ public interface UserHistoryFileRepository extends JpaRepository<UserHistoryFile
 			@Param("userId") Integer userId);
 	
 	List<UserHistoryFile> findByUserHisotyId(Integer userHisotyId);
+
+	@Query(value = "select uhf.file_id as fileId,uh.activity_id as  activityId from user_history_file uhf inner join user_history uh on uhf.user_hisoty_id = uh.id "
+			+ "where  uh.user_id = :userId ", nativeQuery = true)
+	List<UserHistoryDTO> findFileHistoryHome(@Param("userId") Integer userId);
 
 
 }

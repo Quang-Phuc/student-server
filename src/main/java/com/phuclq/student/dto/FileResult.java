@@ -18,6 +18,8 @@ public class FileResult {
 	private Boolean isCard;
 	private String category;
 	private Boolean isVip;
+
+	private Integer categoryId;
 	public FileResult(Object[] obj) {
 		this.id = (Integer) obj[0];
 		this.title = (String) obj[1];
@@ -32,6 +34,7 @@ public class FileResult {
 		this.isLike = (Boolean) obj[10];
 		this.isCard = (Boolean) obj[11];
 		this.isVip = (Boolean) obj[12];
+		this.categoryId = (Integer) obj[13];
 	}
 	
 	public FileResult() {

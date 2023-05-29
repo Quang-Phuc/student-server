@@ -12,12 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import com.phuclq.student.domain.*;
+import com.phuclq.student.dto.*;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,12 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.cloud.storage.Storage;
 import com.phuclq.student.constant.ErrorCode;
 import com.phuclq.student.controller.FileController.FileHomePageRequest;
-import com.phuclq.student.dto.CategoryHomeDTO;
-import com.phuclq.student.dto.FileApprove;
-import com.phuclq.student.dto.FileDTO;
-import com.phuclq.student.dto.FileHomeDoFilterDTO;
-import com.phuclq.student.dto.FileResult;
-import com.phuclq.student.dto.FileUploadRequest;
 import com.phuclq.student.exception.BusinessException;
 import com.phuclq.student.exception.NotFoundException;
 import com.phuclq.student.repository.CategoryRepository;
@@ -53,6 +49,9 @@ import com.phuclq.student.service.FileService;
 import com.phuclq.student.service.UserService;
 import com.phuclq.student.utils.ActivityConstants;
 import com.phuclq.student.utils.DateTimeUtils;
+
+import static com.phuclq.student.utils.ActivityConstants.CARD;
+import static com.phuclq.student.utils.ActivityConstants.LIKE;
 
 @Service
 @Transactional
@@ -389,27 +388,55 @@ public class FileServiceImpl implements FileService {
         Objects.nonNull(request.getCategoryIds()) ? categoryRepository.findAllByIdIn(
             request.getCategoryIds()) : categoryRepository.findAll();
     List<FileHomeDoFilterDTO> listFile = new ArrayList<FileHomeDoFilterDTO>();
+    List<FileResult> fileResults = searchFileInCategory(request, listCategory.stream().map(Category::getId).collect(Collectors.toList()));
+    User userLogin = userService.getUserLogin();
+    List<UserHistoryDTO> fileHistoryHome = new ArrayList<>();
+    if(Objects.nonNull(userLogin.getId())){
+       fileHistoryHome = userHistoryFileRepository.findFileHistoryHome(userLogin.getId());
+
+    }
+
+    List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
     listCategory.forEach(category -> {
       FileHomeDoFilterDTO file = new FileHomeDoFilterDTO();
       file.setCategory(category.getCategory());
       file.setId(category.getId());
-      file.setListFile(searchFileInCategory(request, category.getId()));
+      List<FileResult> fileByCategory = fileResults.stream().filter(x -> Objects.equals(x.getCategoryId(), category.getId())).collect(Collectors.toList());
+      fileByCategory.forEach(x->{
+        if(finalFileHistoryHome.size()>0 ){
+          List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
+          if(collect.size()>0){
+            if(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE))){
+              x.setIsLike(true);
+            }else {
+              x.setIsLike(false);
+            }
+            if(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD))){
+              x.setIsCard(true);
+            }else {
+              x.setIsCard(false);
+            }
+          }
+        }
+      });
+      file.setListFile(fileByCategory);
       listFile.add(file);
     });
 
     return listFile;
   }
 
-  public List<FileResult> searchFileInCategory(FileHomePageRequest request, Integer categoryId) {
+  public List<FileResult> searchFileInCategory(FileHomePageRequest request, List<Integer> categoryIds) {
     List<Object> objList = null;
     StringBuilder sqlStatement = new StringBuilder();
     List<Object> listParam = new ArrayList<Object>();
+    List<Object> listParamList = new ArrayList<Object>();
     sqlStatement.append(
         "from file f inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
             + "inner join industry i on f.industry_id = i.id "
             + "inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
-    sqlStatement.append(" and f.category_id = ? ");
-    listParam.add(categoryId);
+    sqlStatement.append(" and f.category_id IN :param ");
+    listParamList.add(categoryIds);
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {
       sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
       sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
@@ -455,10 +482,13 @@ public class FileServiceImpl implements FileService {
     }
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-            + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip "
+            + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId  "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
+    }
+    for (int i = 0; i < listParamList.size(); i++) {
+      query.setParameter("param", categoryIds);
     }
     objList = query.getResultList();
     List<FileResult> list = new ArrayList<>();
