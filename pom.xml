@@ -57,6 +57,14 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<groupId>com.amazonaws</groupId>
+			<version>1.12.257</version>
+		</dependency>
+
+		<!-- Thanks for using https://jar-download.com -->
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
