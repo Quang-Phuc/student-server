@@ -61,11 +61,7 @@
 			<groupId>com.amazonaws</groupId>
 			<version>1.12.257</version>
 		</dependency>
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-core</artifactId>
-			<version>1.11.214</version>
-		</dependency>
+
 		<!-- Thanks for using https://jar-download.com -->
 
 		<dependency>
