@@ -1,5 +1,6 @@
 package com.phuclq.student.dto;
 
+import java.util.List;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -7,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadRequest {
 	private Integer id;
     private String title;
-    private MultipartFile fileImage;
     private Integer categoryId;
     private Integer specializationId;
     private Integer industryId;
@@ -20,8 +20,7 @@ public class FileUploadRequest {
     private MultipartFile attachment;
     private MultipartFile file;
     private Boolean isVip;
-    private String urlAttachment;
-    private String urlFile;
-    private String urlAvatar;
+    List<RequestFileDTO> files;
+
 
 }

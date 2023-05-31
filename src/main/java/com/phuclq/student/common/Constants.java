@@ -192,7 +192,7 @@ public class Constants {
   public static final String POLICY_NO = "POLICYNR_TT";
   public static final String PAGNO_ID = "PAGNO_ID";
   public static final String NOTIFIER = "NOTIFICATION";
-  public static final String STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED = "%s_%s";
+  public static final String STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED = "%s_%s_%s";
   public static final String STRING_FORMAT_2_VARIABLE_WITH_TWO_DOT = "%s: %s";
   public static final String STRING_FORMAT_3_VARIABLE_WITH_TWO_DOT = "%s: %s %s";
   public static final String STRING_FORMAT_3_VARIABLE = "%s %s %s";
@@ -392,6 +392,7 @@ public class Constants {
   public static final String LUNCH_END_TIME = "LUNCH_END_TIME";
   public static final String AFTERNOON_END_TIME = "AFTERNOON_END_TIME";
   public static final String WORK_TIME_DAILY = "WORK_TIME_DAILY";
+  public static final String DEFAULT_FILE_TYPE = "NBU_FILE_TYPE_DEFAULT";
 
   private Constants() {
     throw new IllegalStateException("Constant class");

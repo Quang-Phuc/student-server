@@ -18,7 +18,7 @@ public class FileApprove {
 	public FileApprove(File file) {
 		this.id = file.getId();
 		this.title = file.getTitle();
-		this.file = file.getFile();
+//		this.file = file.getFile();
 		this.pageStart = file.getStartPageNumber();
 		this.pageEnd = file.getEndPageNumber();
 		this.createDate = file.getCreatedDate();

@@ -30,11 +30,11 @@ public class FileDTO {
         this.fileTitle = file.getTitle();
         this.countView = file.getView();
         this.countDownload = file.getDowloading();
-        this.urlImage = file.getImage();
+//        this.urlImage = file.getImage();
         this.updateDate = file.getUpdatedDate();
         this.totalPageNumber = file.getTotalPageNumber();
         this.description = file.getDescription();
-        this.fileCut = file.getFileCut();
+//        this.fileCut = file.getFileCut();
     }
 
     public FileDTO() {

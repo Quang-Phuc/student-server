@@ -1,5 +1,6 @@
 package com.phuclq.student.domain;
 
+import java.time.Instant;
 import javax.persistence.*;
 import java.sql.Timestamp;
 
@@ -445,5 +446,21 @@ public class File {
 
     public void setFileHashcode(String fileHashcode) {
         this.fileHashcode = fileHashcode;
+    }
+  public File( Integer loginId) {
+    this.dowloading = 0;
+    this.view = 0;
+    this.reading = 0;
+    this.rating = 0.0;
+    Instant instant = Instant.now();
+    Timestamp timestamp = Timestamp.from(instant);
+    this.createdDate = timestamp;
+    this.updatedDate = timestamp;
+    this.authorId = loginId;
+    this.view = 0;
+    this.authorId = loginId;
+  }
+
+    public File() {
     }
 }

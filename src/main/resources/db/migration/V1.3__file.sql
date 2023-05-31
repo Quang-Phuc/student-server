@@ -2,8 +2,8 @@ DROP TABLE IF EXISTS `file`;
 CREATE TABLE `file`  (
   `id` int(0) NOT NULL,
   `title` varchar(255) CHARACTER SET utf8mb4  NOT NULL,
-  `file` varchar(255) CHARACTER SET utf8mb4  NOT NULL,
-  `file_cut` varchar(255) CHARACTER SET utf8mb4  NOT NULL,
+  `file` varchar(255) CHARACTER SET utf8mb4  NULL DEFAULT NULL,
+  `file_cut` varchar(255) CHARACTER SET utf8mb4  NULL DEFAULT NULL,
   `description` varchar(4000) CHARACTER SET utf8mb4  NULL DEFAULT NULL,
   `image` varchar(500) CHARACTER SET utf8mb4  NULL DEFAULT NULL,
   `attachment` varchar(500) CHARACTER SET utf8mb4  NULL DEFAULT NULL,

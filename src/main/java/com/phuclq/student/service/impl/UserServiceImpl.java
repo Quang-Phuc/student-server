@@ -234,6 +234,7 @@ public class UserServiceImpl implements UserService {
     user.setIntroduction(userResult.getIntroduction());
     user.setIndustryId(userResult.getIndustryId());
     user.setAddress(userResult.getAddress());
+    user.setFullName(userResult.getFullName());
     return user;
   }
 
@@ -275,7 +276,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User save(User accountDTO) {
-    User userLogin = getUserLogin();
+    User userLogin = userRepository.findById(getUserLogin().getId()).get();
     if(Objects.nonNull(accountDTO.getBirthDay())){
       userLogin.setBirthDay(accountDTO.getBirthDay());
     }
@@ -294,6 +295,6 @@ public class UserServiceImpl implements UserService {
     if(Objects.nonNull(accountDTO.getIntroduction())){
       userLogin.setIntroduction(accountDTO.getIntroduction());
     }
-    return userRepository.save(accountDTO);
+     return userRepository.save(userLogin);
   }
 }

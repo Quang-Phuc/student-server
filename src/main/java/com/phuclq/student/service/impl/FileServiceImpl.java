@@ -1,5 +1,7 @@
 package com.phuclq.student.service.impl;
 
+import com.phuclq.student.service.AttachmentService;
+import com.phuclq.student.service.UserHistoryService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -85,6 +87,12 @@ public class FileServiceImpl implements FileService {
   @Autowired
   private IndustryRepository industryRepository;
 
+  @Autowired
+  private AttachmentService attachmentService;
+  @Autowired
+  private UserHistoryService userHistoryService;
+
+
   @Override
   public Page<File> findFilesByCategory(Integer categoryId, Pageable pageable) {
     Page<File> filePage = fileRepository.findFilesByCategory(categoryId, pageable);
@@ -120,8 +128,8 @@ public class FileServiceImpl implements FileService {
     fileDTO.setCountView(file.getView() + 1);
     fileDTO.setCountDownload(file.getDowloading());
     fileDTO.setFileTitle(file.getTitle());
-    fileDTO.setUrlImage(file.getImage());
-    fileDTO.setFileLink(file.getFileCut());
+//    fileDTO.setUrlImage(file.getImage());
+//    fileDTO.setFileLink(file.getFileCut());
     fileDTO.setCategoryId(category.get().getId());
     fileDTO.setCategoryName(category.get().getCategory());
     fileDTO.setIndustryName(industry.get().getValue());
@@ -143,10 +151,9 @@ public class FileServiceImpl implements FileService {
   @Override
   public File uploadFile(FileUploadRequest fileUploadRequest) throws IOException {
 
-    File file = new File();
+    Integer login = userService.getUserLogin().getId();
+    File file = new File(login);
     BeanUtils.copyProperties(fileUploadRequest, file);
-
-    file = upload(fileUploadRequest, file, false);
 
     boolean error = false;
     if (file.getIsVip()) {
@@ -157,19 +164,14 @@ public class FileServiceImpl implements FileService {
             ErrorCode.ERROR_NOT_ENOUGH_COIN_MESSAGE);
       }
     }
-    file.setDowloading(0);
-    file.setView(0);
-    file.setReading(0);
-    file.setRating(0.0);
-    file.setFileCut("nodata");
+
     if (!error) {
       File saveFile = fileRepository.save(file);
-
-      // set file price
-      Double price =
-          fileUploadRequest.getFilePrice() != null ? fileUploadRequest.getFilePrice() : 0;
+      Double price = fileUploadRequest.getFilePrice() != null ? fileUploadRequest.getFilePrice() : 0;
       FilePrice filePrice = new FilePrice(saveFile.getId(), price);
       filePriceRepository.save(filePrice);
+      attachmentService.createListAttachmentsFromBase64S3(fileUploadRequest.getFiles(),saveFile.getId());
+      userHistoryService.activateFileHistory(login, file.getId(), ActivityConstants.UPLOAD);
       return saveFile;
     } else {
       return null;
@@ -188,10 +190,10 @@ public class FileServiceImpl implements FileService {
     boolean isFileUpdate = false;
     try (InputStream is = fileUploadRequest.getFile().getInputStream()) {
       String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
-      if (!curentFile.getFileHashcode().equals(md5)) {
-        newfile = upload(fileUploadRequest, newfile, true);
-        isFileUpdate = true;
-      }
+//      if (!curentFile.getFileHashcode().equals(md5)) {
+//        newfile = upload(fileUploadRequest, newfile, true);
+//        isFileUpdate = true;
+//      }
     }
 
     boolean error = false;
@@ -238,48 +240,43 @@ public class FileServiceImpl implements FileService {
     // upload file
     MultipartFile fileUpload = fileUploadRequest.getFile();
 
-    Instant instant = Instant.now();
-    Timestamp timestamp = Timestamp.from(instant);
-    newfile.setCreatedDate(timestamp);
-    newfile.setUpdatedDate(timestamp);
-    newfile.setAuthorId(userService.getUserLogin().getId());
-    newfile.setView(0);
 
-    try (InputStream is = fileUpload.getInputStream()) {
-      String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
-      newfile.setFileHashcode(md5);
-      if (!isUpdate) {
-        File fileCompare = fileRepository.findByFileHashcode(md5);
-        if (fileCompare != null) {
-          throw new BusinessException(ErrorCode.ERROR_FILE_EXISTS,
-              ErrorCode.ERROR_FILE_EXISTS_MESSAGE);
-        }
-      }
-    }
-    byte[] bytes = fileUpload.getBytes();
-    Path root = FileSystems.getDefault().getPath("").toAbsolutePath();
-    Path path = Paths.get(root.toString(), "src", "main", "resources", "upload",
-        fileUpload.getOriginalFilename());
-    Files.write(path, bytes);
-    newfile.setFile(path.toString());
 
-    // upload file image
-    MultipartFile fileImage = fileUploadRequest.getFileImage();
-    bytes = fileImage.getBytes();
-    path = Paths.get(root.toString(), "src", "main", "resources", "upload",
-        fileImage.getOriginalFilename());
-    Files.write(path, bytes);
-    newfile.setImage(path.toString());
-
-    // upload file attachment
-    if (fileUploadRequest.getAttachment() != null) {
-      MultipartFile fileAttachment = fileUploadRequest.getAttachment();
-      bytes = fileAttachment.getBytes();
-      path = Paths.get(root.toString(), "src", "main", "resources", "upload",
-          fileAttachment.getOriginalFilename());
-      Files.write(path, bytes);
-      newfile.setAttachment(path.toString());
-    }
+//    try (InputStream is = fileUpload.getInputStream()) {
+//      String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
+//      newfile.setFileHashcode(md5);
+//      if (!isUpdate) {
+//        File fileCompare = fileRepository.findByFileHashcode(md5);
+//        if (fileCompare != null) {
+//          throw new BusinessException(ErrorCode.ERROR_FILE_EXISTS,
+//              ErrorCode.ERROR_FILE_EXISTS_MESSAGE);
+//        }
+//      }
+//    }
+//    byte[] bytes = fileUpload.getBytes();
+//    Path root = FileSystems.getDefault().getPath("").toAbsolutePath();
+//    Path path = Paths.get(root.toString(), "src", "main", "resources", "upload",
+//        fileUpload.getOriginalFilename());
+//    Files.write(path, bytes);
+//    newfile.setFile(path.toString());
+//
+//    // upload file image
+//    MultipartFile fileImage = fileUploadRequest.getFileImage();
+//    bytes = fileImage.getBytes();
+//    path = Paths.get(root.toString(), "src", "main", "resources", "upload",
+//        fileImage.getOriginalFilename());
+//    Files.write(path, bytes);
+//    newfile.setImage(path.toString());
+//
+//    // upload file attachment
+//    if (fileUploadRequest.getAttachment() != null) {
+//      MultipartFile fileAttachment = fileUploadRequest.getAttachment();
+//      bytes = fileAttachment.getBytes();
+//      path = Paths.get(root.toString(), "src", "main", "resources", "upload",
+//          fileAttachment.getOriginalFilename());
+//      Files.write(path, bytes);
+//      newfile.setAttachment(path.toString());
+//    }
 
     return newfile;
   }
