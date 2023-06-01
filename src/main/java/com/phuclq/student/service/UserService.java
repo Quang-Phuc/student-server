@@ -8,7 +8,9 @@ import com.phuclq.student.dto.UserAccountDTO;
 import com.phuclq.student.dto.UserDTO;
 import com.phuclq.student.dto.UserInfoDTO;
 import com.phuclq.student.dto.UserInfoResult;
+import com.phuclq.student.dto.UserSaveDTO;
 import com.phuclq.student.dto.UsersSearchRequest;
+import java.io.IOException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,7 +19,7 @@ import java.util.Optional;
 
 public interface UserService {
     User registryUser(UserAccountDTO accountDTO);
-    User save(User accountDTO);
+    User save(UserSaveDTO accountDTO) throws IOException;
 
     User findUserByEmail(String email);
     

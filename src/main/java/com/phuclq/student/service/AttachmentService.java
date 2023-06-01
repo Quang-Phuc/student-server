@@ -15,4 +15,7 @@ public interface AttachmentService {
 
   AttachmentDTO getAttachmentByIdFromS3(Long id, HttpServletRequest request) throws IOException;
 
+  AttachmentDTO getAttachmentByRequestIdFromS3(Integer requestId,String fileType)
+      throws IOException;
+
 }

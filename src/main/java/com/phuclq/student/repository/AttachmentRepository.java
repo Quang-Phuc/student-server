@@ -10,4 +10,6 @@ public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
 
   List<Attachment> findAllByRequestId(Integer requestId);
 
+  List<Attachment> findAllByRequestIdAndFileType(Integer requestId,String fileType);
+
 }

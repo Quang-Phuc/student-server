@@ -3,15 +3,20 @@ package com.phuclq.student.controller;
 import com.phuclq.student.component.RestEntityResponse;
 import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.User;
+import com.phuclq.student.dto.AttachmentDTO;
 import com.phuclq.student.dto.ChangePasswordDTO;
 import com.phuclq.student.dto.UserAccountDTO;
 import com.phuclq.student.dto.UserDTO;
 import com.phuclq.student.dto.UserInfoResult;
+import com.phuclq.student.dto.UserSaveDTO;
 import com.phuclq.student.dto.UsersSearchRequest;
+import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.ConfirmationTokenService;
 import com.phuclq.student.service.EmailSenderService;
 import com.phuclq.student.service.UserService;
+import com.phuclq.student.types.FileType;
 import com.phuclq.student.utils.PaginationUtil;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +37,9 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    AttachmentService attachmentService;
 
 
     @Autowired
@@ -97,8 +105,10 @@ public class UserController {
     }
 
     @GetMapping("/user/get-login")
-    public ResponseEntity<UserDTO> getUserLogin() {
+    public ResponseEntity<UserDTO> getUserLogin() throws IOException {
         UserDTO user = userService.getUserResultLogin();
+        user.setAttachmentDTO(attachmentService.getAttachmentByRequestIdFromS3(user.getId(),
+            FileType.USER_AVATAR.getName()));
         return ResponseEntity.ok(user);
     }
     @GetMapping("/user/gettop")
@@ -108,7 +118,7 @@ public class UserController {
 
     }
     @PostMapping("/save")
-    public ResponseEntity<?> save(@RequestBody User accountDTO) {
+    public ResponseEntity<?> save(@RequestBody UserSaveDTO accountDTO) throws IOException {
 
         User user = userService.save(accountDTO);
         return restEntityRes.setHttpStatus(HttpStatus.CREATED).setDataResponse(user.getUserName()).getResponse();

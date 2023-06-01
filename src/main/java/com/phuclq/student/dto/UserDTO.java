@@ -35,6 +35,7 @@ public class UserDTO {
 	private String address;
 	private String introduction;
 	private Integer industryId;
+	private AttachmentDTO attachmentDTO;
 
 	public UserDTO(User user) {
 		this.id = user.getId();

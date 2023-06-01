@@ -4,7 +4,8 @@ package com.phuclq.student.types;
 public enum FileType {
     FILE_AVATAR (1, "FILE_AVATAR"),
     FILE_DEMO(2, "FILE_DEMO"),
-    FILE_UPLOAD(2, "FILE_UPLOAD");
+    FILE_UPLOAD(2, "FILE_UPLOAD"),
+    USER_AVATAR(3, "USER_AVATAR");
 
 
     private final Integer code;

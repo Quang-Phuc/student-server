@@ -95,5 +95,18 @@ public class AttachmentServiceImpl implements AttachmentService {
     return attachmentOptional.get();
   }
 
+  @Override
+  public AttachmentDTO getAttachmentByRequestIdFromS3(Integer requestId,String fileType)
+      throws IOException {
 
+    List<Attachment> attachmentOptional = attachmentRepository.findAllByRequestIdAndFileType(requestId,fileType);
+    if (Objects.isNull(attachmentOptional)||attachmentOptional.size()==0) {
+     return null;
+    }
+    Attachment attachment= attachmentOptional.get(0);
+    String base64FromS3 = s3StorageService.downloadFileFromS3(attachment.getFileNameS3());
+    AttachmentDTO attachmentDTO = new AttachmentDTO(attachment);
+    attachmentDTO.setMainDocument(base64FromS3);
+    return attachmentDTO;
+  }
 }

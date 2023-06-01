@@ -6,12 +6,14 @@ import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.*;
 import com.phuclq.student.exception.BusinessHandleException;
 import com.phuclq.student.repository.UserRepository;
+import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.CaptchaService;
 import com.phuclq.student.service.ConfirmationTokenService;
 import com.phuclq.student.service.EmailSenderService;
 import com.phuclq.student.service.UserService;
 import com.phuclq.student.utils.DateTimeUtils;
 import com.phuclq.student.utils.StringUtils;
+import java.io.IOException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +53,9 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   private CaptchaService captchaService;
+
+  @Autowired
+  private AttachmentService attachmentService;
 
   @Override
   public User registryUser(UserAccountDTO accountDTO) {
@@ -275,7 +280,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User save(User accountDTO) {
+  public User save(UserSaveDTO accountDTO) throws IOException {
     User userLogin = userRepository.findById(getUserLogin().getId()).get();
     if(Objects.nonNull(accountDTO.getBirthDay())){
       userLogin.setBirthDay(accountDTO.getBirthDay());
@@ -294,6 +299,10 @@ public class UserServiceImpl implements UserService {
     }
     if(Objects.nonNull(accountDTO.getIntroduction())){
       userLogin.setIntroduction(accountDTO.getIntroduction());
+    }
+    if(Objects.nonNull(accountDTO.getFiles())){
+      Long listAttachmentsFromBase64S3 = attachmentService.createListAttachmentsFromBase64S3(
+          accountDTO.getFiles(), userLogin.getId());
     }
      return userRepository.save(userLogin);
   }
