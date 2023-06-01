@@ -8,6 +8,6 @@ public interface UserInfoResult {
 
 	String getBirthDate();
 
-	String getId();
+	Integer getId();
 
 }

@@ -1,13 +1,12 @@
 package com.phuclq.student.service;
 
-import com.google.cloud.Role;
 import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.AdminRoleDTO;
 import com.phuclq.student.dto.UserAccountDTO;
 import com.phuclq.student.dto.UserDTO;
 import com.phuclq.student.dto.UserInfoDTO;
-import com.phuclq.student.dto.UserInfoResult;
+import com.phuclq.student.dto.UserInfoResultDto;
 import com.phuclq.student.dto.UserSaveDTO;
 import com.phuclq.student.dto.UsersSearchRequest;
 import java.io.IOException;
@@ -51,6 +50,6 @@ public interface UserService {
     
     UserDTO changeRole(AdminRoleDTO adminRoleDTO);
 
-    List<UserInfoResult> findTop10OrderByIdDesc();
+    List<UserInfoResultDto> findTop10OrderByIdDesc();
     
 }

@@ -1,6 +1,5 @@
 package com.phuclq.student.service.impl;
 
-import com.phuclq.student.constant.ErrorCode;
 import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.*;
@@ -11,6 +10,7 @@ import com.phuclq.student.service.CaptchaService;
 import com.phuclq.student.service.ConfirmationTokenService;
 import com.phuclq.student.service.EmailSenderService;
 import com.phuclq.student.service.UserService;
+import com.phuclq.student.types.FileType;
 import com.phuclq.student.utils.DateTimeUtils;
 import com.phuclq.student.utils.StringUtils;
 import java.io.IOException;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,7 +28,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -264,8 +262,22 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserInfoResult> findTop10OrderByIdDesc() {
-    return userRepository.findTop10OrderByIdDesc();
+  public List<UserInfoResultDto> findTop10OrderByIdDesc() {
+    List<UserInfoResult> top10OrderByIdDesc = userRepository.findTop10OrderByIdDesc();
+    List<UserInfoResultDto> userInfoResultDtos = new ArrayList<>();
+    top10OrderByIdDesc.forEach(x -> {
+      UserInfoResultDto userInfoResultDto = new UserInfoResultDto();
+      userInfoResultDto.setId(x.getId());
+      try {
+        userInfoResultDto.setAttachmentDTO(
+            attachmentService.getAttachmentByRequestIdFromS3(x.getId(),
+                FileType.USER_AVATAR.getName()));
+        userInfoResultDtos.add(userInfoResultDto);
+      } catch (IOException e) {
+
+      }
+    });
+    return userInfoResultDtos;
   }
 
   @Override
@@ -282,28 +294,28 @@ public class UserServiceImpl implements UserService {
   @Override
   public User save(UserSaveDTO accountDTO) throws IOException {
     User userLogin = userRepository.findById(getUserLogin().getId()).get();
-    if(Objects.nonNull(accountDTO.getBirthDay())){
+    if (Objects.nonNull(accountDTO.getBirthDay())) {
       userLogin.setBirthDay(accountDTO.getBirthDay());
     }
-    if(Objects.nonNull(accountDTO.getFullName())){
+    if (Objects.nonNull(accountDTO.getFullName())) {
       userLogin.setFullName(accountDTO.getFullName());
     }
-    if(Objects.nonNull(accountDTO.getGender())){
+    if (Objects.nonNull(accountDTO.getGender())) {
       userLogin.setGender(accountDTO.getGender());
     }
-    if(Objects.nonNull(accountDTO.getAddress())){
+    if (Objects.nonNull(accountDTO.getAddress())) {
       userLogin.setAddress(accountDTO.getAddress());
     }
-    if(Objects.nonNull(accountDTO.getIndustryId())){
+    if (Objects.nonNull(accountDTO.getIndustryId())) {
       userLogin.setIndustryId(accountDTO.getIndustryId());
     }
-    if(Objects.nonNull(accountDTO.getIntroduction())){
+    if (Objects.nonNull(accountDTO.getIntroduction())) {
       userLogin.setIntroduction(accountDTO.getIntroduction());
     }
-    if(Objects.nonNull(accountDTO.getFiles())){
+    if (Objects.nonNull(accountDTO.getFiles())) {
       Long listAttachmentsFromBase64S3 = attachmentService.createListAttachmentsFromBase64S3(
           accountDTO.getFiles(), userLogin.getId());
     }
-     return userRepository.save(userLogin);
+    return userRepository.save(userLogin);
   }
 }
