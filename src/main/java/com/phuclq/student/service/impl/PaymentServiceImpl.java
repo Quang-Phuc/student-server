@@ -1,5 +1,8 @@
 package com.phuclq.student.service.impl;
 
+import com.phuclq.student.dto.baokim.BankResponseWrapper;
+import com.phuclq.student.service.BaoKimService;
+import com.phuclq.student.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,10 @@ public class PaymentServiceImpl implements PaymentService{
 	
 	@Autowired
 	private UserCoinRepository userCoinRepository;
+	@Autowired
+	private BaoKimService baoKimService ;
+	@Autowired
+	private UserService userService;
 	
 	public void payment(PaymentRequest paymentRequest, String value) {
 		User userTakeCoin = userRepository.findByEmailIgnoreCaseAndIsDeleted(paymentRequest.getEmailTakeCoin(),false);
@@ -36,6 +43,12 @@ public class PaymentServiceImpl implements PaymentService{
 		userCoinRepository.save(takeCoin);
 		
 	}
+
+	@Override
+	public BankResponseWrapper getBanks() {
+		return  baoKimService.getBanks(userService.getUserLogin().getId());
+	}
+
 	public static void main(String args[]) {
 		Double total1 = (double) 8f;
 		Double total2 = (double) 9.56f;

@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.phuclq.student.component.RestEntityResponse;
@@ -18,6 +20,7 @@ import com.phuclq.student.service.PaymentService;
 public class PaymentController {
 	@Autowired
 	private PaymentService paymentService;
+
 	
 	@SuppressWarnings("rawtypes")
 	@Autowired
@@ -31,5 +34,10 @@ public class PaymentController {
 		paymentService.payment(paymentRequest, value);
 		return restEntityRes.setHttpStatus(HttpStatus.OK).getResponse();
 	}
-	
+	@RequestMapping(value = "/get-banks", method = RequestMethod.GET)
+	public ResponseEntity<?> getBanks() {
+		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(paymentService.getBanks()).getResponse();
+	}
+
+
 }

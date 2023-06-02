@@ -40,4 +40,5 @@ public class RequestType {
     public final static String QUERY_STATUS_AUTHORIZE_WITH_APP = "queryStatusAuthorizeWithApp";
     public final static String PAY_WITH_APP = "payWithApp";
 
+  public static final String BAOKIM_GET_BANK_LIST = "BAOKIM_GET_BANK_LIST";
 }
