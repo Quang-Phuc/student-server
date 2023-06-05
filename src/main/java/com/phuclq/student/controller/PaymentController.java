@@ -39,5 +39,10 @@ public class PaymentController {
 		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(paymentService.getBanks()).getResponse();
 	}
 
+	@RequestMapping(value = "/send-order-payment", method = RequestMethod.POST)
+	public ResponseEntity<?> sendOrderPayment(@RequestParam String id, @RequestParam Integer bpmId) {
+		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(paymentService.sendOrderPayment(id, bpmId)).getResponse();
+	}
+
 
 }

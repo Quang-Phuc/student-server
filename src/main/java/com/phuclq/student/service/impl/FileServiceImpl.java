@@ -11,6 +11,8 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +31,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -379,13 +382,12 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public List<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request) {
+  public List<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request, Pageable pageable) {
 
-    List<Category> listCategory =
+    Page<Category> listCategory =
         Objects.nonNull(request.getCategoryIds()) ? categoryRepository.findAllByIdIn(
-            request.getCategoryIds()) : categoryRepository.findAll();
+            request.getCategoryIds(),pageable) : categoryRepository.findAll(pageable);
     List<FileHomeDoFilterDTO> listFile = new ArrayList<FileHomeDoFilterDTO>();
-    List<FileResult> fileResults = searchFileInCategory(request, listCategory.stream().map(Category::getId).collect(Collectors.toList()));
     User userLogin = userService.getUserLogin();
     List<UserHistoryDTO> fileHistoryHome = new ArrayList<>();
     if(Objects.nonNull(userLogin.getId())){
@@ -398,7 +400,7 @@ public class FileServiceImpl implements FileService {
       FileHomeDoFilterDTO file = new FileHomeDoFilterDTO();
       file.setCategory(category.getCategory());
       file.setId(category.getId());
-      List<FileResult> fileByCategory = fileResults.stream().filter(x -> Objects.equals(x.getCategoryId(), category.getId())).collect(Collectors.toList());
+      Page<FileResult> fileByCategory = searchFileInCategory(request,category.getId());
       fileByCategory.forEach(x->{
         if(finalFileHistoryHome.size()>0 ){
           List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
@@ -423,17 +425,18 @@ public class FileServiceImpl implements FileService {
     return listFile;
   }
 
-  public List<FileResult> searchFileInCategory(FileHomePageRequest request, List<Integer> categoryIds) {
+  public Page<FileResult> searchFileInCategory(FileHomePageRequest request,Integer categoryIds) {
+    Pageable pageable = PageRequest.of(request.getPage(), request.getSizeFile());
     List<Object> objList = null;
+
     StringBuilder sqlStatement = new StringBuilder();
     List<Object> listParam = new ArrayList<Object>();
-    List<Object> listParamList = new ArrayList<Object>();
     sqlStatement.append(
-        "from file f inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
+        "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
             + "inner join industry i on f.industry_id = i.id "
             + "inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
-    sqlStatement.append(" and f.category_id IN :param ");
-    listParamList.add(categoryIds);
+    sqlStatement.append(" and f.category_id = ? ");
+    listParam.add(categoryIds);
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {
       sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
       sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
@@ -477,15 +480,23 @@ public class FileServiceImpl implements FileService {
         sqlStatement.append(" , null ");
       }
     }
+    sqlStatement.append("LIMIT ? OFFSET ?");
+    listParam.add(request.getSizeFile());
+    listParam.add(request.getSizeFile() * request.getPage());
+
+    Query queryCount = entityManager.createNativeQuery(
+        " select count(f.id) " + sqlStatement);
+    for (int i = 0; i < listParam.size(); i++) {
+      queryCount.setParameter(i + 1, listParam.get(i));
+    }
+    Integer count = ((Number) queryCount.getSingleResult()).intValue();
+
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
             + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId  "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
-    }
-    for (int i = 0; i < listParamList.size(); i++) {
-      query.setParameter("param", categoryIds);
     }
     objList = query.getResultList();
     List<FileResult> list = new ArrayList<>();
@@ -494,7 +505,9 @@ public class FileServiceImpl implements FileService {
       list.add(result);
     }
 
-    return list;
+    Page<FileResult> pageTotal = new PageImpl<FileResult>(list, pageable, count);
+    return pageTotal;
+
   }
 
   @Override

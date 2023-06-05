@@ -8,5 +8,7 @@ public interface PaymentService {
 	public void payment(PaymentRequest paymentRequest, String value);
 
 	public BankResponseWrapper getBanks();
-		
+
+  Object sendOrderPayment(String idFile, Integer bpmId);
+
 }

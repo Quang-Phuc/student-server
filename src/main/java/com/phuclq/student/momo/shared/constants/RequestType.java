@@ -41,4 +41,6 @@ public class RequestType {
     public final static String PAY_WITH_APP = "payWithApp";
 
   public static final String BAOKIM_GET_BANK_LIST = "BAOKIM_GET_BANK_LIST";
+    public static final String BAOKIM_SEND_ORDER = "BAOKIM_SEND_ORDER";
+    public static final String BAOKIM_ORDER_DETAIL = "BAOKIM_ORDER_DETAIL";
 }

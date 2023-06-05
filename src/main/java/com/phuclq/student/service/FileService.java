@@ -35,7 +35,7 @@ public interface FileService {
     public List<CategoryHomeDTO> getCategoriesHome() ;
     
     File updateFile(FileUploadRequest fileUploadRequest, Storage storage, String bucketName) throws IOException;
-    List<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request);
+    List<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request, Pageable pageable);
 
    Page <FileResult> searchFileCategory(FileHomePageRequest request, Integer categoryId, Pageable pageable);
 
