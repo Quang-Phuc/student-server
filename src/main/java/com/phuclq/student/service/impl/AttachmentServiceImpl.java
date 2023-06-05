@@ -38,7 +38,7 @@ public class AttachmentServiceImpl implements AttachmentService {
   @Transactional
   public Long createListAttachmentsFromBase64S3(List<RequestFileDTO> files, Integer requestId)
       throws IOException {
-    files.forEach(x -> {
+    files.parallelStream().forEach(x -> {
      deleteAttachmentByRequestId(requestId);
 
       Map<String, List<RequestFileDTO>> collect = files.stream().collect(Collectors.groupingBy(
