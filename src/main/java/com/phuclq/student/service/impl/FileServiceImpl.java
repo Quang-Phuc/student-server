@@ -30,7 +30,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -381,8 +380,8 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public List<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request, Pageable pageable) {
-
+  public CategoryHomeFileResult filesPage(FileHomePageRequest request, Pageable pageable) {
+    CategoryHomeFileResult categoryHomeFileResult = new CategoryHomeFileResult();
     Page<Category> listCategory =
         Objects.nonNull(request.getCategoryIds()) ? categoryRepository.findAllByIdIn(
             request.getCategoryIds(),pageable) : categoryRepository.findAll(pageable);
@@ -399,7 +398,7 @@ public class FileServiceImpl implements FileService {
       FileHomeDoFilterDTO file = new FileHomeDoFilterDTO();
       file.setCategory(category.getCategory());
       file.setId(category.getId());
-      Page<FileResult> fileByCategory = searchFileInCategory(request,category.getId());
+      List<FileResult> fileByCategory = searchFileInCategory(request,category.getId());
       fileByCategory.forEach(x->{
         if(finalFileHistoryHome.size()>0 ){
           List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
@@ -412,12 +411,13 @@ public class FileServiceImpl implements FileService {
       file.setListFile(fileByCategory);
       listFile.add(file);
     });
-
-    return listFile;
+    categoryHomeFileResult.setFileHomeDoFilterDTOS(listFile);
+    PaginationModel paginationModel = new PaginationModel(listCategory.getPageable().getPageNumber(), listCategory.getPageable().getPageSize(), (int) listCategory.getTotalElements());
+    categoryHomeFileResult.setPaginationModel(paginationModel);
+    return categoryHomeFileResult;
   }
 
-  public Page<FileResult> searchFileInCategory(FileHomePageRequest request,Integer categoryIds) {
-    Pageable pageable = PageRequest.of(request.getPage(), request.getSizeFile());
+  public List<FileResult> searchFileInCategory(FileHomePageRequest request,Integer categoryIds) {
     List<Object> objList = null;
 
     StringBuilder sqlStatement = new StringBuilder();
@@ -468,14 +468,6 @@ public class FileServiceImpl implements FileService {
       sqlStatement.append(" order by f.created_date desc ");
     }
 
-
-    Query queryCount = entityManager.createNativeQuery(
-        " select count(f.id) " + sqlStatement);
-    for (int i = 0; i < listParam.size(); i++) {
-      queryCount.setParameter(i + 1, listParam.get(i));
-    }
-    Integer count = ((Number) queryCount.getSingleResult()).intValue();
-
     sqlStatement.append(" LIMIT ? OFFSET ?");
     listParam.add(request.getSizeFile());
     listParam.add(request.getSizeFile() * request.getPage());
@@ -493,8 +485,7 @@ public class FileServiceImpl implements FileService {
       list.add(result);
     }
 
-    Page<FileResult> pageTotal = new PageImpl<FileResult>(list, pageable, count);
-    return pageTotal;
+    return list;
 
   }
 

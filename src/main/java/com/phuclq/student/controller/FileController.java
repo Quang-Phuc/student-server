@@ -1,6 +1,8 @@
 package com.phuclq.student.controller;
 
 import com.phuclq.student.dto.AttachmentDTO;
+import com.phuclq.student.dto.CategoryHomeFileResult;
+import com.phuclq.student.dto.FileHomeDoFilterDTO;
 import com.phuclq.student.service.AttachmentService;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,7 +46,6 @@ import com.phuclq.student.dto.CategoryHomeDTO;
 import com.phuclq.student.dto.FileApprove;
 import com.phuclq.student.dto.FileApproveRequest;
 import com.phuclq.student.dto.FileDTO;
-import com.phuclq.student.dto.FileHomeDoFilterDTO;
 import com.phuclq.student.dto.FileResult;
 import com.phuclq.student.dto.FileSearchRequest;
 import com.phuclq.student.dto.FileUploadRequest;
@@ -290,7 +291,7 @@ public class FileController {
   @PostMapping("/file/page-home")
   public ResponseEntity<?> fileHomePage(@RequestBody FileHomePageRequest request) {
     Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-    List<FileHomeDoFilterDTO> result = fileService.filesPage(request,pageable);
+    CategoryHomeFileResult result = fileService.filesPage(request,pageable);
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
   }
 

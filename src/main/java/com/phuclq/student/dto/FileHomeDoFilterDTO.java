@@ -9,5 +9,5 @@ import org.springframework.data.domain.Page;
 public class FileHomeDoFilterDTO {
 	private Integer id;
 	private String category;
-	Page<FileResult> listFile;
+	List<FileResult> listFile;
 }

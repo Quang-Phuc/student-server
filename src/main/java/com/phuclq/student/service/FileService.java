@@ -5,9 +5,9 @@ import com.phuclq.student.controller.FileController.FileHomePageRequest;
 import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.CategoryHomeDTO;
+import com.phuclq.student.dto.CategoryHomeFileResult;
 import com.phuclq.student.dto.FileApprove;
 import com.phuclq.student.dto.FileDTO;
-import com.phuclq.student.dto.FileHomeDoFilterDTO;
 import com.phuclq.student.dto.FileResult;
 import com.phuclq.student.dto.FileUploadRequest;
 import org.springframework.data.domain.Page;
@@ -35,7 +35,7 @@ public interface FileService {
     public List<CategoryHomeDTO> getCategoriesHome() ;
     
     File updateFile(FileUploadRequest fileUploadRequest, Storage storage, String bucketName) throws IOException;
-    List<FileHomeDoFilterDTO> filesPage(FileHomePageRequest request, Pageable pageable);
+    CategoryHomeFileResult filesPage(FileHomePageRequest request, Pageable pageable);
 
    Page <FileResult> searchFileCategory(FileHomePageRequest request, Integer categoryId, Pageable pageable);
 
