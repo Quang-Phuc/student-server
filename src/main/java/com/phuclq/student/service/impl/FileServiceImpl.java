@@ -2,6 +2,7 @@ package com.phuclq.student.service.impl;
 
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.UserHistoryService;
+import com.phuclq.student.types.OrderFileType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -11,8 +12,6 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -405,16 +404,8 @@ public class FileServiceImpl implements FileService {
         if(finalFileHistoryHome.size()>0 ){
           List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
           if(collect.size()>0){
-            if(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE))){
-              x.setIsLike(true);
-            }else {
-              x.setIsLike(false);
-            }
-            if(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD))){
-              x.setIsCard(true);
-            }else {
-              x.setIsCard(false);
-            }
+            x.setIsLike(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE)));
+            x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
           }
         }
       });
@@ -446,41 +437,38 @@ public class FileServiceImpl implements FileService {
       listParam.add("%" + request.getSearch() + "&");
     }
     if (Objects.nonNull(request.getPriceStart())) {
-      sqlStatement.append(" and f.price >= ? ");
+      sqlStatement.append(" and fp.price >= ? ");
       listParam.add(request.getPriceStart());
     }
 
     if (Objects.nonNull(request.getPriceEnd())) {
-      sqlStatement.append(" and f.price <= ? ");
+      sqlStatement.append(" and fp.price <= ? ");
       listParam.add(request.getPriceEnd());
     }
     if (Objects.nonNull(request.getIsVip())) {
 
-      sqlStatement.append(" and f.is_vip <= ? ");
-      listParam.add(request.getIsVip() ? 1 : 0);
+      sqlStatement.append(" and f.is_vip = ? ");
+      listParam.add(request.getIsVip());
     }
 
-    if (request.getPriceOrder() != null) {
-      if (request.getPriceOrder().equals("desc")) {
-        sqlStatement.append(" order by fp.price desc ");
-      } else {
-        sqlStatement.append(" order by fp.price asc ");
+    if(Objects.nonNull(request.getOrderType())){
+      if(request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())){
+        sqlStatement.append(" order by f.dowloading "+request.getOrder());
       }
-    } else {
-      sqlStatement.append(" order by null ");
-    }
-    if (request.getOrderBy() != null) {
-      if (request.getOrderBy() == 1) {
-        sqlStatement.append(" , f.created_date desc ");
-      } else if (request.getOrderBy() == 2) {
-        sqlStatement.append(" , f.dowloading desc ");
-      } else if (request.getOrderBy() == 3) {
-        sqlStatement.append(" , f.view desc ");
-      } else {
-        sqlStatement.append(" , null ");
+      if(request.getOrderType().equals(OrderFileType.FAVORITES.getCode())){
+        sqlStatement.append(" order by f.total_like "+request.getOrder());
       }
+      if(request.getOrderType().equals(OrderFileType.PRICE.getCode())){
+        sqlStatement.append(" order by  fp.price "+request.getOrder());
+      }
+      if(request.getOrderType().equals(OrderFileType.VIEW.getCode())){
+        sqlStatement.append(" order by f.view "+request.getOrder());
+      }
+    }else {
+      sqlStatement.append(" , f.created_date desc ");
     }
-    sqlStatement.append("LIMIT ? OFFSET ?");
+
+    sqlStatement.append(" LIMIT ? OFFSET ?");
     listParam.add(request.getSizeFile());
     listParam.add(request.getSizeFile() * request.getPage());
 
@@ -532,41 +520,38 @@ public class FileServiceImpl implements FileService {
       listParam.add("%" + request.getSearch() + "&");
     }
     if (Objects.nonNull(request.getPriceStart())) {
-      sqlStatement.append(" and f.price >= ? ");
+      sqlStatement.append(" and fp.price >= ? ");
       listParam.add(request.getPriceStart());
     }
 
     if (Objects.nonNull(request.getPriceEnd())) {
-      sqlStatement.append(" and f.price <= ? ");
+      sqlStatement.append(" and fp.price <= ? ");
       listParam.add(request.getPriceEnd());
     }
     if (Objects.nonNull(request.getIsVip())) {
 
-      sqlStatement.append(" and f.is_vip <= ? ");
-      listParam.add(request.getIsVip() ? 1 : 0);
+      sqlStatement.append(" and f.is_vip = ? ");
+      listParam.add(request.getIsVip());
     }
 
-    if (request.getPriceOrder() != null) {
-      if (request.getPriceOrder().equals("desc")) {
-        sqlStatement.append(" order by fp.price desc ");
-      } else {
-        sqlStatement.append(" order by fp.price asc ");
+    if(Objects.nonNull(request.getOrderType())){
+      if(request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())){
+        sqlStatement.append(" order by f.dowloading "+request.getOrder());
       }
-    } else {
-      sqlStatement.append(" order by null ");
-    }
-    if (request.getOrderBy() != null) {
-      if (request.getOrderBy() == 1) {
-        sqlStatement.append(" , f.created_date desc ");
-      } else if (request.getOrderBy() == 2) {
-        sqlStatement.append(" , f.dowloading desc ");
-      } else if (request.getOrderBy() == 3) {
-        sqlStatement.append(" , f.view desc ");
-      } else {
-        sqlStatement.append(" , null ");
+      if(request.getOrderType().equals(OrderFileType.FAVORITES.getCode())){
+        sqlStatement.append(" order by f.total_like "+request.getOrder());
       }
+      if(request.getOrderType().equals(OrderFileType.PRICE.getCode())){
+        sqlStatement.append(" order by  fp.price "+request.getOrder());
+      }
+      if(request.getOrderType().equals(OrderFileType.VIEW.getCode())){
+        sqlStatement.append(" order by f.view "+request.getOrder());
+      }
+    }else {
+      sqlStatement.append(" , f.created_date desc ");
     }
-    sqlStatement.append("LIMIT ? OFFSET ?");
+
+    sqlStatement.append(" LIMIT ? OFFSET ?");
     listParam.add(request.getSize());
     listParam.add(request.getSize() * request.getPage());
 

@@ -2,7 +2,6 @@ package com.phuclq.student.controller;
 
 import com.phuclq.student.dto.AttachmentDTO;
 import com.phuclq.student.service.AttachmentService;
-import java.awt.SystemTray;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -344,7 +343,8 @@ public class FileController {
     private Integer page;
     private Integer size;
     private Integer sizeFile;
-    private String priceOrder;
+    private String order;
+    private Integer orderType;
     private Integer orderBy;
     private Integer categoryId;
     private String search;
