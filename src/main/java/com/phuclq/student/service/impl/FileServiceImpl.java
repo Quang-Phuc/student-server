@@ -578,6 +578,15 @@ public class FileServiceImpl implements FileService {
 
     Page<FileResult> listCategory = new PageImpl<FileResult>(list, pageable, count);
     FileResultDto fileResultDto = new FileResultDto();
+    listCategory.getContent().forEach(x->{
+      try {
+        AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
+            x.getId(),
+            FileType.FILE_AVATAR.getName());
+        x.setImage(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
+      } catch (IOException e) {
+      }
+    });
     fileResultDto.setList(listCategory.getContent());
     PaginationModel paginationModel = new PaginationModel(listCategory.getPageable().getPageNumber(), listCategory.getPageable().getPageSize(), (int) listCategory.getTotalElements());
     fileResultDto.setPaginationModel(paginationModel);
