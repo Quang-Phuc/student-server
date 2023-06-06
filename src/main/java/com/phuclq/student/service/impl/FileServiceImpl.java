@@ -2,6 +2,7 @@ package com.phuclq.student.service.impl;
 
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.UserHistoryService;
+import com.phuclq.student.types.FileType;
 import com.phuclq.student.types.OrderFileType;
 import java.io.IOException;
 import java.io.InputStream;
@@ -400,6 +401,13 @@ public class FileServiceImpl implements FileService {
       file.setId(category.getId());
       List<FileResult> fileByCategory = searchFileInCategory(request,category.getId());
       fileByCategory.forEach(x->{
+        try {
+          AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
+              x.getId(),
+              FileType.FILE_AVATAR.getName());
+          x.setImage(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
+        } catch (IOException e) {
+        }
         if(finalFileHistoryHome.size()>0 ){
           List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
           if(collect.size()>0){
