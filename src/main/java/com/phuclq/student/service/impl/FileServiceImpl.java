@@ -465,12 +465,9 @@ public class FileServiceImpl implements FileService {
         sqlStatement.append(" order by f.view "+request.getOrder());
       }
     }else {
-      sqlStatement.append(" , f.created_date desc ");
+      sqlStatement.append(" order by f.created_date desc ");
     }
 
-    sqlStatement.append(" LIMIT ? OFFSET ?");
-    listParam.add(request.getSizeFile());
-    listParam.add(request.getSizeFile() * request.getPage());
 
     Query queryCount = entityManager.createNativeQuery(
         " select count(f.id) " + sqlStatement);
@@ -479,6 +476,9 @@ public class FileServiceImpl implements FileService {
     }
     Integer count = ((Number) queryCount.getSingleResult()).intValue();
 
+    sqlStatement.append(" LIMIT ? OFFSET ?");
+    listParam.add(request.getSizeFile());
+    listParam.add(request.getSizeFile() * request.getPage());
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
             + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId  "
