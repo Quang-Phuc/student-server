@@ -490,7 +490,7 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public Page<FileResult> searchFileCategory(FileHomePageRequest request, Integer categoryId,
+  public FileResultDto searchFileCategory(FileHomePageRequest request, Integer categoryId,
       Pageable pageable) {
     List<Object> objList = null;
 
@@ -568,8 +568,12 @@ public class FileServiceImpl implements FileService {
       list.add(result);
     }
 
-    Page<FileResult> pageTotal = new PageImpl<FileResult>(list, pageable, count);
-    return pageTotal;
+    Page<FileResult> listCategory = new PageImpl<FileResult>(list, pageable, count);
+    FileResultDto fileResultDto = new FileResultDto();
+    fileResultDto.setList(listCategory.getContent());
+    PaginationModel paginationModel = new PaginationModel(listCategory.getPageable().getPageNumber(), listCategory.getPageable().getPageSize(), (int) listCategory.getTotalElements());
+    fileResultDto.setPaginationModel(paginationModel);
+    return fileResultDto;
   }
 
 

@@ -9,6 +9,7 @@ import com.phuclq.student.dto.CategoryHomeFileResult;
 import com.phuclq.student.dto.FileApprove;
 import com.phuclq.student.dto.FileDTO;
 import com.phuclq.student.dto.FileResult;
+import com.phuclq.student.dto.FileResultDto;
 import com.phuclq.student.dto.FileUploadRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +38,7 @@ public interface FileService {
     File updateFile(FileUploadRequest fileUploadRequest, Storage storage, String bucketName) throws IOException;
     CategoryHomeFileResult filesPage(FileHomePageRequest request, Pageable pageable);
 
-   Page <FileResult> searchFileCategory(FileHomePageRequest request, Integer categoryId, Pageable pageable);
+   FileResultDto searchFileCategory(FileHomePageRequest request, Integer categoryId, Pageable pageable);
 
     Page<FileApprove> getFileUnApprove(Pageable pageable);
     

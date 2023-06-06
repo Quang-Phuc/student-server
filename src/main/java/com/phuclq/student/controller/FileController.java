@@ -3,6 +3,7 @@ package com.phuclq.student.controller;
 import com.phuclq.student.dto.AttachmentDTO;
 import com.phuclq.student.dto.CategoryHomeFileResult;
 import com.phuclq.student.dto.FileHomeDoFilterDTO;
+import com.phuclq.student.dto.FileResultDto;
 import com.phuclq.student.service.AttachmentService;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -298,7 +299,7 @@ public class FileController {
   @PostMapping("/file/category/search")
   public ResponseEntity<?> searchFileByCategory(@RequestBody FileHomePageRequest request) {
     Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-    Page<FileResult> result = fileService.searchFileCategory(request, request.getCategoryId(),
+    FileResultDto result = fileService.searchFileCategory(request, request.getCategoryId(),
         pageable);
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
   }
