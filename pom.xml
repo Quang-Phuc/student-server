@@ -61,7 +61,36 @@
 			<groupId>com.amazonaws</groupId>
 			<version>1.12.257</version>
 		</dependency>
-
+		<dependency>
+			<artifactId>itextpdf</artifactId>
+			<groupId>com.itextpdf</groupId>
+			<version>5.5.13.3</version>
+		</dependency>
+		<dependency>
+			<artifactId>xmlworker</artifactId>
+			<groupId>com.itextpdf.tool</groupId>
+			<version>5.5.13.3</version>
+		</dependency>
+		<dependency>
+			<artifactId>html2pdf</artifactId>
+			<groupId>com.itextpdf</groupId>
+			<version>3.0.3</version>
+		</dependency>
+		<dependency>
+			<artifactId>pdfbox</artifactId>
+			<groupId>org.apache.pdfbox</groupId>
+			<version>2.0.1</version>
+		</dependency>
+		<dependency>
+			<artifactId>imgscalr-lib</artifactId>
+			<groupId>org.imgscalr</groupId>
+			<version>4.2</version>
+		</dependency>
+		<dependency>
+			<artifactId>thymeleaf</artifactId>
+			<groupId>org.thymeleaf</groupId>
+			<version>3.0.11.RELEASE</version>
+		</dependency>
 		<!-- Thanks for using https://jar-download.com -->
 
 		<dependency>
@@ -195,6 +224,7 @@
 			<version>0.0.20131108.vaadin1</version>
 		</dependency>
 		<!-- MOMO -->
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

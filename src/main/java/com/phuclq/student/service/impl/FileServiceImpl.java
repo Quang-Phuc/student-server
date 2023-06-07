@@ -578,15 +578,29 @@ public class FileServiceImpl implements FileService {
 
     Page<FileResult> listCategory = new PageImpl<FileResult>(list, pageable, count);
     FileResultDto fileResultDto = new FileResultDto();
-    listCategory.getContent().parallelStream().forEach(x->{
-      try {
-        AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
-            x.getId(),
-            FileType.FILE_AVATAR.getName());
-        x.setImage(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
-      } catch (IOException e) {
-      }
-    });
+    User userLogin = userService.getUserLogin();
+    List<UserHistoryDTO> fileHistoryHome = new ArrayList<>();
+    if(Objects.nonNull(userLogin.getId())){
+      fileHistoryHome = userHistoryFileRepository.findFileHistoryHome(userLogin.getId());
+
+    }
+    List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
+    listCategory.stream().parallel().forEach(x->{
+        try {
+          AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
+              x.getId(),
+              FileType.FILE_AVATAR.getName());
+          x.setImage(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
+        } catch (IOException e) {
+        }
+        if(finalFileHistoryHome.size()>0 ){
+          List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
+          if(collect.size()>0){
+            x.setIsLike(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE)));
+            x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
+          }
+        }
+      });
     fileResultDto.setList(listCategory.getContent());
     PaginationModel paginationModel = new PaginationModel(listCategory.getPageable().getPageNumber(), listCategory.getPageable().getPageSize(), (int) listCategory.getTotalElements());
     fileResultDto.setPaginationModel(paginationModel);
