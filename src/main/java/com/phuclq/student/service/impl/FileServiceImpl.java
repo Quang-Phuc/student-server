@@ -395,12 +395,12 @@ public class FileServiceImpl implements FileService {
     }
 
     List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
-    listCategory.forEach(category -> {
+    listCategory.stream().parallel().forEach(category -> {
       FileHomeDoFilterDTO file = new FileHomeDoFilterDTO();
       file.setCategory(category.getCategory());
       file.setId(category.getId());
       List<FileResult> fileByCategory = searchFileInCategory(request,category.getId());
-      fileByCategory.forEach(x->{
+      fileByCategory.parallelStream().forEach(x->{
         try {
           AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
               x.getId(),
