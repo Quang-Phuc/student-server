@@ -578,7 +578,7 @@ public class FileServiceImpl implements FileService {
 
     Page<FileResult> listCategory = new PageImpl<FileResult>(list, pageable, count);
     FileResultDto fileResultDto = new FileResultDto();
-    listCategory.getContent().forEach(x->{
+    listCategory.getContent().parallelStream().forEach(x->{
       try {
         AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
             x.getId(),
