@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS `laguage`;
 CREATE TABLE `laguage`  (
   `id` int(0) NOT NULL AUTO_INCREMENT,
-  `value` varchar(500) CHARACTER SET utf8mb4  NULL DEFAULT NULL,
+  `value` varchar(500) CHARACTER SET utf8  NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 );

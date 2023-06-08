@@ -2,6 +2,7 @@ package com.phuclq.student.service.impl;
 
 //import com.itextpdf.text.DocumentException;
 
+import com.itextpdf.text.DocumentException;
 import com.phuclq.student.common.Constants;
 import com.phuclq.student.domain.Attachment;
 import com.phuclq.student.dto.AttachmentDTO;
@@ -10,7 +11,9 @@ import com.phuclq.student.exception.ExceptionUtils;
 import com.phuclq.student.repository.AttachmentRepository;
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.S3StorageService;
+import com.phuclq.student.types.FileType;
 import com.phuclq.student.utils.Base64ToMultipartFile;
+import com.phuclq.student.utils.FileUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +41,7 @@ public class AttachmentServiceImpl implements AttachmentService {
   @Transactional
   public Long createListAttachmentsFromBase64S3(List<RequestFileDTO> files, Integer requestId)
       throws IOException {
-    files.parallelStream().forEach(x -> {
+    files.forEach(x -> {
      deleteAttachmentByRequestId(requestId);
 
       Map<String, List<RequestFileDTO>> collect = files.stream().collect(Collectors.groupingBy(
@@ -49,7 +52,20 @@ public class AttachmentServiceImpl implements AttachmentService {
       Attachment existAtt;
       for (Map.Entry<String, List<RequestFileDTO>> entry : collect.entrySet()) {
         String typeFile = entry.getKey();
-        base64String = x.getContent();
+        if(x.getType().equals(FileType.FILE_AVATAR.getName())){
+          try {
+            System.out.println("Lưu file");
+            base64String = FileUtils.mergeFileToBase64(x.getContent());
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          } catch (DocumentException e) {
+            throw new RuntimeException(e);
+          }
+
+        }else {
+          base64String = x.getContent();
+
+        }
         String  dataUir = String.format(Constants.START_BASE64_STRING, Constants.APPLICATION_PDF);
         MultipartFile base64ToMultipartFile = new Base64ToMultipartFile(base64String, dataUir,
             String.format(Constants.STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED, requestId,

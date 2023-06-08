@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS `school`;
 CREATE TABLE `school`  (
   `id` int(0) NOT NULL AUTO_INCREMENT,
-  `school_name` varchar(500) CHARACTER SET utf8mb4  NULL DEFAULT NULL,
+  `school_name` varchar(500) CHARACTER SET utf8  NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 );
