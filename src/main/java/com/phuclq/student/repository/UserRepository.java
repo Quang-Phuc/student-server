@@ -33,9 +33,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     User findUserByEmail(String email);
     User findUserByEmailAndIsDeleted(String email,Boolean isDelete);
 
-    @Query(value = "select u.*,u.birth_day as birthDay,u.industry_id as industryId,  uc.total_coin,u.full_name as fullName from user u left join user_coin uc on uc.user_id = u.id where u.email ="
-    		+ " ?1", nativeQuery = true)
-    UserResult findUserResultByEmail(String email);
+    @Query(value = "select u.*,u.birth_day as birthDay,u.industry_id as industryId,  uc.total_coin,u.full_name as fullName, a.url as image from user u left join user_coin uc on uc.user_id = u.id left join attachment a on u.id = a.request_id  where u.email = ?1 and a.file_type =?2 "
+    		+ " ", nativeQuery = true)
+    UserResult findUserResultByEmail(String email, String type);
 
     @Query("SELECT c FROM User c WHERE (:userName is null or c.userName = :userName) and (:email is null"
             + " or c.email = :email) and (:phone is null or c.phone = :phone)")
@@ -53,7 +53,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     
     List<User> findUserByRoleIdAndIsDeleted(Integer roleId, Boolean isDeleted);
 
-  @Query(value ="SELECT u.id as id FROM user u order by id desc LIMIT 9  " , nativeQuery = true)
-    List<UserInfoResult> findTop10OrderByIdDesc();
+  @Query(value ="SELECT u.id as id ,a.url as image FROM user u  left join attachment a on u.id = a.request_id and a.file_type =:type order by id desc LIMIT 9  " , nativeQuery = true)
+    List<UserInfoResult> findTop10OrderByIdDesc(@Param("type") String type);
     
 }

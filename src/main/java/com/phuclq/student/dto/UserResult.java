@@ -36,5 +36,7 @@ public interface UserResult {
 
   String getIntroduction();
 
+  String getImage();
+
   Integer getIndustryId();
 }

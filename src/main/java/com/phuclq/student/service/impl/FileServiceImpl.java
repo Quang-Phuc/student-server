@@ -431,8 +431,8 @@ public class FileServiceImpl implements FileService {
     List<Object> listParam = new ArrayList<Object>();
     sqlStatement.append(
         "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
-            + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ='FILE_AVATAR' "
-            + "inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
+            + " inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type = "+"'"+FileType.FILE_AVATAR.getName()+"'"
+            + " inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
     sqlStatement.append(" and f.category_id = ? ");
     listParam.add(categoryIds);
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {
@@ -505,8 +505,8 @@ public class FileServiceImpl implements FileService {
     List<Object> listParam = new ArrayList<Object>();
     sqlStatement.append(
         "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
-            + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ='FILE_AVATAR' "
-            + "inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
+            + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="+"'"+FileType.FILE_AVATAR.getName()+"'"
+            + " inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
     sqlStatement.append(" and f.category_id = ? ");
     listParam.add(categoryId);
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {

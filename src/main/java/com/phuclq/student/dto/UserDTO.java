@@ -34,8 +34,8 @@ public class UserDTO {
 	private String gender;
 	private String address;
 	private String introduction;
+	private String image;
 	private Integer industryId;
-	private AttachmentDTO attachmentDTO;
 
 	public UserDTO(User user) {
 		this.id = user.getId();

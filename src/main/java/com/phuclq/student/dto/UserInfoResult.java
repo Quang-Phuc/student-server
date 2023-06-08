@@ -5,6 +5,7 @@ public interface UserInfoResult {
 	String getUserName();
 
 	String getEmail();
+	String getImage();
 
 	String getBirthDate();
 

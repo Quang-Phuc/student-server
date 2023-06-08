@@ -221,7 +221,7 @@ public class UserServiceImpl implements UserService {
     UserResult userResult = null;
     if (!(authentication instanceof AnonymousAuthenticationToken)) {
       String email = authentication.getName();
-      userResult = userRepository.findUserResultByEmail(email);
+      userResult = userRepository.findUserResultByEmail(email,FileType.USER_AVATAR.getName());
 
     }
     UserDTO user = new UserDTO();
@@ -238,6 +238,7 @@ public class UserServiceImpl implements UserService {
     user.setIndustryId(userResult.getIndustryId());
     user.setAddress(userResult.getAddress());
     user.setFullName(userResult.getFullName());
+    user.setImage(userResult.getImage());
     return user;
   }
 
@@ -262,22 +263,9 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserInfoResultDto> findTop10OrderByIdDesc() {
-    List<UserInfoResult> top10OrderByIdDesc = userRepository.findTop10OrderByIdDesc();
-    List<UserInfoResultDto> userInfoResultDtos = new ArrayList<>();
-    top10OrderByIdDesc.forEach(x -> {
-      UserInfoResultDto userInfoResultDto = new UserInfoResultDto();
-      userInfoResultDto.setId(x.getId());
-      try {
-        userInfoResultDto.setAttachmentDTO(
-            attachmentService.getAttachmentByRequestIdFromS3(x.getId(),
-                FileType.USER_AVATAR.getName()));
-        userInfoResultDtos.add(userInfoResultDto);
-      } catch (IOException e) {
+  public List<UserInfoResult> findTop10OrderByIdDesc() {
+    return userRepository.findTop10OrderByIdDesc(FileType.USER_AVATAR.getName());
 
-      }
-    });
-    return userInfoResultDtos;
   }
 
   @Override

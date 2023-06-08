@@ -108,13 +108,11 @@ public class UserController {
     @GetMapping("/user/get-login")
     public ResponseEntity<UserDTO> getUserLogin() throws IOException {
         UserDTO user = userService.getUserResultLogin();
-        user.setAttachmentDTO(attachmentService.getAttachmentByRequestIdFromS3(user.getId(),
-            FileType.USER_AVATAR.getName()));
         return ResponseEntity.ok(user);
     }
     @GetMapping("/user/gettop")
     public ResponseEntity<?>  findTop10OrderByIdDesc() {
-        List<UserInfoResultDto> data = userService.findTop10OrderByIdDesc();
+        List<UserInfoResult> data = userService.findTop10OrderByIdDesc();
         return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(data).getResponse();
 
     }
