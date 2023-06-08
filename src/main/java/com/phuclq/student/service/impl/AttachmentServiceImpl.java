@@ -57,8 +57,8 @@ public class AttachmentServiceImpl implements AttachmentService {
       String folder = x.getType().equals(FileType.FILE_AVATAR.getName()) ? "public/" : "File";
       String dateFormat = new SimpleDateFormat("yyyy-MM-ddhhmmss").format(new Date());
       String fileName = com.phuclq.student.utils.StringUtils.getSearchableString(
-          String.format(Constants.STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED, folder, requestId,
-              x.getName(), dateFormat)).replace(" ", "_");
+          String.format(Constants.STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED, folder,dateFormat, requestId,
+              x.getName())).replace(" ", "_");
       MultipartFile base64ToMultipartFile = new Base64ToMultipartFile(base64String, dataUir,
           fileName);
       String url = s3StorageService.getUrlFile(fileName);

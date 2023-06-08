@@ -406,13 +406,7 @@ public class FileServiceImpl implements FileService {
       file.setId(category.getId());
       List<FileResult> fileByCategory = searchFileInCategory(request,category.getId());
       fileByCategory.parallelStream().forEach(x->{
-        try {
-          AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
-              x.getId(),
-              FileType.FILE_AVATAR.getName());
-          x.setImage(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
-        } catch (IOException e) {
-        }
+
         if(finalFileHistoryHome.size()>0 ){
           List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
           if(collect.size()>0){
@@ -437,7 +431,7 @@ public class FileServiceImpl implements FileService {
     List<Object> listParam = new ArrayList<Object>();
     sqlStatement.append(
         "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
-            + "inner join industry i on f.industry_id = i.id "
+            + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ='FILE_AVATAR' "
             + "inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
     sqlStatement.append(" and f.category_id = ? ");
     listParam.add(categoryIds);
@@ -486,7 +480,7 @@ public class FileServiceImpl implements FileService {
     listParam.add(request.getSizeFile() * request.getPage());
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-            + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId  "
+            + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId  "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
@@ -511,7 +505,7 @@ public class FileServiceImpl implements FileService {
     List<Object> listParam = new ArrayList<Object>();
     sqlStatement.append(
         "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
-            + "inner join industry i on f.industry_id = i.id "
+            + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ='FILE_AVATAR' "
             + "inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
     sqlStatement.append(" and f.category_id = ? ");
     listParam.add(categoryId);
@@ -569,7 +563,7 @@ public class FileServiceImpl implements FileService {
     listParam.add(request.getSize() * request.getPage());
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-            + "    		, f.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId  "
+            + "    		, a.image as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId  "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
@@ -591,13 +585,7 @@ public class FileServiceImpl implements FileService {
     }
     List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
     listCategory.stream().parallel().forEach(x->{
-        try {
-          AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
-              x.getId(),
-              FileType.FILE_AVATAR.getName());
-          x.setImage(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
-        } catch (IOException e) {
-        }
+
         if(finalFileHistoryHome.size()>0 ){
           List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
           if(collect.size()>0){
