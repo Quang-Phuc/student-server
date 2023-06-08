@@ -1,5 +1,7 @@
 package com.phuclq.student.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.UserHistoryService;
 import com.phuclq.student.types.FileType;
@@ -153,6 +155,9 @@ public class FileServiceImpl implements FileService {
   @Override
   public File uploadFile(FileUploadRequest fileUploadRequest) throws IOException {
 
+    ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+    String json = ow.writeValueAsString(fileUploadRequest);
+    System.out.println(json);
     Integer login = userService.getUserLogin().getId();
     File file = new File(login);
     BeanUtils.copyProperties(fileUploadRequest, file);

@@ -151,6 +151,7 @@ public class Constants {
   public static final String DEFAULT_BK_DETAILS = "0001";
   public static final String DEFAULT_MERGED_ATTACHMENT_TO_SAP = "Free-look cancellation & Refund";
   public static final String DOT_COMMA = ";";
+  public static final String DOT_COMMA_2 = ",";
   public static final String SIMPLE_FORMATTER_DATE_FORMAT = "yyyy-MM-dd";
   public static final String DEFAULT_BP_NUMBER_WHEN_PAYMENT_METHOD_IS_CASH_TO_PASS_SAP =
       "0100124617";
@@ -192,7 +193,7 @@ public class Constants {
   public static final String POLICY_NO = "POLICYNR_TT";
   public static final String PAGNO_ID = "PAGNO_ID";
   public static final String NOTIFIER = "NOTIFICATION";
-  public static final String STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED = "%s_%s_%s";
+  public static final String STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED = "%s_%s_%s_%s";
   public static final String STRING_FORMAT_2_VARIABLE_WITH_TWO_DOT = "%s: %s";
   public static final String STRING_FORMAT_3_VARIABLE_WITH_TWO_DOT = "%s: %s %s";
   public static final String STRING_FORMAT_3_VARIABLE = "%s %s %s";

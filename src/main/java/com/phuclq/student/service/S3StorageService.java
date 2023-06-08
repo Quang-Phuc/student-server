@@ -16,4 +16,6 @@ public interface S3StorageService {
   String downloadFileFromS3(String fileName) throws IOException;
 
   List<Bucket> showListBucket();
+
+  String getUrlFile(String fileName);
 }

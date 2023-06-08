@@ -28,7 +28,7 @@ public class Base64ToMultipartFile implements MultipartFile {
 //    this.customName = null;
 //  }
   public Base64ToMultipartFile(String base64, String dataUri, String customName) {
-    this.fileContent = Base64.getDecoder().decode(base64.getBytes(StandardCharsets.UTF_8));
+    this.fileContent = Base64.getDecoder().decode(base64.split(Constants.DOT_COMMA_2)[1].getBytes(StandardCharsets.UTF_8));
     this.extension = dataUri.split(Constants.DOT_COMMA)[0].split(Constants.SLASHES)[1];
     this.contentType = dataUri.split(Constants.DOT_COMMA)[0].split(Constants.DOT_DOT)[1];
     this.customName = customName;

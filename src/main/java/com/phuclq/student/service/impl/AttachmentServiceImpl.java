@@ -15,6 +15,9 @@ import com.phuclq.student.types.FileType;
 import com.phuclq.student.utils.Base64ToMultipartFile;
 import com.phuclq.student.utils.FileUtils;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -41,48 +44,37 @@ public class AttachmentServiceImpl implements AttachmentService {
   @Transactional
   public Long createListAttachmentsFromBase64S3(List<RequestFileDTO> files, Integer requestId)
       throws IOException {
+    List<Attachment> attachments = new ArrayList<>();
     files.forEach(x -> {
-     deleteAttachmentByRequestId(requestId);
+      deleteAttachmentByRequestId(requestId);
 
       Map<String, List<RequestFileDTO>> collect = files.stream().collect(Collectors.groupingBy(
           e -> e.getType() == null ? Constants.DEFAULT_FILE_TYPE : e.getType()));
 
-      String base64String;
-      Optional<Attachment> existAttOptional;
-      Attachment existAtt;
-      for (Map.Entry<String, List<RequestFileDTO>> entry : collect.entrySet()) {
-        String typeFile = entry.getKey();
-        if(x.getType().equals(FileType.FILE_AVATAR.getName())){
-          try {
-            System.out.println("Lưu file");
-            base64String = FileUtils.mergeFileToBase64(x.getContent());
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          } catch (DocumentException e) {
-            throw new RuntimeException(e);
-          }
+      String base64String = x.getContent();
+      String dataUir = x.getContent().split(Constants.DOT_COMMA_2)[0];
 
-        }else {
-          base64String = x.getContent();
+      String folder = x.getType().equals(FileType.FILE_AVATAR.getName()) ? "public/" : "File";
+      String dateFormat = new SimpleDateFormat("yyyy-MM-ddhhmmss").format(new Date());
+      String fileName = com.phuclq.student.utils.StringUtils.getSearchableString(
+          String.format(Constants.STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED, folder, requestId,
+              x.getName(), dateFormat)).replace(" ", "_");
+      MultipartFile base64ToMultipartFile = new Base64ToMultipartFile(base64String, dataUir,
+          fileName);
+      String url = s3StorageService.getUrlFile(fileName);
 
-        }
-        String  dataUir = String.format(Constants.START_BASE64_STRING, Constants.APPLICATION_PDF);
-        MultipartFile base64ToMultipartFile = new Base64ToMultipartFile(base64String, dataUir,
-            String.format(Constants.STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED, requestId,
+      try {
+        Attachment attachment = new Attachment(x.getName(), StringUtils.EMPTY, x.getType(),
+            requestId, x.getAttachmentTypeCode(),
+            s3StorageService.uploadFileToS3(base64ToMultipartFile), url);
+        attachments.add(attachment);
 
-                typeFile,x.getName()));
-
-        Attachment attachment = null; // upload to s3
-        try {
-          attachment = attachmentRepository.save(
-              new Attachment(x.getName(), StringUtils.EMPTY, x.getType(), requestId,
-                  x.getAttachmentTypeCode(),
-                  s3StorageService.uploadFileToS3(base64ToMultipartFile)));
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
     });
+    attachmentRepository.saveAll(attachments);
+
     return null;
   }
 
@@ -91,19 +83,20 @@ public class AttachmentServiceImpl implements AttachmentService {
   }
 
   public void deleteAttachmentByRequestId(Integer id) {
-     this.attachmentRepository.deleteAll(getListAttachmentByRequestId(id));
+    this.attachmentRepository.deleteAll(getListAttachmentByRequestId(id));
   }
 
   @Override
   public AttachmentDTO getAttachmentByIdFromS3(Long id, HttpServletRequest request)
-      throws  IOException {
+      throws IOException {
     Attachment attachment = getById(id, request);
     String base64FromS3 = s3StorageService.downloadFileFromS3(attachment.getFileNameS3());
     AttachmentDTO attachmentDTO = new AttachmentDTO(attachment);
     attachmentDTO.setMainDocument(base64FromS3);
     return attachmentDTO;
   }
-  public Attachment getById(Long id, HttpServletRequest request)  {
+
+  public Attachment getById(Long id, HttpServletRequest request) {
     Optional<Attachment> attachmentOptional = attachmentRepository.findById(id);
     if (Objects.isNull(attachmentOptional)) {
       throw new IllegalArgumentException((ExceptionUtils.ATTACHMENT_NOT_EXIST));
@@ -112,14 +105,15 @@ public class AttachmentServiceImpl implements AttachmentService {
   }
 
   @Override
-  public AttachmentDTO getAttachmentByRequestIdFromS3(Integer requestId,String fileType)
+  public AttachmentDTO getAttachmentByRequestIdFromS3(Integer requestId, String fileType)
       throws IOException {
 
-    List<Attachment> attachmentOptional = attachmentRepository.findAllByRequestIdAndFileType(requestId,fileType);
-    if (Objects.isNull(attachmentOptional)||attachmentOptional.size()==0) {
-     return null;
+    List<Attachment> attachmentOptional = attachmentRepository.findAllByRequestIdAndFileType(
+        requestId, fileType);
+    if (Objects.isNull(attachmentOptional) || attachmentOptional.size() == 0) {
+      return null;
     }
-    Attachment attachment= attachmentOptional.get(0);
+    Attachment attachment = attachmentOptional.get(0);
     String base64FromS3 = s3StorageService.downloadFileFromS3(attachment.getFileNameS3());
     AttachmentDTO attachmentDTO = new AttachmentDTO(attachment);
     attachmentDTO.setMainDocument(base64FromS3);

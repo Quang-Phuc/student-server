@@ -1,6 +1,7 @@
 package com.phuclq.student.service.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.*;
 import com.phuclq.student.common.Constants;
 import com.phuclq.student.exception.BusinessException;
@@ -45,8 +46,7 @@ public class S3StorageServiceImpl implements S3StorageService {
    */
   @Override
   public String uploadFileToS3(MultipartFile file) throws  IOException {
-    if (ObjectUtils.isNotEmpty(file)
-            && StringUtils.containsIgnoreCase(file.getContentType(), Constants.PDF)) {
+    if (ObjectUtils.isNotEmpty(file)) {
       ObjectMetadata metadata = new ObjectMetadata();
       metadata.setContentType(file.getContentType());
       metadata.setContentLength(file.getSize());
@@ -136,5 +136,11 @@ public class S3StorageServiceImpl implements S3StorageService {
   @Override
   public List<Bucket> showListBucket() {
     return s3Client.listBuckets();
+  }
+
+  @Override
+  public String getUrlFile(String fileName) {
+   String url = ((AmazonS3Client) s3Client).getResourceUrl(bucketName, fileName);
+    return url;
   }
 }

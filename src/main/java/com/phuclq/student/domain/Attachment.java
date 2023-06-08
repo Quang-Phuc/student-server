@@ -51,6 +51,8 @@ public class Attachment extends Auditable<String>{
 
   @Column(name = "REQUEST_ID")
   private Integer requestId;
+  @Column(name = "url")
+  private String url;
 
 
   public Attachment(MultipartFile file) throws IOException {
@@ -59,7 +61,7 @@ public class Attachment extends Auditable<String>{
   }
 
   public Attachment(String fileName, String fileBase64, String fileType, Integer requestId,
-      String type, String fileNameS3) {
+      String type, String fileNameS3,String url) {
     this.fileName = fileName;
     this.licenseBase64 = fileBase64;
     this.fileType = fileType;
@@ -67,6 +69,7 @@ public class Attachment extends Auditable<String>{
     this.requestId = requestId;
 
     this.fileNameS3 = fileNameS3;
+    this.url = url;
   }
 
 }
