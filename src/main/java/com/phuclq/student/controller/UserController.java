@@ -58,7 +58,7 @@ public class UserController {
 
 	        User user = userService.registryUser(accountDTO);
 	        SimpleMailMessage mailMessage = confirmationTokenService.sendEmail(user);
-	      //  emailSenderService.sendEmail(mailMessage);
+//	        emailSenderService.sendEmail(mailMessage);
 	        return restEntityRes.setHttpStatus(HttpStatus.CREATED).setDataResponse(user.getUserName()).getResponse();
         }
 

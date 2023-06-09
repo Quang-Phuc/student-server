@@ -2,6 +2,7 @@ package com.phuclq.student.service;
 
 import com.phuclq.student.domain.ConfirmationToken;
 import com.phuclq.student.domain.User;
+import com.phuclq.student.dto.EmailEvent;
 import com.phuclq.student.repository.ConfirmationTokenRepository;
 import com.phuclq.student.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class ConfirmationTokenService {
     @Autowired
     Environment environment;
 
+    @Autowired
+    EmailService emailService;
+
     public SimpleMailMessage sendEmail(User user) {
         ConfirmationToken confirmationToken = new ConfirmationToken(user);
 
@@ -41,9 +45,11 @@ public class ConfirmationTokenService {
 
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("quang.phuc.777290596@gmail.com");
-        mailMessage.setText("To confirm your account, please click here : "
-                + "http://"+ host +":"+ port +"/api/activate-account?token=" + confirmationToken.getConfirmationToken());
+        String sub = "To confirm your account, please click here : "
+            + "http://"+ host +":"+ port +"/api/activate-account?token=" + confirmationToken.getConfirmationToken();
         System.out.println(mailMessage.getText());
+        EmailEvent emailEvent = new EmailEvent(user.getEmail(),"Complete Registration!",sub);
+        emailService.sendMailSendAppointment(emailEvent);
         return mailMessage;
     }
     
