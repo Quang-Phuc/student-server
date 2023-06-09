@@ -24,11 +24,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class Auditable<U> {
   @CreatedBy
-  @Column(name = "CREATED_BY", updatable = false)
+  @Column(name = "CREATED_BY", nullable = false, updatable = false)
   private U createdBy;
 
   @CreatedDate
-  @Column(name = "CREATED_DATE", updatable = false)
+  @Column(name = "CREATED_DATE", nullable = false, updatable = false)
   private LocalDateTime createdDate;
 
   @LastModifiedBy

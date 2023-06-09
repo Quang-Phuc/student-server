@@ -17,7 +17,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @Data
-public class Category {
+public class Category extends Auditable<String> {
     private Integer id;
     private String category;
 

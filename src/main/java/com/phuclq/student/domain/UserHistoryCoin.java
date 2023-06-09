@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "user_history_coin", schema = "smdb", catalog = "")
-public class UserHistoryCoin {
+public class UserHistoryCoin extends Auditable<String>{
     
 
 	private Integer id;

@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "user_history", schema = "smdb", catalog = "")
-public class UserHistory {
+public class UserHistory extends Auditable<String>{
     private Integer id;
     private Integer userId;
     private Integer activityId;

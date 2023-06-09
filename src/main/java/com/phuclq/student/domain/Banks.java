@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Banks {
+public class Banks extends Auditable<String> {
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

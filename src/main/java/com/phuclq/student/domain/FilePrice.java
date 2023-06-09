@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "file_price", schema = "smdb", catalog = "")
-public class FilePrice {
+public class FilePrice extends Auditable<String>{
     private Integer id;
     private Integer fileId;
     private Double price;

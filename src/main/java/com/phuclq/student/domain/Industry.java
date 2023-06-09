@@ -3,7 +3,7 @@ package com.phuclq.student.domain;
 import javax.persistence.*;
 
 @Entity
-public class Industry {
+public class Industry extends Auditable<String>{
     private Integer id;
     private String value;
 

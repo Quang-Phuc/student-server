@@ -5,13 +5,13 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-public class Report {
+public class Report extends Auditable<String>{
     private Integer id;
     private Integer idUser;
     private Integer idFile;
     private String typeReport;
     private String contentReport;
-    private Timestamp createdDate;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -64,31 +64,5 @@ public class Report {
         this.contentReport = contentReport;
     }
 
-    @Basic
-    @Column(name = "created_date")
-    public Timestamp getCreatedDate() {
-        return createdDate;
-    }
 
-    public void setCreatedDate(Timestamp createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Report report = (Report) o;
-        return id == report.id &&
-                idUser == report.idUser &&
-                idFile == report.idFile &&
-                Objects.equals(typeReport, report.typeReport) &&
-                Objects.equals(contentReport, report.contentReport) &&
-                Objects.equals(createdDate, report.createdDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, idUser, idFile, typeReport, contentReport, createdDate);
-    }
 }

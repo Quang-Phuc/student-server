@@ -31,9 +31,6 @@ public class ReportServiceImpl implements ReportService {
         report.setIdUser(idLogin);
         report.setTypeReport(reportDTO.getTypeReport());
         report.setContentReport(reportDTO.getContentReport());
-        Instant instant = Instant.now();
-        Timestamp timestamp = Timestamp.from(instant);
-        report.setCreatedDate(timestamp);
         reportRepository.save(report);
 
 

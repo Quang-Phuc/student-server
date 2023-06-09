@@ -31,5 +31,36 @@ public class RentalHouse extends Auditable<String> {
   @Column(name = "ID", nullable = false)
   private Long id;
 
+  @Column(name = "id_province", nullable = false)
+  private Integer idProvince;
+
+  @Column(name = "id_district", nullable = false)
+  private Integer idDistrict;
+
+  @Column(name = "id_ward", nullable = false)
+  private Integer idWard;
+
+  @Column(name = "id_street", nullable = false)
+  private Integer idStreet;
+
+  @Column(name = "address", nullable = false)
+  private String address;
+
+  @Column(name = "title", nullable = false)
+  private String title;
+
+  @Column(name = "number_beds", nullable = false)
+  private Integer numberBeds;
+  @Column(name = "number_bathroom", nullable = false)
+  private Integer numberBathroom;
+
+  @Column(name = "closed", nullable = false)
+  private Boolean closed;
+
+  @Column(name = "shared_room", nullable = false)
+  private Boolean sharedRoom;
+
+  @Column(name = "user_id", nullable = false)
+  private Integer userId;
 
 }
