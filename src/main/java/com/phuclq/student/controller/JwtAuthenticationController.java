@@ -5,6 +5,8 @@ import static org.springframework.http.ResponseEntity.ok;
 import com.phuclq.student.config.JwtTokenUtil;
 import com.phuclq.student.dto.JwtRequest;
 import com.phuclq.student.dto.JwtResponse;
+import com.phuclq.student.exception.BusinessException;
+import com.phuclq.student.exception.BusinessHandleException;
 import com.phuclq.student.service.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,7 +50,7 @@ public class JwtAuthenticationController {
         } catch (DisabledException e) {
             throw new Exception("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-           return "400";
+            throw new BusinessHandleException("SS005");
         }
         return null;
     }

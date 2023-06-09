@@ -1,6 +1,8 @@
 package com.phuclq.student.service;
 
 import com.phuclq.student.domain.UserRole;
+import com.phuclq.student.exception.BusinessException;
+import com.phuclq.student.exception.BusinessHandleException;
 import com.phuclq.student.repository.UserRepository;
 import com.phuclq.student.repository.UserRoleRepository;
 import java.util.Objects;
@@ -27,11 +29,15 @@ public class JwtUserDetailsService implements UserDetailsService {
     private UserRoleRepository userRoleRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) {
         com.phuclq.student.domain.User user = userRepository.findUserByEmailAndIsDeleted(email,false);
+
      if(Objects.isNull(user)){
-         throw new UsernameNotFoundException("User not found with email: " + email);
+         throw new BusinessHandleException("SS004");
      }
+      if(!user.getIsEnable()){
+        throw new BusinessHandleException("SS003");
+      }
         Optional<UserRole> userRoleOptional = userRoleRepository.findById(user.getRoleId());
         UserRole userRole = new UserRole();
         if (userRoleOptional.isPresent()) {

@@ -32,6 +32,7 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     User findUserByEmail(String email);
     User findUserByEmailAndIsDeleted(String email,Boolean isDelete);
+    User findUserByEmailAndIsDeletedAndIsEnable(String email,Boolean isDelete,Boolean isEnable);
 
     @Query(value = "select u.*,u.birth_day as birthDay,u.industry_id as industryId,  uc.total_coin,u.full_name as fullName, a.url as image from user u left join user_coin uc on uc.user_id = u.id left join attachment a on u.id = a.request_id  where u.email = ?1 and a.file_type =?2 "
     		+ " ", nativeQuery = true)
