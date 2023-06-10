@@ -39,8 +39,6 @@ public class PaymentServiceImpl implements PaymentService{
 	@Autowired
 	private BaoKimProperties baoKimProperties;
 	@Autowired
-	private OrderPaymentSubService orderPaymentSubService;
-	@Autowired
 	private UserHistoryCoinRepository repository;
 	
 	public void payment(PaymentRequest paymentRequest, String value) {

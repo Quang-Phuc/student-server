@@ -32,12 +32,9 @@ public class JwtAuthenticationController {
 
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
-        String authenticate = authenticate(authenticationRequest.getEmail(),
+       authenticate(authenticationRequest.getEmail(),
             authenticationRequest.getPassword());
-        if("400".equals(authenticate)){
-            HttpStatus status =HttpStatus.BAD_REQUEST;
-            return ResponseEntity.status(status).body(authenticate);
-        }
+
         final UserDetails userDetails = userDetailsService
                 .loadUserByUsername(authenticationRequest.getEmail());
         final String token = jwtTokenUtil.generateToken(userDetails);
