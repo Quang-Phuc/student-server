@@ -5,7 +5,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
-public class File {
+public class File extends Auditable<String>{
     private Integer id;
     private String title;
     private String description;
@@ -22,7 +22,6 @@ public class File {
     private Integer startPageNumber;
     private Integer endPageNumber;
     private Integer totalPageNumber;
-    private Timestamp createdDate;
     private Timestamp updatedDate;
     private Timestamp approvedDate;
     private Integer fileGroup;
@@ -204,15 +203,6 @@ public class File {
         this.totalPageNumber = totalPageNumber;
     }
 
-    @Basic
-    @Column(name = "created_date")
-    public Timestamp getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Timestamp createdDate) {
-        this.createdDate = createdDate;
-    }
 
     @Basic
     @Column(name = "updated_date")
@@ -350,73 +340,8 @@ public class File {
 		this.deleteDate = deleteDate;
 	}
 
-	@Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        File file = (File) o;
 
-        if (id != file.id) return false;
-        if (authorId != file.authorId) return false;
-        if (title != null ? !title.equals(file.title) : file.title != null) return false;
-        if (description != null ? !description.equals(file.description) : file.description != null) return false;
-        if (image != null ? !image.equals(file.image) : file.image != null) return false;
-        if (attachment != null ? !attachment.equals(file.attachment) : file.attachment != null) return false;
-        if (approverId != null ? !approverId.equals(file.approverId) : file.approverId != null) return false;
-        if (isVip != null ? !isVip.equals(file.isVip) : file.isVip != null) return false;
-        if (isDeleted != null ? !isDeleted.equals(file.isDeleted) : file.isDeleted != null) return false;
-        if (rating != null ? !rating.equals(file.rating) : file.rating != null) return false;
-        if (reading != null ? !reading.equals(file.reading) : file.reading != null) return false;
-        if (dowloading != null ? !dowloading.equals(file.dowloading) : file.dowloading != null) return false;
-        if (startPageNumber != null ? !startPageNumber.equals(file.startPageNumber) : file.startPageNumber != null)
-            return false;
-        if (endPageNumber != null ? !endPageNumber.equals(file.endPageNumber) : file.endPageNumber != null)
-            return false;
-        if (totalPageNumber != null ? !totalPageNumber.equals(file.totalPageNumber) : file.totalPageNumber != null)
-            return false;
-        if (createdDate != null ? !createdDate.equals(file.createdDate) : file.createdDate != null) return false;
-        if (updatedDate != null ? !updatedDate.equals(file.updatedDate) : file.updatedDate != null) return false;
-        if (approvedDate != null ? !approvedDate.equals(file.approvedDate) : file.approvedDate != null) return false;
-        if (fileGroup != null ? !fileGroup.equals(file.fileGroup) : file.fileGroup != null) return false;
-        if (languageId != null ? !languageId.equals(file.languageId) : file.languageId != null) return false;
-        if (categoryId != null ? !categoryId.equals(file.categoryId) : file.categoryId != null) return false;
-        if (schoolId != null ? !schoolId.equals(file.schoolId) : file.schoolId != null) return false;
-        if (specializationId != null ? !specializationId.equals(file.specializationId) : file.specializationId != null)
-            return false;
-        if (industryId != null ? !industryId.equals(file.industryId) : file.industryId != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (title != null ? title.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (image != null ? image.hashCode() : 0);
-        result = 31 * result + (attachment != null ? attachment.hashCode() : 0);
-        result = 31 * result + authorId;
-        result = 31 * result + (approverId != null ? approverId.hashCode() : 0);
-        result = 31 * result + (isVip != null ? isVip.hashCode() : 0);
-        result = 31 * result + (isDeleted != null ? isDeleted.hashCode() : 0);
-        result = 31 * result + (rating != null ? rating.hashCode() : 0);
-        result = 31 * result + (reading != null ? reading.hashCode() : 0);
-        result = 31 * result + (dowloading != null ? dowloading.hashCode() : 0);
-        result = 31 * result + (startPageNumber != null ? startPageNumber.hashCode() : 0);
-        result = 31 * result + (endPageNumber != null ? endPageNumber.hashCode() : 0);
-        result = 31 * result + (totalPageNumber != null ? totalPageNumber.hashCode() : 0);
-        result = 31 * result + (createdDate != null ? createdDate.hashCode() : 0);
-        result = 31 * result + (updatedDate != null ? updatedDate.hashCode() : 0);
-        result = 31 * result + (approvedDate != null ? approvedDate.hashCode() : 0);
-        result = 31 * result + (fileGroup != null ? fileGroup.hashCode() : 0);
-        result = 31 * result + (languageId != null ? languageId.hashCode() : 0);
-        result = 31 * result + (categoryId != null ? categoryId.hashCode() : 0);
-        result = 31 * result + (schoolId != null ? schoolId.hashCode() : 0);
-        result = 31 * result + (specializationId != null ? specializationId.hashCode() : 0);
-        result = 31 * result + (industryId != null ? industryId.hashCode() : 0);
-        return result;
-    }
 
     @Basic
     @Column(name = "file")
@@ -454,9 +379,7 @@ public class File {
     this.rating = 0.0;
     Instant instant = Instant.now();
     Timestamp timestamp = Timestamp.from(instant);
-    this.createdDate = timestamp;
     this.updatedDate = timestamp;
-    this.authorId = loginId;
     this.view = 0;
     this.authorId = loginId;
   }

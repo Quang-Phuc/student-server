@@ -21,7 +21,7 @@ public class FileApprove {
 //		this.file = file.getFile();
 		this.pageStart = file.getStartPageNumber();
 		this.pageEnd = file.getEndPageNumber();
-		this.createDate = file.getCreatedDate();
+//		this.createDate = file.getCreatedDate();
 	}
 
 }

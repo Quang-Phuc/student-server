@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -351,5 +353,8 @@ public class FileController {
     private Integer categoryId;
     private String search;
     private List<Integer> categoryIds;
+    private LocalDateTime dateFrom;
+    private LocalDateTime dateTo;
+    private Integer approve;
   }
 }

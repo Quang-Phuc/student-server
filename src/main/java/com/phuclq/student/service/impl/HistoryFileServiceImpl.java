@@ -1,5 +1,9 @@
 package com.phuclq.student.service.impl;
 
+import com.phuclq.student.controller.FileController.FileHomePageRequest;
+import com.phuclq.student.dao.FileDao;
+import com.phuclq.student.dto.FileResultDto;
+import com.phuclq.student.repository.AttachmentRepository;
 import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,99 +21,84 @@ import com.phuclq.student.utils.DateTimeUtils;
 import com.phuclq.student.utils.StringUtils;
 
 @Service
-public class HistoryFileServiceImpl implements HistoryFileService{
-	
-	@Autowired
-	private FileRepository fileRepo;
-	
-	@Autowired
-	private UserService userService;
-	
-	@Override
-	public Page<HistoryFileResult> getFile(HistoryFileRequest request, Pageable pageable) {
-		User user = userService.getUserLogin();
-		Timestamp dateFrom = null;
-		Timestamp dateTo = null;
-		if (StringUtils.isStringNotNullAndHasValue(request.getDateFrom())) {
-			dateFrom = DateTimeUtils.convertDateToTimestamp(DateTimeUtils.toDateFromStr(request.getDateFrom(), DateTimeUtils.yyyy_MM_dd));
-			dateTo = !StringUtils.isStringNotNullAndHasValue(request.getDateTo()) ?
-					DateTimeUtils.convertDateToTimestamp(DateTimeUtils.toDateFromStr("9999-12-31", DateTimeUtils.yyyy_MM_dd))
-					: DateTimeUtils.convertDateToTimestamp(DateTimeUtils.toDateFromStr(request.getDateTo(), DateTimeUtils.yyyy_MM_dd));
-		}
-		if (!StringUtils.isStringNotNullAndHasValue(request.getDateFrom()) && StringUtils.isStringNotNullAndHasValue(request.getDateTo())) {
-			dateFrom = DateTimeUtils.toTimestampFromStr("1900-01-01", DateTimeUtils.yyyy_MM_dd);
-			dateTo = DateTimeUtils.toTimestampFromStr(request.getDateTo(), DateTimeUtils.yyyy_MM_dd);
-		}
-		
-		Page<HistoryFileResult> page = null;
-		
-		if (StringUtils.isStringNotNullAndHasValue(request.getDateFrom()) 
-				|| StringUtils.isStringNotNullAndHasValue(request.getDateTo())) {
-			page = request.getApprove() == 1 ? fileRepo.getFileByUserApprovedFile(dateFrom, dateTo, request.getTitle(), user.getId(), pageable)
-					: request.getApprove() == 0 ? fileRepo.getFileByUserApprovingFile(dateFrom, dateTo, request.getTitle(), user.getId(), pageable)
-					: fileRepo.getFileByUser(dateFrom, dateTo, request.getTitle(), user.getId(), pageable);
-		}else {
-			page = request.getApprove() == 1 ? fileRepo.getFileByUserApprovedFile(request.getTitle(), user.getId(), pageable)
-					: request.getApprove() == 0 ? fileRepo.getFileByUserApprovingFile(request.getTitle(), user.getId(), pageable)
-					: fileRepo.getFileByUser(request.getTitle(), user.getId(), pageable);
-		}
-		
-		return page;
-	}
+public class HistoryFileServiceImpl implements HistoryFileService {
 
-	@Override
-	public Page<HistoryFileResult> getFileDownload(HistoryFileRequest request, Pageable pageable) {
-		User user = userService.getUserLogin();
-		Timestamp dateFrom = null;
-		Timestamp dateTo = null;
-		if (StringUtils.isStringNotNullAndHasValue(request.getDateFrom())) {
-			dateFrom = DateTimeUtils.convertDateToTimestamp(DateTimeUtils.toDateFromStr(request.getDateFrom(), DateTimeUtils.yyyy_MM_dd));
-			dateTo = !StringUtils.isStringNotNullAndHasValue(request.getDateTo()) ?
-					DateTimeUtils.convertDateToTimestamp(DateTimeUtils.toDateFromStr("9999-12-31", DateTimeUtils.yyyy_MM_dd))
-					: DateTimeUtils.convertDateToTimestamp(DateTimeUtils.toDateFromStr(request.getDateTo(), DateTimeUtils.yyyy_MM_dd));
-		}
-		if (!StringUtils.isStringNotNullAndHasValue(request.getDateFrom()) && StringUtils.isStringNotNullAndHasValue(request.getDateTo())) {
-			dateFrom = DateTimeUtils.toTimestampFromStr("1900-01-01", DateTimeUtils.yyyy_MM_dd);
-			dateTo = DateTimeUtils.toTimestampFromStr(request.getDateTo(), DateTimeUtils.yyyy_MM_dd);
-		}
-		
-		Page<HistoryFileResult> page = null;
-		
-		if (StringUtils.isStringNotNullAndHasValue(request.getDateFrom()) 
-				|| StringUtils.isStringNotNullAndHasValue(request.getDateTo())) {
-			page = fileRepo.getFileByUserDownloaded(dateFrom, dateTo, request.getTitle(), user.getId(), pageable);
-		}else {
-			page = fileRepo.getFileByUserDownloaded(request.getTitle(), user.getId(), pageable);
-		}
-		return page;
-	}
+  @Autowired
+  AttachmentRepository attachmentRepository;
+  @Autowired
+  private FileRepository fileRepo;
+  @Autowired
+  private UserService userService;
+  @Autowired
+  FileDao fileDao;
 
-	@Override
-	public Page<HistoryFileResult> getFileFavorite(String title, Pageable pageable) {
-		if (title == null) {
-			title = "";
-		}
+  @Override
+  public FileResultDto getFile(FileHomePageRequest request, Pageable pageable) {
+    return fileDao.myFile(request,pageable);
+
+
+  }
+
+  @Override
+  public Page<HistoryFileResult> getFileDownload(HistoryFileRequest request, Pageable pageable) {
+    User user = userService.getUserLogin();
+    Timestamp dateFrom = null;
+    Timestamp dateTo = null;
+    if (StringUtils.isStringNotNullAndHasValue(request.getDateFrom())) {
+      dateFrom = DateTimeUtils.convertDateToTimestamp(
+          DateTimeUtils.toDateFromStr(request.getDateFrom(), DateTimeUtils.yyyy_MM_dd));
+      dateTo = !StringUtils.isStringNotNullAndHasValue(request.getDateTo())
+          ? DateTimeUtils.convertDateToTimestamp(
+          DateTimeUtils.toDateFromStr("9999-12-31", DateTimeUtils.yyyy_MM_dd))
+          : DateTimeUtils.convertDateToTimestamp(
+              DateTimeUtils.toDateFromStr(request.getDateTo(), DateTimeUtils.yyyy_MM_dd));
+    }
+    if (!StringUtils.isStringNotNullAndHasValue(request.getDateFrom())
+        && StringUtils.isStringNotNullAndHasValue(request.getDateTo())) {
+      dateFrom = DateTimeUtils.toTimestampFromStr("1900-01-01", DateTimeUtils.yyyy_MM_dd);
+      dateTo = DateTimeUtils.toTimestampFromStr(request.getDateTo(), DateTimeUtils.yyyy_MM_dd);
+    }
+
+    Page<HistoryFileResult> page = null;
+
+    if (StringUtils.isStringNotNullAndHasValue(request.getDateFrom())
+        || StringUtils.isStringNotNullAndHasValue(request.getDateTo())) {
+      page = fileRepo.getFileByUserDownloaded(dateFrom, dateTo, request.getTitle(), user.getId(),
+          pageable);
+    } else {
+      page = fileRepo.getFileByUserDownloaded(request.getTitle(), user.getId(), pageable);
+    }
+    return page;
+  }
+
+  @Override
+  public Page<HistoryFileResult> getFileFavorite(String title, Pageable pageable) {
+    if (title == null) {
+      title = "";
+    }
 //		Page<HistoryFileResult> page = fileRepo.getFileByUserFavorite(title, pageable);
 //		return page;
-		return null;
-	}
+    return null;
+  }
 
-	@Override
-	public Page<HistoryFileResult> getFileFavoriteByDate(String dateFromStr, String dateToStr, Pageable pageable) {
-		User user = userService.getUserLogin();
-		Timestamp dateFrom = null;
-		Timestamp dateTo = null;
-		if (!dateFromStr.isEmpty()) {
-			dateFrom = DateTimeUtils.toTimestampFromStr(dateFromStr, DateTimeUtils.DATE_TIME_MYSQL_FORMAT);
-		}
-		if (!dateToStr.isEmpty()) {
-		dateTo = DateTimeUtils.toTimestampFromStr(dateToStr, DateTimeUtils.DATE_TIME_MYSQL_FORMAT);
-		}
-		if (dateFrom != null && dateTo != null) {
-			return fileRepo.getFileUserFavoriteByDate(dateFrom, dateTo, user.getId(), pageable);
-		} else {
-			return fileRepo.getFileByUserFavorite(user.getId(), pageable);
-		}
-	}
+  @Override
+  public Page<HistoryFileResult> getFileFavoriteByDate(String dateFromStr, String dateToStr,
+      Pageable pageable) {
+    User user = userService.getUserLogin();
+    Timestamp dateFrom = null;
+    Timestamp dateTo = null;
+    if (!dateFromStr.isEmpty()) {
+      dateFrom = DateTimeUtils.toTimestampFromStr(dateFromStr,
+          DateTimeUtils.DATE_TIME_MYSQL_FORMAT);
+    }
+    if (!dateToStr.isEmpty()) {
+      dateTo = DateTimeUtils.toTimestampFromStr(dateToStr, DateTimeUtils.DATE_TIME_MYSQL_FORMAT);
+    }
+    if (dateFrom != null && dateTo != null) {
+      return fileRepo.getFileUserFavoriteByDate(dateFrom, dateTo, user.getId(), pageable);
+    } else {
+      return fileRepo.getFileByUserFavorite(user.getId(), pageable);
+    }
+  }
 
 }
