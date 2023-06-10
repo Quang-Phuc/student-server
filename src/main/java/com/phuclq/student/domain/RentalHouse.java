@@ -69,4 +69,7 @@ public class RentalHouse extends Auditable<String> {
 
   @Column(name = "acreage", nullable = false)
   private Integer acreage;
+
+  @Column(name = "number_toilet ")
+  private Integer numberToilet ;
 }

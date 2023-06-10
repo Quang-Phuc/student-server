@@ -35,6 +35,7 @@ public class RentalHouseServiceImpl implements RentalHouseService {
       rentalHouseDto.setNumberBathroom(x.getNumberBathroom());
       rentalHouseDto.setDistrictName(x.getDistrictName());
       rentalHouseDto.setAcreage(x.getAcreage());
+      rentalHouseDto.setNumberToilet(x.getNumberToilet());
       rentalHouseDtos.add(rentalHouseDto);
     });
     result.setRentalHouseDtos(rentalHouseDtos);

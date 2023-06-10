@@ -47,4 +47,6 @@ public class RentalHouseDto extends Auditable<String> {
   private Integer userId;
 
   private Integer acreage;
+
+  private Integer numberToilet;
 }

@@ -34,4 +34,6 @@ public interface RentalHouseResult {
   Integer userId();
   Integer getAcreage();
 
+  Integer getNumberToilet();
+
 }

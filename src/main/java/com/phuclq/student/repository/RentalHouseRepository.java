@@ -18,7 +18,7 @@ public interface RentalHouseRepository extends JpaRepository<RentalHouse, Intege
 
   Category findAllById(int id);
 
-  @Query(" select rh.id as id , rh.title as title , rh.price as price ,rh.numberBathroom,rh.numberBeds, d.name as districtName from RENTING_HOUSE rh join District d on rh.idDistrict = d.id ")
+  @Query(" select rh.id as id , rh.title as title , rh.price as price ,rh.numberBathroom,rh.numberBeds, d.name as districtName,rh.acreage as acreage ,rh.numberToilet as  numberToilet,rh.numberBathroom as numberBathroom from RENTING_HOUSE rh join District d on rh.idDistrict = d.id ")
   Page<RentalHouseResult> findAllHome(Pageable pageable);
 
 }
