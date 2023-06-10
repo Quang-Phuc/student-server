@@ -2,6 +2,8 @@ package com.phuclq.student.controller;
 
 import com.phuclq.student.component.RestEntityResponse;
 import com.phuclq.student.domain.RentalHouse;
+import com.phuclq.student.dto.RentalHouseResult;
+import com.phuclq.student.dto.RentalHouseResultPage;
 import com.phuclq.student.service.RentalHouseService;
 import com.phuclq.student.service.RentalHouseService;
 import java.util.List;
@@ -30,7 +32,7 @@ public class RentalHouseController {
     @GetMapping("/rentalhouse")
     public ResponseEntity<?> getAllRentalHouse( Pageable pageable) {
 
-        Page<RentalHouse> result = RentalHouseService.findAll(pageable);
+        RentalHouseResultPage result = RentalHouseService.findAll(pageable);
         return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
     }
 

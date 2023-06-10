@@ -1,11 +1,11 @@
 package com.phuclq.student.service;
 
 import com.phuclq.student.domain.RentalHouse;
-import org.springframework.data.domain.Page;
+import com.phuclq.student.dto.RentalHouseResultPage;
 import org.springframework.data.domain.Pageable;
 
 public interface RentalHouseService {
-    Page<RentalHouse> findAll(Pageable pageable);
+    RentalHouseResultPage findAll(Pageable pageable);
 
     RentalHouse findAllById(int id);
 
