@@ -54,7 +54,7 @@ public class AttachmentServiceImpl implements AttachmentService {
       String base64String = x.getContent();
       String dataUir = x.getContent().split(Constants.DOT_COMMA_2)[0];
 
-      String folder = x.getType().equals(FileType.FILE_AVATAR.getName()) ? "public/" : "File";
+      String folder = x.getType().equals(FileType.FILE_AVATAR.getName()) ||x.getType().equals(FileType.USER_AVATAR.getName()) ? "public/" : "File";
       String dateFormat = new SimpleDateFormat("yyyy-MM-ddhhmmss").format(new Date());
       String fileName = com.phuclq.student.utils.StringUtils.getSearchableString(
           String.format(Constants.STRING_FORMAT_2_VARIABLE_WITH_UNDERLINED, folder,dateFormat, requestId,
