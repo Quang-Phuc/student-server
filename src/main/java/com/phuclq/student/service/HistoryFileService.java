@@ -1,6 +1,6 @@
 package com.phuclq.student.service;
 
-import com.phuclq.student.controller.FileController.FileHomePageRequest;
+import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResultDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,4 +16,6 @@ public interface HistoryFileService {
 	Page<HistoryFileResult> getFileFavorite(String title, Pageable pageable);
 	
 	Page<HistoryFileResult> getFileFavoriteByDate(String dateFrom, String dateTo, Pageable pageable);
+
+	Page<HistoryFileResult> deleteFileHistory(FileHomePageRequest request);
 }

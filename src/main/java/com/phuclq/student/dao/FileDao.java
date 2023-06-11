@@ -3,8 +3,8 @@ package com.phuclq.student.dao;
 import static com.phuclq.student.utils.ActivityConstants.CARD;
 import static com.phuclq.student.utils.ActivityConstants.LIKE;
 
-import com.phuclq.student.controller.FileController.FileHomePageRequest;
 import com.phuclq.student.domain.User;
+import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResult;
 import com.phuclq.student.dto.FileResultDto;
 import com.phuclq.student.dto.PaginationModel;
@@ -70,7 +70,7 @@ public class FileDao {
 
     StringBuilder sqlStatement = new StringBuilder();
     List<Object> listParam = new ArrayList<Object>();
-    if (Objects.nonNull(request.getIsLike())&&request.getIsLike()) {
+    if (Objects.nonNull(request.getIsLike()) && request.getIsLike()) {
       sqlStatement.append(
           "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
               + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
@@ -78,7 +78,7 @@ public class FileDao {
               + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 4 where 1 =1  ");
 
     }
-    if (Objects.nonNull(request.getIsUser())&&request.getIsUser()) {
+    if (Objects.nonNull(request.getIsUser()) && request.getIsUser()) {
       sqlStatement.append(
           "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
               + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
@@ -87,7 +87,7 @@ public class FileDao {
       sqlStatement.append(" and f.author_id = ? ");
       listParam.add(userService.getUserLogin().getId());
     }
-    if (Objects.nonNull(request.getIsDownload())&&request.getIsDownload()) {
+    if (Objects.nonNull(request.getIsDownload()) && request.getIsDownload()) {
       sqlStatement.append(
           "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
               + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="

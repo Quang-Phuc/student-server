@@ -3,6 +3,7 @@ package com.phuclq.student.controller;
 import com.phuclq.student.dto.AttachmentDTO;
 import com.phuclq.student.dto.CategoryHomeFileResult;
 import com.phuclq.student.dto.FileHomeDoFilterDTO;
+import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResultDto;
 import com.phuclq.student.service.AttachmentService;
 import java.io.IOException;
@@ -294,7 +295,7 @@ public class FileController {
   @PostMapping("/file/page-home")
   public ResponseEntity<?> fileHomePage(@RequestBody FileHomePageRequest request) {
     Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
-    CategoryHomeFileResult result = fileService.filesPage(request,pageable);
+    CategoryHomeFileResult result = fileService.filesPage(request, pageable);
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
   }
 
@@ -326,38 +327,13 @@ public class FileController {
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
   }
 
-	@GetMapping("/file/downloadS3")
-	public ResponseEntity<List<File>> downloadS3(@RequestParam Long id, HttpServletRequest request)
-			throws IOException {
-		AttachmentDTO attachmentByIdFromS3 = attachmentService.getAttachmentByIdFromS3(id, request);
+  @GetMapping("/file/downloadS3")
+  public ResponseEntity<List<File>> downloadS3(@RequestParam Long id, HttpServletRequest request)
+      throws IOException {
+    AttachmentDTO attachmentByIdFromS3 = attachmentService.getAttachmentByIdFromS3(id, request);
 
-		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(attachmentByIdFromS3).getResponse();
-	}
-
-  @Data
-  public static class FileHomePageRequest {
-
-    private String title;
-    private Boolean isVip;
-    private Integer priceStart;
-    private Integer priceEnd;
-    private Integer priceTo;
-    private Integer school;
-    private Integer industry;
-    private Integer page;
-    private Integer size;
-    private Integer sizeFile;
-    private String order;
-    private Integer orderType;
-    private Integer orderBy;
-    private Integer categoryId;
-    private String search;
-    private List<Integer> categoryIds;
-    private LocalDateTime dateFrom;
-    private LocalDateTime dateTo;
-    private Integer approve;
-    private Boolean isLike;
-    private Boolean isDownload;
-    private Boolean isUser;
+    return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(attachmentByIdFromS3)
+        .getResponse();
   }
+
 }
