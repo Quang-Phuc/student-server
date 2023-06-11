@@ -1,5 +1,6 @@
 package com.phuclq.student.controller;
 
+import com.phuclq.student.dto.OrderDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -40,8 +41,8 @@ public class PaymentController {
 	}
 
 	@RequestMapping(value = "/send-order-payment", method = RequestMethod.POST)
-	public ResponseEntity<?> sendOrderPayment(@RequestParam String id, @RequestParam Integer bpmId) {
-		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(paymentService.sendOrderPayment(id, bpmId)).getResponse();
+	public ResponseEntity<?> sendOrderPayment(@RequestBody OrderDto dto) {
+		return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(paymentService.sendOrderPayment(dto)).getResponse();
 	}
 
 

@@ -3,6 +3,8 @@ package com.phuclq.student.controller;
 import com.phuclq.student.component.RestEntityResponse;
 import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResultDto;
+import com.phuclq.student.dto.TotalMyFileDTO;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +37,12 @@ public class FileHistoryController {
   public ResponseEntity<?> getFileWithUser(@RequestBody FileHomePageRequest request,
       Pageable pageable) {
     FileResultDto page = fileService.getFile(request, pageable);
+    return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(page).getResponse();
+  }
+
+  @GetMapping("/total")
+  public ResponseEntity<?> total() {
+    TotalMyFileDTO page = fileService.total();
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(page).getResponse();
   }
 

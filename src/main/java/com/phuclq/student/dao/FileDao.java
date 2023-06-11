@@ -8,6 +8,7 @@ import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResult;
 import com.phuclq.student.dto.FileResultDto;
 import com.phuclq.student.dto.PaginationModel;
+import com.phuclq.student.dto.TotalMyFileDTO;
 import com.phuclq.student.dto.UserHistoryDTO;
 import com.phuclq.student.repository.CategoryRepository;
 import com.phuclq.student.repository.FilePriceRepository;
@@ -200,6 +201,43 @@ public class FileDao {
         (int) listCategory.getTotalElements());
     fileResultDto.setPaginationModel(paginationModel);
     return fileResultDto;
+
+  }
+
+  public TotalMyFileDTO myFileTotal() {
+
+    StringBuilder sqlStatement = new StringBuilder();
+    StringBuilder sqlStatement2 = new StringBuilder();
+    StringBuilder sqlStatement3 = new StringBuilder();
+      sqlStatement.append(
+          "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
+              + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
+              + "'" + FileType.FILE_AVATAR.getName() + "'"
+              + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 4   ");
+
+      sqlStatement2.append(
+          "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
+              + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
+              + "'" + FileType.FILE_AVATAR.getName() + "'"
+              + " inner join user u on f.author_id = u.id ");
+      sqlStatement2.append(" and f.author_id =  "+userService.getUserLogin().getId());
+      sqlStatement3.append(
+          "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
+              + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
+              + "'" + FileType.FILE_AVATAR.getName() + "'"
+              + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 1  ");
+
+
+    Integer queryCount = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement).getSingleResult()).intValue();;
+    Integer queryCount2 = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement).getSingleResult()).intValue();;
+    Integer queryCount3 = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement).getSingleResult()).intValue();
+    TotalMyFileDTO totalMyFileDTO = new TotalMyFileDTO();
+    totalMyFileDTO.setIsUser(queryCount);
+    totalMyFileDTO.setIsLike(queryCount2);
+    totalMyFileDTO.setIsDownload(queryCount3);
+    return  totalMyFileDTO;
+
+
 
   }
 

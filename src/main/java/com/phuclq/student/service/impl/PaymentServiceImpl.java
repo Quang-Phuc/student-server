@@ -1,6 +1,7 @@
 package com.phuclq.student.service.impl;
 
 import com.phuclq.student.domain.UserHistoryCoin;
+import com.phuclq.student.dto.OrderDto;
 import com.phuclq.student.dto.baokim.BankResponseWrapper;
 import com.phuclq.student.dto.baokim.BaoKimProperties;
 import com.phuclq.student.dto.baokim.OrderSendDto;
@@ -40,6 +41,9 @@ public class PaymentServiceImpl implements PaymentService{
 	private BaoKimProperties baoKimProperties;
 	@Autowired
 	private UserHistoryCoinRepository repository;
+	@Autowired
+	OrderPaymentSubService orderPaymentSubService;
+
 	
 	public void payment(PaymentRequest paymentRequest, String value) {
 		User userTakeCoin = userRepository.findByEmailIgnoreCaseAndIsDeleted(paymentRequest.getEmailTakeCoin(),false);
@@ -66,11 +70,8 @@ public class PaymentServiceImpl implements PaymentService{
 	}
 
 	@Override
-	public Object sendOrderPayment(String idFile, Integer bpmId) {
+	public Object sendOrderPayment(OrderDto dto) {
 //		log.info("===========================");
-//		log.info("orderId={}", idFile);
-//		BusinessAssert.notNull(idFile);
-//		BusinessAssert.notNull(bpmId);
 //
 //		UserHistoryCoin historyCoin = new UserHistoryCoin();
 //		User userLogin = userService.getUserLogin();
@@ -79,24 +80,22 @@ public class PaymentServiceImpl implements PaymentService{
 //		historyCoin.setActivityDate();
 //		historyCoin.setUserId(userLogin.getId());
 //
-//		Order order = orderRepository.getById(orderId);
 //
-//		BusinessAssert.notNull(userLogin, BusinessExceptionCode.ORDER_NOT_FOUND, BusinessExceptionCode.ORDER_NOT_FOUND);
 //
 //
 //		try {
 //
 //			OrderSendParamDto orderSendParamDto = new OrderSendParamDto();
-//			String mrcOrderId = genMrcOrderId(userLogin.getId());
+//			String mrcOrderId = genMrcOrderId(userLogin.getPhone());
 //			orderSendParamDto.setMrcOrderId(mrcOrderId);
 //			orderSendParamDto.setMerchantId(!StringUtils.isEmpty(baoKimProperties.getMerchantId())
 //					? Integer.valueOf(baoKimProperties.getMerchantId())
 //					: 0);
-//			orderSendParamDto.setTotalAmount(order.getPaymentAmount().intValue());
+//			orderSendParamDto.setTotalAmount(dto.getTotalAmount());
 //
 //			String description = String.format(DESCRIPTION_SEND_ORDER,
 //					order.getApplNo(),
-//					new SimpleDateFormat(MBAL_DATE_SDF_PATTERN).format(order.getCreatedTime()));
+//					new SimpleDateFormat(DateTimeUtils).format(order.getCreatedTime()));
 //			orderSendParamDto.setDescription(description);
 //			String urlSuccess = null;
 //			String callBackDetail = null;
@@ -152,8 +151,8 @@ public class PaymentServiceImpl implements PaymentService{
 //		}
 		return  null;
 	}
-	private String genMrcOrderId(String appNo) {
-		String mrcOrderId = "HSYCBH_" + appNo.replaceAll("/", "") + "_" + DateTimeUtils.getCurrentTime().getTime();
+	private String genMrcOrderId(String phone) {
+		String mrcOrderId = "HD" + phone + "_" + DateTimeUtils.getCurrentTime().getTime();
 
 		return mrcOrderId;
 	}

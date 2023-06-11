@@ -5,18 +5,17 @@ import com.phuclq.student.domain.UserHistory;
 import com.phuclq.student.domain.UserHistoryFile;
 import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResultDto;
+import com.phuclq.student.dto.TotalMyFileDTO;
 import com.phuclq.student.repository.AttachmentRepository;
 import com.phuclq.student.repository.UserHistoryFileRepository;
 import com.phuclq.student.repository.UserHistoryRepository;
 import java.sql.Timestamp;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import com.phuclq.student.controller.FileHistoryController.HistoryFileRequest;
@@ -50,6 +49,11 @@ public class HistoryFileServiceImpl implements HistoryFileService {
     return fileDao.myFile(request, pageable);
 
 
+  }
+
+  @Override
+  public TotalMyFileDTO total() {
+    return fileDao.myFileTotal();
   }
 
   @Override
