@@ -356,5 +356,8 @@ public class FileController {
     private LocalDateTime dateFrom;
     private LocalDateTime dateTo;
     private Integer approve;
+    private Boolean isLike;
+    private Boolean isDownload;
+    private Boolean isUser;
   }
 }

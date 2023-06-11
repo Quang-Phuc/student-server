@@ -70,12 +70,32 @@ public class FileDao {
 
     StringBuilder sqlStatement = new StringBuilder();
     List<Object> listParam = new ArrayList<Object>();
-    sqlStatement.append(
-        "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
-            + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="+"'"+FileType.FILE_AVATAR.getName()+"'"
-            + " inner join user u on f.author_id = u.id " + "where 1 =1  ");
-    sqlStatement.append(" and f.author_id = ? ");
-    listParam.add(userService.getUserLogin().getId());
+    if (Objects.nonNull(request.getIsLike())&&request.getIsLike()) {
+      sqlStatement.append(
+          "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
+              + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
+              + "'" + FileType.FILE_AVATAR.getName() + "'"
+              + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 4 where 1 =1  ");
+
+    }
+    if (Objects.nonNull(request.getIsUser())&&request.getIsUser()) {
+      sqlStatement.append(
+          "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
+              + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
+              + "'" + FileType.FILE_AVATAR.getName() + "'"
+              + " inner join user u on f.author_id = u.id " + "where 1 =1  ");
+      sqlStatement.append(" and f.author_id = ? ");
+      listParam.add(userService.getUserLogin().getId());
+    }
+    if (Objects.nonNull(request.getIsDownload())&&request.getIsDownload()) {
+      sqlStatement.append(
+          "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
+              + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
+              + "'" + FileType.FILE_AVATAR.getName() + "'"
+              + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 1 where 1 =1  ");
+
+    }
+
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {
       sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
       sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
@@ -114,27 +134,24 @@ public class FileDao {
       listParam.add(request.getDateTo());
     }
 
-    if(Objects.nonNull(request.getOrderType())){
-      if(request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())){
-        sqlStatement.append(" order by f.dowloading "+request.getOrder());
+    if (Objects.nonNull(request.getOrderType())) {
+      if (request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())) {
+        sqlStatement.append(" order by f.dowloading " + request.getOrder());
       }
-      if(request.getOrderType().equals(OrderFileType.FAVORITES.getCode())){
-        sqlStatement.append(" order by f.total_like "+request.getOrder());
+      if (request.getOrderType().equals(OrderFileType.FAVORITES.getCode())) {
+        sqlStatement.append(" order by f.total_like " + request.getOrder());
       }
-      if(request.getOrderType().equals(OrderFileType.PRICE.getCode())){
-        sqlStatement.append(" order by  fp.price "+request.getOrder());
+      if (request.getOrderType().equals(OrderFileType.PRICE.getCode())) {
+        sqlStatement.append(" order by  fp.price " + request.getOrder());
       }
-      if(request.getOrderType().equals(OrderFileType.VIEW.getCode())){
-        sqlStatement.append(" order by f.view "+request.getOrder());
+      if (request.getOrderType().equals(OrderFileType.VIEW.getCode())) {
+        sqlStatement.append(" order by f.view " + request.getOrder());
       }
-    }else {
+    } else {
       sqlStatement.append(" order by f.created_date desc ");
     }
 
-
-
-    Query queryCount = entityManager.createNativeQuery(
-        " select count(f.id) " + sqlStatement);
+    Query queryCount = entityManager.createNativeQuery(" select count(f.id) " + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       queryCount.setParameter(i + 1, listParam.get(i));
     }
@@ -161,23 +178,26 @@ public class FileDao {
     FileResultDto fileResultDto = new FileResultDto();
     User userLogin = userService.getUserLogin();
     List<UserHistoryDTO> fileHistoryHome = new ArrayList<>();
-    if(Objects.nonNull(userLogin.getId())){
+    if (Objects.nonNull(userLogin.getId())) {
       fileHistoryHome = userHistoryFileRepository.findFileHistoryHome(userLogin.getId());
 
     }
     List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
-    listCategory.stream().parallel().forEach(x->{
+    listCategory.stream().parallel().forEach(x -> {
 
-      if(finalFileHistoryHome.size()>0 ){
-        List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
-        if(collect.size()>0){
+      if (finalFileHistoryHome.size() > 0) {
+        List<UserHistoryDTO> collect = finalFileHistoryHome.stream()
+            .filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
+        if (collect.size() > 0) {
           x.setIsLike(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE)));
           x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
         }
       }
     });
     fileResultDto.setList(listCategory.getContent());
-    PaginationModel paginationModel = new PaginationModel(listCategory.getPageable().getPageNumber(), listCategory.getPageable().getPageSize(), (int) listCategory.getTotalElements());
+    PaginationModel paginationModel = new PaginationModel(
+        listCategory.getPageable().getPageNumber(), listCategory.getPageable().getPageSize(),
+        (int) listCategory.getTotalElements());
     fileResultDto.setPaginationModel(paginationModel);
     return fileResultDto;
 
