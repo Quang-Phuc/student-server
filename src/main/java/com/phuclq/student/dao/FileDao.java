@@ -214,6 +214,7 @@ public class FileDao {
               + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
               + "'" + FileType.FILE_AVATAR.getName() + "'"
               + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 4   ");
+    sqlStatement.append(" and uh.user_id =  "+userService.getUserLogin().getId());
 
       sqlStatement2.append(
           "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
@@ -226,11 +227,11 @@ public class FileDao {
               + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
               + "'" + FileType.FILE_AVATAR.getName() + "'"
               + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 1  ");
-
+    sqlStatement3.append(" and uh.user_id =  "+userService.getUserLogin().getId());
 
     Integer queryCount = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement).getSingleResult()).intValue();;
-    Integer queryCount2 = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement).getSingleResult()).intValue();;
-    Integer queryCount3 = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement).getSingleResult()).intValue();
+    Integer queryCount2 = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement2).getSingleResult()).intValue();;
+    Integer queryCount3 = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement3).getSingleResult()).intValue();
     TotalMyFileDTO totalMyFileDTO = new TotalMyFileDTO();
     totalMyFileDTO.setIsUser(queryCount);
     totalMyFileDTO.setIsLike(queryCount2);

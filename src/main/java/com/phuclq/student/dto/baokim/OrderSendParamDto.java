@@ -30,8 +30,8 @@ public class OrderSendParamDto {
     @JsonProperty("webhooks")
     private String webhooks;
 
-//    @JsonProperty("bpm_id")
-//    private Integer bpmId;
+    @JsonProperty("bpm_id")
+    private Integer bpmId;
 
     public String getMrcOrderId() {
         return mrcOrderId;
@@ -97,12 +97,12 @@ public class OrderSendParamDto {
         this.webhooks = webhooks;
     }
 
-//    public Integer getBpmId() {
-//        return bpmId;
-//    }
-//
-//    public void setBpmId(Integer bpmId) {
-//        this.bpmId = bpmId;
-//    }
+    public Integer getBpmId() {
+        return bpmId;
+    }
+
+    public void setBpmId(Integer bpmId) {
+        this.bpmId = bpmId;
+    }
 
 }
