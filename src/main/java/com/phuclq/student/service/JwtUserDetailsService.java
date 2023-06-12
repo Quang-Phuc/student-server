@@ -35,7 +35,7 @@ public class JwtUserDetailsService implements UserDetailsService {
      if(Objects.isNull(user)){
          throw new BusinessHandleException("SS004");
      }
-      if(!user.getIsEnable()){
+      if(Objects.isNull(user.getIsEnable())||!user.getIsEnable()){
         throw new BusinessHandleException("SS003");
       }
         Optional<UserRole> userRoleOptional = userRoleRepository.findById(user.getRoleId());

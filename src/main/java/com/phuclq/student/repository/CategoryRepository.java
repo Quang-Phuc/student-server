@@ -21,7 +21,7 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     Page<Category> findAllByIdIn(List<Integer> id,Pageable pageable);
 
     @Query(value = "select category.id as id,category.category as name, file.count as countCategory   from category left join (select category_id,count(*) as count from file f join category c on f.category_id = c.id  join file_price fp on f.id = fp.file_id  join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id "
-        + " and a.file_type ='FILE_UPLOAD' inner join user u on f.author_id = u.id where f.approver_id is not null group by category_id) file on category.id = file.category_id ", nativeQuery = true)
+        + " and a.file_type ='FILE_UPLOAD' inner join user u on f.author_id = u.id where f.approver_id is not null and f.is_deleted =0 group by category_id) file on category.id = file.category_id ", nativeQuery = true)
     List<CategoryHomeResult> getCategoriesHome();
 
     @Query(value = "select category.id as id,category.category as name   from category WHERE category.id in ?1 ORDER BY ?#{#pageable}",

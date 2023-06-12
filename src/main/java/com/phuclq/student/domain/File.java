@@ -126,6 +126,7 @@ public class File extends Auditable<String> {
     this.authorId = loginId;
     this.setCreatedBy(loginId.toString());
     this.setCreatedDate(LocalDateTime.now());
+    this.isDeleted = false;
   }
 
   public File() {

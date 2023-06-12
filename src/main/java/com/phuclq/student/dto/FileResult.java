@@ -11,6 +11,8 @@ public class FileResult {
 	private Float price;
 	private String image;
 	private String createDate;
+	private String userName;
+	private String urlAuthor;
 	private String fileHashCode;
 	private Integer totalComment;
 	private Integer totalLike;
@@ -35,6 +37,8 @@ public class FileResult {
 		this.isCard = (Boolean) obj[11];
 		this.isVip = (Boolean) obj[12];
 		this.categoryId = (Integer) obj[13];
+		this.userName = (String) obj[14];
+		this.urlAuthor = (String) obj[15];
 	}
 	
 	public FileResult() {

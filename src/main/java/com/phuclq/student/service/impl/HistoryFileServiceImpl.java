@@ -1,6 +1,9 @@
 package com.phuclq.student.service.impl;
 
+import static com.phuclq.student.utils.ActivityConstants.UPLOAD_2;
+
 import com.phuclq.student.dao.FileDao;
+import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.UserHistory;
 import com.phuclq.student.domain.UserHistoryFile;
 import com.phuclq.student.dto.FileHomePageRequest;
@@ -11,6 +14,7 @@ import com.phuclq.student.repository.UserHistoryFileRepository;
 import com.phuclq.student.repository.UserHistoryRepository;
 import java.sql.Timestamp;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,6 +134,18 @@ public class HistoryFileServiceImpl implements HistoryFileService {
       userHistoryRepository.delete(history.get());
     }
     });
+    request.getFileIds().forEach(y->{
+      if (UPLOAD_2.equals(request.getActivityId())) {
+        File fileOptional = fileRepo.findById(y).get();
+        fileOptional.setIsDeleted(true);
+        fileOptional.setDeleteId(user.getId());
+        Instant instant = Instant.now();
+        Timestamp timestamp = Timestamp.from(instant);
+        fileOptional.setDeleteDate(timestamp);
+        fileRepo.save(fileOptional);
+      }
+    });
+
 
     return null;
   }

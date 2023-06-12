@@ -428,7 +428,7 @@ public class FileServiceImpl implements FileService {
     sqlStatement.append(
         "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
             + " inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type = "+"'"+FileType.FILE_AVATAR.getName()+"'"
-            + " inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
+            + " inner join user u on f.author_id = u.id left join attachment ab on u.id = ab.request_id and ab.file_type = "+"'"+FileType.USER_AVATAR.getName()+"'"  + "where f.approver_id is not null and f.is_deleted =0  ");
     sqlStatement.append(" and f.category_id = ? ");
     listParam.add(categoryIds);
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {
@@ -476,7 +476,7 @@ public class FileServiceImpl implements FileService {
     listParam.add(request.getSizeFile() * request.getPage());
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-            + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId  "
+            + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor  "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
@@ -502,7 +502,7 @@ public class FileServiceImpl implements FileService {
     sqlStatement.append(
         "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
             + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="+"'"+FileType.FILE_AVATAR.getName()+"'"
-            + " inner join user u on f.author_id = u.id " + "where f.approver_id is not null ");
+            + " inner join user u on f.author_id = u.id left join attachment ab on u.id = ab.request_id and ab.file_type = "+"'"+FileType.USER_AVATAR.getName()+"'" + "where f.approver_id is not null and f.is_deleted =0  ");
     sqlStatement.append(" and f.category_id = ? ");
     listParam.add(categoryId);
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {
@@ -559,7 +559,7 @@ public class FileServiceImpl implements FileService {
     listParam.add(request.getSize() * request.getPage());
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-            + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId  "
+            + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId ,u.user_name as userName,ab.url as urlAuthor "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
