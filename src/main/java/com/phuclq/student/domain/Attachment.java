@@ -1,6 +1,9 @@
 package com.phuclq.student.domain;
 
+import com.phuclq.student.types.AttachmentStatusType;
+import io.swagger.models.auth.In;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -61,7 +64,7 @@ public class Attachment extends Auditable<String>{
   }
 
   public Attachment(String fileName, String fileBase64, String fileType, Integer requestId,
-      String type, String fileNameS3,String url) {
+      String type, String fileNameS3,String url, Integer createBy,String extension) {
     this.fileName = fileName;
     this.licenseBase64 = fileBase64;
     this.fileType = fileType;
@@ -70,6 +73,10 @@ public class Attachment extends Auditable<String>{
 
     this.fileNameS3 = fileNameS3;
     this.url = url;
+    this.status = AttachmentStatusType.ACTIVE.getName();
+    this.setCreatedBy(createBy.toString());
+    this.setCreatedDate(LocalDateTime.now());
+    this.type = extension;
   }
 
 }

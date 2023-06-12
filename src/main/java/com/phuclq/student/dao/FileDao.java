@@ -101,9 +101,9 @@ public class FileDao {
       sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
       sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
       sqlStatement.append(" or LOWER(u.user_name) like LOWER(?)) ");
-      listParam.add("%" + request.getSearch() + "&");
-      listParam.add("%" + request.getSearch() + "&");
-      listParam.add("%" + request.getSearch() + "&");
+      listParam.add("%" + request.getSearch() + "%");
+      listParam.add("%" + request.getSearch() + "%");
+      listParam.add("%" + request.getSearch() + "%");
     }
     if (Objects.nonNull(request.getPriceStart())) {
       sqlStatement.append(" and fp.price >= ? ");

@@ -42,7 +42,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
   @Override
   @Transactional
-  public Long createListAttachmentsFromBase64S3(List<RequestFileDTO> files, Integer requestId)
+  public Long createListAttachmentsFromBase64S3(List<RequestFileDTO> files, Integer requestId,Integer loginId)
       throws IOException {
     List<Attachment> attachments = new ArrayList<>();
     files.forEach(x -> {
@@ -66,7 +66,7 @@ public class AttachmentServiceImpl implements AttachmentService {
       try {
         Attachment attachment = new Attachment(x.getName(), StringUtils.EMPTY, x.getType(),
             requestId, x.getAttachmentTypeCode(),
-            s3StorageService.uploadFileToS3(base64ToMultipartFile), url);
+            s3StorageService.uploadFileToS3(base64ToMultipartFile), url,loginId,x.getExtension());
         attachments.add(attachment);
 
       } catch (IOException e) {

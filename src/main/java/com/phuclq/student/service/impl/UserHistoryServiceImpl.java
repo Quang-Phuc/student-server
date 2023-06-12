@@ -1,14 +1,17 @@
 package com.phuclq.student.service.impl;
 
+import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.UserCoin;
 import com.phuclq.student.domain.UserHistory;
 import com.phuclq.student.domain.UserHistoryFile;
+import com.phuclq.student.repository.FileRepository;
 import com.phuclq.student.repository.UserCoinRepository;
 import com.phuclq.student.repository.UserHistoryFileRepository;
 import com.phuclq.student.repository.UserHistoryRepository;
 import com.phuclq.student.service.UserHistoryService;
 import com.phuclq.student.utils.ActivityConstants;
 
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +32,8 @@ public class UserHistoryServiceImpl implements UserHistoryService {
 	
 	@Autowired
 	private UserCoinRepository coinRepository;
+	@Autowired
+	private FileRepository fileRepository;
 
 	@Override
 	public UserHistory activateFileHistory(Integer userId, Integer fileId, Integer activityId) {
@@ -42,6 +47,19 @@ public class UserHistoryServiceImpl implements UserHistoryService {
 		Timestamp timestamp = Timestamp.from(instant);
 		UserHistoryFile userHistoryFile = new UserHistoryFile(saveUserHistory.getId(), fileId, timestamp);
 		userHistoryFileRepository.save(userHistoryFile);
+		File file = fileRepository.findById(fileId).get();
+		if(activityId.equals(ActivityConstants.DOWNLOAD)){
+			file.setDowloading(Objects.nonNull(file.getDowloading())?file.getDowloading()+1:1);
+		}
+		if(activityId.equals(ActivityConstants.CARD)){
+			file.setTotalCard(Objects.nonNull(file.getTotalCard())?file.getTotalCard()+1:1);
+		}
+		if(activityId.equals(ActivityConstants.LIKE)){
+			file.setTotalLike(Objects.nonNull(file.getTotalLike())?file.getTotalLike()+1:1);
+		}
+		fileRepository.save(file);
+
+
 		return saveUserHistory;
 	}
 
@@ -63,6 +81,17 @@ public class UserHistoryServiceImpl implements UserHistoryService {
 			userHistoryFileRepository.delete(fileHistory.get(0));
 			userHistoryRepository.delete(history.get());
 		}
+		File file = fileRepository.findById(fileId).get();
+		if(activityId.equals(ActivityConstants.DOWNLOAD)){
+			file.setDowloading(Objects.nonNull(file.getDowloading())?file.getDowloading()-1:0);
+		}
+		if(activityId.equals(ActivityConstants.CARD)){
+			//.setTotalCard(Objects.nonNull(file.getTotalCard())?file.getTotalCard()-1:0);
+		}
+		if(activityId.equals(ActivityConstants.LIKE)){
+			file.setTotalLike(Objects.nonNull(file.getTotalLike())?file.getTotalLike()-1:0);
+		}
+		fileRepository.save(file);
 	}
 
 	@Override

@@ -302,7 +302,7 @@ public class UserServiceImpl implements UserService {
     }
     if (Objects.nonNull(accountDTO.getFiles())) {
       Long listAttachmentsFromBase64S3 = attachmentService.createListAttachmentsFromBase64S3(
-          accountDTO.getFiles(), userLogin.getId());
+          accountDTO.getFiles(), userLogin.getId(),userLogin.getId());
     }
     return userRepository.save(userLogin);
   }

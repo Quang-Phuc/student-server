@@ -154,9 +154,6 @@ public class FileServiceImpl implements FileService {
   @Override
   public File uploadFile(FileUploadRequest fileUploadRequest) throws IOException {
 
-    ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-    String json = ow.writeValueAsString(fileUploadRequest);
-    System.out.println(json);
     Integer login = userService.getUserLogin().getId();
     File file = new File(login);
     BeanUtils.copyProperties(fileUploadRequest, file);
@@ -176,7 +173,7 @@ public class FileServiceImpl implements FileService {
       Double price = fileUploadRequest.getFilePrice() != null ? fileUploadRequest.getFilePrice() : 0;
       FilePrice filePrice = new FilePrice(saveFile.getId(), price);
       filePriceRepository.save(filePrice);
-      attachmentService.createListAttachmentsFromBase64S3(fileUploadRequest.getFiles(),saveFile.getId());
+      attachmentService.createListAttachmentsFromBase64S3(fileUploadRequest.getFiles(),saveFile.getId(),login);
       userHistoryService.activateFileHistory(login, file.getId(), ActivityConstants.UPLOAD);
       return saveFile;
     } else {
@@ -388,7 +385,7 @@ public class FileServiceImpl implements FileService {
   public CategoryHomeFileResult filesPage(FileHomePageRequest request, Pageable pageable) {
     CategoryHomeFileResult categoryHomeFileResult = new CategoryHomeFileResult();
     Page<Category> listCategory =
-        Objects.nonNull(request.getCategoryIds()) ? categoryRepository.findAllByIdIn(
+        Objects.nonNull(request.getCategoryIds()) && request.getCategoryIds().size()>0 ? categoryRepository.findAllByIdIn(
             request.getCategoryIds(),pageable) : categoryRepository.findAll(pageable);
     List<FileHomeDoFilterDTO> listFile = new ArrayList<FileHomeDoFilterDTO>();
     User userLogin = userService.getUserLogin();
@@ -438,9 +435,9 @@ public class FileServiceImpl implements FileService {
       sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
       sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
       sqlStatement.append(" or LOWER(u.user_name) like LOWER(?)) ");
-      listParam.add("%" + request.getSearch() + "&");
-      listParam.add("%" + request.getSearch() + "&");
-      listParam.add("%" + request.getSearch() + "&");
+      listParam.add("%" + request.getSearch() + "%");
+      listParam.add("%" + request.getSearch() + "%");
+      listParam.add("%" + request.getSearch() + "%");
     }
     if (Objects.nonNull(request.getPriceStart())) {
       sqlStatement.append(" and fp.price >= ? ");
@@ -512,9 +509,9 @@ public class FileServiceImpl implements FileService {
       sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
       sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
       sqlStatement.append(" or LOWER(u.user_name) like LOWER(?)) ");
-      listParam.add("%" + request.getSearch() + "&");
-      listParam.add("%" + request.getSearch() + "&");
-      listParam.add("%" + request.getSearch() + "&");
+      listParam.add("%" + request.getSearch() + "%");
+      listParam.add("%" + request.getSearch() + "%");
+      listParam.add("%" + request.getSearch() + "%");
     }
     if (Objects.nonNull(request.getPriceStart())) {
       sqlStatement.append(" and fp.price >= ? ");

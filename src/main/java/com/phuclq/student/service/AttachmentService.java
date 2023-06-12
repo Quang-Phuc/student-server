@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface AttachmentService {
 
   @Transactional(rollbackFor = {Exception.class, Throwable.class, RuntimeException.class})
-  Long createListAttachmentsFromBase64S3(List<RequestFileDTO> files, Integer requestId)
+  Long createListAttachmentsFromBase64S3(List<RequestFileDTO> files, Integer requestId,Integer loginId)
       throws IOException;
 
   AttachmentDTO getAttachmentByIdFromS3(Long id, HttpServletRequest request) throws IOException;
