@@ -219,7 +219,6 @@ public class FileDao {
               + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 4   ");
     sqlStatement.append(" and uh.user_id =  "+userService.getUserLogin().getId());
     sqlStatement.append(" where f.is_deleted =0 ");
-    sqlStatement.append("  and uh.user_id = ? ");
 
       sqlStatement2.append(
           "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
