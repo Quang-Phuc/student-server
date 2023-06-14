@@ -7,4 +7,5 @@ public class TotalMyFileDTO {
 	private Integer isUser;
 	private Integer isLike;
 	private Integer isDownload;
+	private Integer isCard;
 }

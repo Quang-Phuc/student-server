@@ -80,6 +80,15 @@ public class FileDao {
       sqlStatement.append("  and uh.user_id = ? ");
       listParam.add(userService.getUserLogin().getId());
     }
+    if (Objects.nonNull(request.getIsCard()) && request.getIsCard()) {
+      sqlStatement.append(
+          "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
+              + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
+              + "'" + FileType.FILE_AVATAR.getName() + "'"
+              + " inner join user u on f.author_id = u.id left join attachment ab on u.id = ab.request_id and ab.file_type = "+"'"+FileType.USER_AVATAR.getName()+"' join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 8 where f.is_deleted =0  ");
+      sqlStatement.append("  and uh.user_id = ? ");
+      listParam.add(userService.getUserLogin().getId());
+    }
     if (Objects.nonNull(request.getIsUser()) && request.getIsUser()) {
       sqlStatement.append(
           "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
@@ -212,6 +221,7 @@ public class FileDao {
     StringBuilder sqlStatement = new StringBuilder();
     StringBuilder sqlStatement2 = new StringBuilder();
     StringBuilder sqlStatement3 = new StringBuilder();
+    StringBuilder sqlStatementCard = new StringBuilder();
       sqlStatement.append(
           "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
               + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
@@ -219,6 +229,14 @@ public class FileDao {
               + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 4   ");
     sqlStatement.append(" and uh.user_id =  "+userService.getUserLogin().getId());
     sqlStatement.append(" where f.is_deleted =0 ");
+
+    sqlStatementCard.append(
+        "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
+            + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
+            + "'" + FileType.FILE_AVATAR.getName() + "'"
+            + " inner join user u on f.author_id = u.id join user_history_file uhf on f.id = uhf.file_id  inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 8   ");
+    sqlStatementCard.append(" and uh.user_id =  "+userService.getUserLogin().getId());
+    sqlStatementCard.append(" where f.is_deleted =0 ");
 
       sqlStatement2.append(
           "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
@@ -238,10 +256,13 @@ public class FileDao {
     Integer queryCount = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement).getSingleResult()).intValue();;
     Integer queryCount2 = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement2).getSingleResult()).intValue();;
     Integer queryCount3 = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatement3).getSingleResult()).intValue();
+    Integer queryCountCard = ((Number)entityManager.createNativeQuery(" select count(f.id) " + sqlStatementCard).getSingleResult()).intValue();
     TotalMyFileDTO totalMyFileDTO = new TotalMyFileDTO();
     totalMyFileDTO.setIsUser(queryCount2);
     totalMyFileDTO.setIsLike(queryCount);
     totalMyFileDTO.setIsDownload(queryCount3);
+    totalMyFileDTO.setIsDownload(queryCount3);
+    totalMyFileDTO.setIsCard(queryCountCard);
     return  totalMyFileDTO;
 
 

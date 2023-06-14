@@ -1,6 +1,6 @@
 package com.phuclq.student.service.impl;
 
-import static com.phuclq.student.utils.ActivityConstants.UPLOAD_2;
+import static com.phuclq.student.utils.ActivityConstants.UPLOAD;
 
 import com.phuclq.student.dao.FileDao;
 import com.phuclq.student.domain.File;
@@ -135,7 +135,7 @@ public class HistoryFileServiceImpl implements HistoryFileService {
     }
     });
     request.getFileIds().forEach(y->{
-      if (UPLOAD_2.equals(request.getActivityId())) {
+      if (UPLOAD.equals(request.getActivityId())) {
         File fileOptional = fileRepo.findById(y).get();
         fileOptional.setIsDeleted(true);
         fileOptional.setDeleteId(user.getId());

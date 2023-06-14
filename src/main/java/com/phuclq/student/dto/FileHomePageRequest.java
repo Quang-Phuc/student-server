@@ -26,6 +26,7 @@ public class FileHomePageRequest {
   private LocalDateTime dateTo;
   private Integer approve;
   private Boolean isLike;
+  private Boolean isCard;
   private Boolean isDownload;
   private Boolean isUser;
   private List<Integer> fileIds;

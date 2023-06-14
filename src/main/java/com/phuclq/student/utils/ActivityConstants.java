@@ -9,5 +9,4 @@ public class ActivityConstants {
     public static final Integer TOP_UP = 6;
     public static final Integer UPDATE_FILE = 7;
     public static final Integer CARD = 8;
-    public static final Integer UPLOAD_2 = 9;
 }

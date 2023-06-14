@@ -286,19 +286,19 @@ public class UserServiceImpl implements UserService {
       userLogin.setBirthDay(accountDTO.getBirthDay());
     }
     if (Objects.nonNull(accountDTO.getFullName())) {
-      userLogin.setFullName(accountDTO.getFullName());
+      userLogin.setFullName(accountDTO.getFullName().trim());
     }
     if (Objects.nonNull(accountDTO.getGender())) {
       userLogin.setGender(accountDTO.getGender());
     }
     if (Objects.nonNull(accountDTO.getAddress())) {
-      userLogin.setAddress(accountDTO.getAddress());
+      userLogin.setAddress(accountDTO.getAddress().trim());
     }
     if (Objects.nonNull(accountDTO.getIndustryId())) {
       userLogin.setIndustryId(accountDTO.getIndustryId());
     }
     if (Objects.nonNull(accountDTO.getIntroduction())) {
-      userLogin.setIntroduction(accountDTO.getIntroduction());
+      userLogin.setIntroduction(accountDTO.getIntroduction().trim());
     }
     if (Objects.nonNull(accountDTO.getFiles())) {
       Long listAttachmentsFromBase64S3 = attachmentService.createListAttachmentsFromBase64S3(
