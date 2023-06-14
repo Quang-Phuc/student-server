@@ -384,9 +384,9 @@ public class FileServiceImpl implements FileService {
   @Override
   public CategoryHomeFileResult filesPage(FileHomePageRequest request, Pageable pageable) {
     CategoryHomeFileResult categoryHomeFileResult = new CategoryHomeFileResult();
-    Page<Category> listCategory =
-        Objects.nonNull(request.getCategoryIds()) && request.getCategoryIds().size()>0 ? categoryRepository.findAllByIdIn(
-            request.getCategoryIds(),pageable) : categoryRepository.findAll(pageable);
+    Page<CategoryFilePageDTO> listCategory =
+        Objects.nonNull(request.getCategoryIds()) && request.getCategoryIds().size()>0 ? categoryRepository.findAllByIdInFile(
+            request.getCategoryIds(),pageable) : categoryRepository.findAllByIdInFile(pageable);
     List<FileHomeDoFilterDTO> listFile = new ArrayList<FileHomeDoFilterDTO>();
     User userLogin = userService.getUserLogin();
     List<UserHistoryDTO> fileHistoryHome = new ArrayList<>();
@@ -398,7 +398,7 @@ public class FileServiceImpl implements FileService {
     List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
     listCategory.stream().parallel().forEach(category -> {
       FileHomeDoFilterDTO file = new FileHomeDoFilterDTO();
-      file.setCategory(category.getCategory());
+      file.setCategory(category.getName());
       file.setId(category.getId());
       List<FileResult> fileByCategory = searchFileInCategory(request,category.getId());
       fileByCategory.parallelStream().forEach(x->{
