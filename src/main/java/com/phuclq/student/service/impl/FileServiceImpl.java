@@ -2,6 +2,7 @@ package com.phuclq.student.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.phuclq.student.repository.*;
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.UserHistoryService;
 import com.phuclq.student.types.FileType;
@@ -14,10 +15,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -42,14 +41,6 @@ import com.google.cloud.storage.Storage;
 import com.phuclq.student.constant.ErrorCode;
 import com.phuclq.student.exception.BusinessException;
 import com.phuclq.student.exception.NotFoundException;
-import com.phuclq.student.repository.CategoryRepository;
-import com.phuclq.student.repository.FilePriceRepository;
-import com.phuclq.student.repository.FileRepository;
-import com.phuclq.student.repository.IndustryRepository;
-import com.phuclq.student.repository.UserCoinRepository;
-import com.phuclq.student.repository.UserHistoryFileRepository;
-import com.phuclq.student.repository.UserHistoryRepository;
-import com.phuclq.student.repository.UserRepository;
 import com.phuclq.student.service.FileService;
 import com.phuclq.student.service.UserService;
 import com.phuclq.student.utils.ActivityConstants;
@@ -70,6 +61,8 @@ public class FileServiceImpl implements FileService {
   private UserService userService;
   @Autowired
   private FilePriceRepository filePriceRepository;
+  @Autowired
+  private AttachmentRepository attachmentRepository;
 
   @Autowired
   private UserCoinRepository userCoinRepository;
@@ -152,11 +145,12 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public File uploadFile(FileUploadRequest fileUploadRequest) throws IOException {
+  public File uploadFile(FileUploadRequest dto) throws IOException {
 
     Integer login = userService.getUserLogin().getId();
+    if(Objects.isNull(dto.getId())){
     File file = new File(login);
-    BeanUtils.copyProperties(fileUploadRequest, file);
+    BeanUtils.copyProperties(dto, file);
 
     boolean error = false;
     if (file.getIsVip()) {
@@ -170,16 +164,54 @@ public class FileServiceImpl implements FileService {
 
     if (!error) {
       File saveFile = fileRepository.save(file);
-      Double price = fileUploadRequest.getFilePrice() != null ? fileUploadRequest.getFilePrice() : 0;
-      FilePrice filePrice = new FilePrice(saveFile.getId(), price);
+      Double price = dto.getFilePrice() != null ? dto.getFilePrice() : 0;
+      FilePrice filePrice = new FilePrice(saveFile.getId(), price,login);
       filePriceRepository.save(filePrice);
-      attachmentService.createListAttachmentsFromBase64S3(fileUploadRequest.getFiles(),saveFile.getId(),login);
+      attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(),saveFile.getId(),login);
       userHistoryService.activateFileHistory(login, file.getId(), ActivityConstants.UPLOAD);
       return saveFile;
     } else {
       return null;
     }
+    }else {
+      File byId = fileRepository.findById(dto.getId()).get();
+      File file = updateFile(byId, dto, login);
+      fileRepository.save(file);
+      attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(),file.getId(),login);
+      return file;
+    }
 
+  }
+  public File updateFile(File file,FileUploadRequest dto,Integer loginId){
+    if(Objects.nonNull(dto.getTitle())){
+      file.setTitle(dto.getTitle());
+    }
+    if(Objects.nonNull(dto.getCategoryId())){
+      file.setCategoryId(dto.getCategoryId());
+    }
+    if(Objects.nonNull(dto.getIndustryId())){
+      file.setIndustryId(dto.getIndustryId());
+    }
+    if(Objects.nonNull(dto.getSpecializationId())){
+      file.setSpecializationId(dto.getSpecializationId());
+    }
+    if(Objects.nonNull(dto.getLanguageId())){
+      file.setLanguageId(dto.getLanguageId());
+    }
+    if(Objects.nonNull(dto.getSchoolId())){
+      file.setSchoolId(dto.getSchoolId());
+    }
+    if(Objects.nonNull(dto.getFilePrice())){
+      FilePrice filePrice = filePriceRepository.findByFileId(dto.getId());
+      filePrice.setPrice(dto.getFilePrice());
+      filePrice.setLastUpdatedBy(loginId.toString());
+      filePrice.setLastUpdatedDate(LocalDateTime.now());
+      filePriceRepository.save(filePrice);
+    }
+    if(Objects.nonNull(dto.getLanguageId())){
+      file.setLanguageId(dto.getLanguageId());
+    }
+    return  file;
   }
 
   @Override
@@ -527,6 +559,10 @@ public class FileServiceImpl implements FileService {
       sqlStatement.append(" and f.is_vip = ? ");
       listParam.add(request.getIsVip());
     }
+    if (Objects.nonNull(request.getFileId())) {
+      sqlStatement.append(" and f.id = ? ");
+      listParam.add(request.getFileId());
+    }
 
     if(Objects.nonNull(request.getOrderType())){
       if(request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())){
@@ -571,7 +607,7 @@ public class FileServiceImpl implements FileService {
       list.add(result);
     }
 
-    Page<FileResult> listCategory = new PageImpl<FileResult>(list, pageable, count);
+    Page<FileResult> file = new PageImpl<FileResult>(list, pageable, count);
     FileResultDto fileResultDto = new FileResultDto();
     User userLogin = userService.getUserLogin();
     List<UserHistoryDTO> fileHistoryHome = new ArrayList<>();
@@ -580,7 +616,7 @@ public class FileServiceImpl implements FileService {
 
     }
     List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
-    listCategory.stream().parallel().forEach(x->{
+    file.stream().parallel().forEach(x->{
 
         if(finalFileHistoryHome.size()>0 ){
           List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
@@ -589,9 +625,24 @@ public class FileServiceImpl implements FileService {
             x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
           }
         }
+        if(Objects.nonNull(request.getFileId())&& Objects.isNull(request.getIsBase64())){
+          List<Attachment> attachmentOptional = attachmentRepository.findAllByRequestIdAndFileTypeIn(
+                  x.getId(), Arrays.asList(FileType.FILE_AVATAR.getName(),FileType.FILE_UPLOAD.getName(),FileType.FILE_DEMO.getName()));
+          x.setAttachmentOptional(attachmentOptional);
+        }
+
+      if(Objects.nonNull(request.getFileId())&& Objects.nonNull(request.getIsBase64())){
+        try {
+          AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
+                  x.getId(),
+                  FileType.FILE_CUT.getName());
+          x.setImage(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
+        } catch (IOException e) {
+        }
+      }
       });
-    fileResultDto.setList(listCategory.getContent());
-    PaginationModel paginationModel = new PaginationModel(listCategory.getPageable().getPageNumber(), listCategory.getPageable().getPageSize(), (int) listCategory.getTotalElements());
+    fileResultDto.setList(file.getContent());
+    PaginationModel paginationModel = new PaginationModel(file.getPageable().getPageNumber(), file.getPageable().getPageSize(), (int) file.getTotalElements());
     fileResultDto.setPaginationModel(paginationModel);
     return fileResultDto;
   }

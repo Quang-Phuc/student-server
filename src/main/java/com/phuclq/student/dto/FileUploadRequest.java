@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadRequest {
 	private Integer id;
     private String title;
+    private String name;
     private Integer categoryId;
     private Integer specializationId;
     private Integer industryId;
