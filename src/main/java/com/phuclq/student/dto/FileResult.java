@@ -1,6 +1,9 @@
 package com.phuclq.student.dto;
 
+import com.phuclq.student.domain.Attachment;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class FileResult {
@@ -22,6 +25,8 @@ public class FileResult {
 	private Boolean isVip;
 
 	private Integer categoryId;
+
+	List<Attachment> attachmentOptional;
 	public FileResult(Object[] obj) {
 		this.id = (Integer) obj[0];
 		this.title = (String) obj[1];

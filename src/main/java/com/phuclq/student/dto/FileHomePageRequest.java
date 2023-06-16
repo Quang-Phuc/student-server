@@ -31,5 +31,7 @@ public class FileHomePageRequest {
   private Boolean isUser;
   private List<Integer> fileIds;
   private Integer activityId;
+  private Integer fileId;
+  private Boolean isBase64;
 
 }

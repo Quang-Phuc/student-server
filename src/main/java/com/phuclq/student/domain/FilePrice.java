@@ -1,6 +1,7 @@
 package com.phuclq.student.domain;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "file_price", schema = "smdb", catalog = "")
@@ -65,8 +66,10 @@ public class FilePrice extends Auditable<String>{
     public FilePrice() {
     }
 
-    public FilePrice(Integer fileId, Double price) {
+    public FilePrice(Integer fileId, Double price,Integer userId) {
         this.fileId = fileId;
         this.price = price;
+        this.setCreatedBy(userId.toString());
+        this.setCreatedDate(LocalDateTime.now());
     }
 }

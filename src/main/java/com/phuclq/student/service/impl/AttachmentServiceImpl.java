@@ -46,7 +46,7 @@ public class AttachmentServiceImpl implements AttachmentService {
       throws IOException {
     List<Attachment> attachments = new ArrayList<>();
     files.forEach(x -> {
-      deleteAttachmentByRequestId(requestId);
+      deleteAttachmentByRequestId(requestId,x.getType());
 
       Map<String, List<RequestFileDTO>> collect = files.stream().collect(Collectors.groupingBy(
           e -> e.getType() == null ? Constants.DEFAULT_FILE_TYPE : e.getType()));
@@ -78,12 +78,12 @@ public class AttachmentServiceImpl implements AttachmentService {
     return null;
   }
 
-  public List<Attachment> getListAttachmentByRequestId(Integer id) {
-    return this.attachmentRepository.findAllByRequestId(id);
+  public List<Attachment> getListAttachmentByRequestId(Integer id,String fileType) {
+    return this.attachmentRepository.findAllByRequestIdAndFileType(id,fileType);
   }
 
-  public void deleteAttachmentByRequestId(Integer id) {
-    this.attachmentRepository.deleteAll(getListAttachmentByRequestId(id));
+  public void deleteAttachmentByRequestId(Integer id,String fileType) {
+    this.attachmentRepository.deleteAll(getListAttachmentByRequestId(id,fileType));
   }
 
   @Override
