@@ -2,6 +2,7 @@ package com.phuclq.student.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.phuclq.student.exception.BusinessHandleException;
 import com.phuclq.student.repository.*;
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.UserHistoryService;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -88,6 +90,9 @@ public class FileServiceImpl implements FileService {
   @Autowired
   private UserHistoryService userHistoryService;
 
+  @Value("${coin.vip}")
+  private int coinVip;
+
 
   @Override
   public Page<File> findFilesByCategory(Integer categoryId, Pageable pageable) {
@@ -124,8 +129,6 @@ public class FileServiceImpl implements FileService {
     fileDTO.setCountView(file.getView() + 1);
     fileDTO.setCountDownload(file.getDowloading());
     fileDTO.setFileTitle(file.getTitle());
-//    fileDTO.setUrlImage(file.getImage());
-//    fileDTO.setFileLink(file.getFileCut());
     fileDTO.setCategoryId(category.get().getId());
     fileDTO.setCategoryName(category.get().getCategory());
     fileDTO.setIndustryName(industry.get().getValue());
@@ -148,36 +151,28 @@ public class FileServiceImpl implements FileService {
   public File uploadFile(FileUploadRequest dto) throws IOException {
 
     Integer login = userService.getUserLogin().getId();
-    if(Objects.isNull(dto.getId())){
-    File file = new File(login);
-    BeanUtils.copyProperties(dto, file);
-
-    boolean error = false;
-    if (file.getIsVip()) {
-      boolean status = registryFileVip(file);
+    if (dto.getIsVip()) {
+      boolean status = registryFileVip(login);
       if (!status) {
-        error = true;
-        throw new BusinessException(ErrorCode.ERROR_NOT_ENOUGH_COIN,
-            ErrorCode.ERROR_NOT_ENOUGH_COIN_MESSAGE);
+        throw new BusinessHandleException("SS006");
       }
     }
+    if (Objects.isNull(dto.getId())) {
+      File file = new File(login);
+      BeanUtils.copyProperties(dto, file);
 
-    if (!error) {
       File saveFile = fileRepository.save(file);
       Double price = dto.getFilePrice() != null ? dto.getFilePrice() : 0;
-      FilePrice filePrice = new FilePrice(saveFile.getId(), price,login);
+      FilePrice filePrice = new FilePrice(saveFile.getId(), price, login);
       filePriceRepository.save(filePrice);
-      attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(),saveFile.getId(),login);
+      attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(), saveFile.getId(), login);
       userHistoryService.activateFileHistory(login, file.getId(), ActivityConstants.UPLOAD);
       return saveFile;
     } else {
-      return null;
-    }
-    }else {
       File byId = fileRepository.findById(dto.getId()).get();
       File file = updateFile(byId, dto, login);
       fileRepository.save(file);
-      attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(),file.getId(),login);
+      attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(), file.getId(), login);
       return file;
     }
 
@@ -215,114 +210,12 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public File updateFile(FileUploadRequest fileUploadRequest, Storage storage, String bucketName)
-      throws IOException {
-    Optional<File> optionalCurentFile = fileRepository.findById(fileUploadRequest.getId());
-    File newfile = optionalCurentFile.get();
-    BeanUtils.copyProperties(fileUploadRequest, newfile);
-    File curentFile = optionalCurentFile.get();
-    BeanUtils.copyProperties(fileUploadRequest, newfile);
-    boolean isFileUpdate = false;
-    try (InputStream is = fileUploadRequest.getFile().getInputStream()) {
-      String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
-//      if (!curentFile.getFileHashcode().equals(md5)) {
-//        newfile = upload(fileUploadRequest, newfile, true);
-//        isFileUpdate = true;
-//      }
-    }
-
-    boolean error = false;
-    if (!curentFile.getIsVip()) {
-      if (newfile.getIsVip()) {
-        boolean status = registryFileVip(newfile);
-        if (!status) {
-          error = true;
-          throw new BusinessException(ErrorCode.ERROR_NOT_ENOUGH_COIN,
-              ErrorCode.ERROR_NOT_ENOUGH_COIN_MESSAGE);
-        }
-      }
-    }
-    newfile.setDowloading(0);
-    if (!error) {
-      File saveFile = fileRepository.save(newfile);
-
-      // set file price
-      Double price =
-          fileUploadRequest.getFilePrice() != null ? fileUploadRequest.getFilePrice() : 0;
-      FilePrice filePrice = filePriceRepository.findByFileId(saveFile.getId());
-      filePrice.setPrice(price);
-      filePriceRepository.save(filePrice);
-
-      // save to history
-      UserHistory userHistory = new UserHistory(saveFile.getAuthorId(),
-          ActivityConstants.UPDATE_FILE);
-      UserHistory saveUserHistory = userHistoryRepository.save(userHistory);
-      Instant instant = Instant.now();
-      Timestamp timestamp = Timestamp.from(instant);
-      UserHistoryFile userHistoryFile = new UserHistoryFile(saveUserHistory.getId(),
-          saveFile.getId(), timestamp);
-      userHistoryFile.setIsFileUpdate(isFileUpdate);
-      userHistoryFileRepository.save(userHistoryFile);
-      return saveFile;
-    } else {
-      return null;
-    }
-
-  }
-
-  private File upload(FileUploadRequest fileUploadRequest, File newfile, boolean isUpdate)
-      throws IOException {
-    // upload file
-    MultipartFile fileUpload = fileUploadRequest.getFile();
-
-
-
-//    try (InputStream is = fileUpload.getInputStream()) {
-//      String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(is);
-//      newfile.setFileHashcode(md5);
-//      if (!isUpdate) {
-//        File fileCompare = fileRepository.findByFileHashcode(md5);
-//        if (fileCompare != null) {
-//          throw new BusinessException(ErrorCode.ERROR_FILE_EXISTS,
-//              ErrorCode.ERROR_FILE_EXISTS_MESSAGE);
-//        }
-//      }
-//    }
-//    byte[] bytes = fileUpload.getBytes();
-//    Path root = FileSystems.getDefault().getPath("").toAbsolutePath();
-//    Path path = Paths.get(root.toString(), "src", "main", "resources", "upload",
-//        fileUpload.getOriginalFilename());
-//    Files.write(path, bytes);
-//    newfile.setFile(path.toString());
-//
-//    // upload file image
-//    MultipartFile fileImage = fileUploadRequest.getFileImage();
-//    bytes = fileImage.getBytes();
-//    path = Paths.get(root.toString(), "src", "main", "resources", "upload",
-//        fileImage.getOriginalFilename());
-//    Files.write(path, bytes);
-//    newfile.setImage(path.toString());
-//
-//    // upload file attachment
-//    if (fileUploadRequest.getAttachment() != null) {
-//      MultipartFile fileAttachment = fileUploadRequest.getAttachment();
-//      bytes = fileAttachment.getBytes();
-//      path = Paths.get(root.toString(), "src", "main", "resources", "upload",
-//          fileAttachment.getOriginalFilename());
-//      Files.write(path, bytes);
-//      newfile.setAttachment(path.toString());
-//    }
-
-    return newfile;
-  }
-
-  @Override
-  public boolean registryFileVip(File file) {
-    UserCoin userCoin = userCoinRepository.findByUserId(file.getAuthorId());
+  public boolean registryFileVip(Integer userId) {
+    UserCoin userCoin = userCoinRepository.findByUserId(userId);
     if (userCoin != null) {
-      Double totalCoin = userCoin.getTotalCoin() != null ? userCoin.getTotalCoin() : 0;
-      if (totalCoin > 20) {
-        totalCoin -= 20;
+      double totalCoin = userCoin.getTotalCoin() != null ? userCoin.getTotalCoin() : 0;
+      if (totalCoin > coinVip) {
+        totalCoin -= coinVip;
         userCoin.setTotalCoin(totalCoin);
         userCoinRepository.save(userCoin);
         return true;
@@ -562,6 +455,10 @@ public class FileServiceImpl implements FileService {
     if (Objects.nonNull(request.getFileId())) {
       sqlStatement.append(" and f.id = ? ");
       listParam.add(request.getFileId());
+     if(Objects.isNull(request.getIsBase64())) {
+        sqlStatement.append(" and f.author_id = ? ");
+        listParam.add(userService.getUserLogin().getId());
+      }
     }
 
     if(Objects.nonNull(request.getOrderType())){
@@ -636,9 +533,12 @@ public class FileServiceImpl implements FileService {
           AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
                   x.getId(),
                   FileType.FILE_CUT.getName());
-          x.setImage(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
+          x.setFileView(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
         } catch (IOException e) {
         }
+        File byId = fileRepository.findById(x.getId()).get();
+        byId.setView(Objects.isNull(byId.getView())?1:byId.getView()+1);
+        fileRepository.save(byId);
       }
       });
     fileResultDto.setList(file.getContent());

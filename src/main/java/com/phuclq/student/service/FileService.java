@@ -29,7 +29,7 @@ public interface FileService {
 
   File uploadFile(FileUploadRequest fileUploadRequest) throws IOException;
 
-  boolean registryFileVip(File file);
+  boolean registryFileVip(Integer userId);
 
   File downloadDocument(Integer fileId, User user);
 
@@ -37,9 +37,6 @@ public interface FileService {
       String bucketName) throws IOException;
 
   List<CategoryHomeDTO> getCategoriesHome();
-
-  File updateFile(FileUploadRequest fileUploadRequest, Storage storage, String bucketName)
-      throws IOException;
 
   CategoryHomeFileResult filesPage(FileHomePageRequest request, Pageable pageable);
 

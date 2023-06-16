@@ -13,6 +13,7 @@ public class FileResult {
 	private Integer download;
 	private Float price;
 	private String image;
+	private String fileView;
 	private String createDate;
 	private String userName;
 	private String urlAuthor;

@@ -133,13 +133,6 @@ public class FileController {
     return ResponseEntity.ok(file);
   }
 
-  @PostMapping("/file/update")
-  public ResponseEntity<File> updateFile(FileUploadRequest fileUploadRequest) throws IOException {
-    String bucketName = gcpService.getBucketName();
-    Storage storage = gcpService.getStorage();
-    File file = fileService.updateFile(fileUploadRequest, storage, bucketName);
-    return ResponseEntity.ok(file);
-  }
 
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping("/file/approverFile")
