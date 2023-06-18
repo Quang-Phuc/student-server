@@ -161,6 +161,7 @@ public class FileServiceImpl implements FileService {
       File file = new File(login);
       BeanUtils.copyProperties(dto, file);
 
+      file.setAuthorId(12);
       File saveFile = fileRepository.save(file);
       Double price = dto.getFilePrice() != null ? dto.getFilePrice() : 0;
       FilePrice filePrice = new FilePrice(saveFile.getId(), price, login);
