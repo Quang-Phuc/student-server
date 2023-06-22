@@ -225,6 +225,7 @@ public class UserServiceImpl implements UserService {
 
     }
     UserDTO user = new UserDTO();
+    assert userResult != null;
     user.setId(userResult.getId());
     user.setUserName(userResult.getUser_name());
     user.setEmail(userResult.getEmail());
