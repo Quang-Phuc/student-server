@@ -1,7 +1,7 @@
 package com.phuclq.student.dto;
 
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.util.Collection;
 import javax.validation.constraints.NotBlank;
 
 import com.phuclq.student.domain.User;
@@ -9,7 +9,7 @@ import com.phuclq.student.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
+import org.springframework.security.core.GrantedAuthority;
 
 @Data
 @AllArgsConstructor
@@ -35,6 +35,7 @@ public class UserDTO {
 	private String address;
 	private String introduction;
 	private String image;
+	private Collection<? extends GrantedAuthority> role;
 	private Integer industryId;
 
 	public UserDTO(User user) {
