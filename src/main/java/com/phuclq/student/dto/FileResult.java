@@ -28,6 +28,11 @@ public class FileResult {
 	private Integer categoryId;
 	private Integer schoolId;
 	private Integer industryId;
+	private String description;
+	private Integer startPageNumber;
+	private Integer endPageNumber;
+	private Integer languageId;
+	private Integer specializationId;
 
 	List<Attachment> attachmentOptional;
 	public FileResult(Object[] obj) {
@@ -49,6 +54,11 @@ public class FileResult {
 		this.urlAuthor = (String) obj[15];
 		this.schoolId = (Integer) obj[16];
 		this.industryId = (Integer) obj[17];
+		this.description = (String) obj[18];
+		this.startPageNumber = (Integer) obj[19];
+		this.endPageNumber = (Integer) obj[20];
+		this.languageId = (Integer) obj[21];
+		this.specializationId = (Integer) obj[22];
 	}
 	
 	public FileResult() {
