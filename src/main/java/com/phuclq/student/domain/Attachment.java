@@ -57,6 +57,8 @@ public class Attachment extends Auditable<String>{
   @Column(name = "url")
   private String url;
 
+  @Column(name = "DATA_UIR")
+  private String dataUir;
 
   public Attachment(MultipartFile file) throws IOException {
     this.licenseBase64 = new String(Base64.decodeBase64(file.getBytes()));
@@ -64,7 +66,7 @@ public class Attachment extends Auditable<String>{
   }
 
   public Attachment(String fileName, String fileBase64, String fileType, Integer requestId,
-      String type, String fileNameS3,String url, Integer createBy,String extension) {
+      String type, String fileNameS3,String url, Integer createBy,String extension,String dataUir) {
     this.fileName = fileName;
     this.licenseBase64 = fileBase64;
     this.fileType = fileType;
@@ -77,6 +79,7 @@ public class Attachment extends Auditable<String>{
     this.setCreatedBy(createBy.toString());
     this.setCreatedDate(LocalDateTime.now());
     this.type = extension;
+    this.dataUir = dataUir;
   }
 
 }

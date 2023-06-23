@@ -66,7 +66,7 @@ public class AttachmentServiceImpl implements AttachmentService {
       try {
         Attachment attachment = new Attachment(x.getName(), StringUtils.EMPTY, x.getType(),
             requestId, x.getAttachmentTypeCode(),
-            s3StorageService.uploadFileToS3(base64ToMultipartFile), url,loginId,x.getExtension());
+            s3StorageService.uploadFileToS3(base64ToMultipartFile), url,loginId,x.getExtension(),dataUir);
         attachments.add(attachment);
 
       } catch (IOException e) {
@@ -95,7 +95,7 @@ public class AttachmentServiceImpl implements AttachmentService {
   public AttachmentDTO getAttachmentByIdFromS3(Attachment attachment) throws IOException {
     String base64FromS3 = s3StorageService.downloadFileFromS3(attachment.getFileNameS3());
     AttachmentDTO attachmentDTO = new AttachmentDTO(attachment);
-    attachmentDTO.setMainDocument(base64FromS3);
+    attachmentDTO.setMainDocument(attachment.getDataUir()+Constants.DOT_COMMA_2+base64FromS3);
     return attachmentDTO;
   }
 
