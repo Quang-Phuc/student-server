@@ -456,7 +456,7 @@ public class FileServiceImpl implements FileService {
     if (Objects.nonNull(request.getFileId())) {
       sqlStatement.append(" and f.id = ? ");
       listParam.add(request.getFileId());
-     if(Objects.isNull(request.getIsBase64())) {
+     if(Objects.nonNull(request.getIsBase64())&& request.getIsBase64()) {
         sqlStatement.append(" and f.author_id = ? ");
         listParam.add(userService.getUserLogin().getId());
       }
@@ -523,13 +523,13 @@ public class FileServiceImpl implements FileService {
             x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
           }
         }
-        if(Objects.nonNull(request.getFileId())&& Objects.isNull(request.getIsBase64())){
+        if(Objects.nonNull(request.getFileId())&& Objects.nonNull(request.getIsBase64()) && (request.getIsBase64())){
           List<Attachment> attachmentOptional = attachmentRepository.findAllByRequestIdAndFileTypeIn(
                   x.getId(), Arrays.asList(FileType.FILE_AVATAR.getName(),FileType.FILE_UPLOAD.getName(),FileType.FILE_DEMO.getName()));
           x.setAttachmentOptional(attachmentOptional);
         }
 
-      if(Objects.nonNull(request.getFileId())&& Objects.nonNull(request.getIsBase64())){
+      if(Objects.nonNull(request.getFileId())&& Objects.nonNull(request.getIsBase64()) && (!request.getIsBase64())){
         try {
           AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
                   x.getId(),
