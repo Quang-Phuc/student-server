@@ -26,6 +26,8 @@ public class FileResult {
 	private Boolean isVip;
 
 	private Integer categoryId;
+	private Integer schoolId;
+	private Integer industryId;
 
 	List<Attachment> attachmentOptional;
 	public FileResult(Object[] obj) {
@@ -45,6 +47,8 @@ public class FileResult {
 		this.categoryId = (Integer) obj[13];
 		this.userName = (String) obj[14];
 		this.urlAuthor = (String) obj[15];
+		this.schoolId = (Integer) obj[16];
+		this.industryId = (Integer) obj[17];
 	}
 	
 	public FileResult() {

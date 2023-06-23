@@ -90,6 +90,9 @@ public class AttachmentServiceImpl implements AttachmentService {
   public AttachmentDTO getAttachmentByIdFromS3(Long id, HttpServletRequest request)
       throws IOException {
     Attachment attachment = getById(id, request);
+    return  getAttachmentByIdFromS3(attachment);
+  }
+  public AttachmentDTO getAttachmentByIdFromS3(Attachment attachment) throws IOException {
     String base64FromS3 = s3StorageService.downloadFileFromS3(attachment.getFileNameS3());
     AttachmentDTO attachmentDTO = new AttachmentDTO(attachment);
     attachmentDTO.setMainDocument(base64FromS3);

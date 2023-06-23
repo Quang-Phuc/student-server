@@ -402,7 +402,8 @@ public class FileServiceImpl implements FileService {
     listParam.add(request.getSizeFile() * request.getPage());
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-            + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor  "
+            + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor"
+            + ", f.school_id as schoolId , f.industry_id as industryId   "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
@@ -494,6 +495,7 @@ public class FileServiceImpl implements FileService {
     Query query = entityManager.createNativeQuery(
         " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
             + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId ,u.user_name as userName,ab.url as urlAuthor "
+            + ", f.school_id as schoolId , f.industry_id as industryId   "
             + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));

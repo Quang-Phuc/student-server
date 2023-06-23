@@ -320,7 +320,7 @@ public class FileController {
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(result).getResponse();
   }
 
-  @GetMapping("/file/downloadS3")
+  @GetMapping("/file/downloadS3-upload")
   public ResponseEntity<List<File>> downloadS3(@RequestParam Long id, HttpServletRequest request)
       throws IOException {
     AttachmentDTO attachmentByIdFromS3 = attachmentService.getAttachmentByIdFromS3(id, request);
