@@ -14,7 +14,7 @@ public interface AttachmentService {
   Long createListAttachmentsFromBase64S3(List<RequestFileDTO> files, Integer requestId,Integer loginId)
       throws IOException;
 
-  AttachmentDTO getAttachmentByIdFromS3(Integer id,String fileType, HttpServletRequest request) throws IOException;
+  AttachmentDTO getAttachmentByIdFromS3(Long id,String fileType, HttpServletRequest request) throws IOException;
 
   AttachmentDTO getAttachmentByRequestIdFromS3(Integer requestId,String fileType)
       throws IOException;
