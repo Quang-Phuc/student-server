@@ -321,7 +321,7 @@ public class FileController {
   }
 
   @GetMapping("/file/downloadS3-upload")
-  public ResponseEntity<List<File>> downloadS3(@RequestParam Long id,@RequestParam  String fileType, HttpServletRequest request)
+  public ResponseEntity<List<File>> downloadS3(@RequestParam Integer id,@RequestParam  String fileType, HttpServletRequest request)
       throws IOException {
     AttachmentDTO attachmentByIdFromS3 = attachmentService.getAttachmentByIdFromS3(id,fileType, request);
 

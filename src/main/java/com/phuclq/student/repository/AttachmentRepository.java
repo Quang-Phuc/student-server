@@ -2,6 +2,7 @@ package com.phuclq.student.repository;
 
 import com.phuclq.student.domain.Attachment;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +15,6 @@ public interface AttachmentRepository extends JpaRepository<Attachment, Long> {
   List<Attachment> findAllByRequestIdAndFileTypeIn(Integer requestId,List<String> typeFile);
 
   List<Attachment> findAllByRequestIdAndFileType(Integer requestId,String fileType);
+  Optional<Attachment> findAllByIdAndFileType(Integer id,String fileType);
 
 }

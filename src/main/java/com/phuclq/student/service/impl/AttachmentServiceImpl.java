@@ -87,7 +87,7 @@ public class AttachmentServiceImpl implements AttachmentService {
   }
 
   @Override
-  public AttachmentDTO getAttachmentByIdFromS3(Long id,String fileType, HttpServletRequest request)
+  public AttachmentDTO getAttachmentByIdFromS3(Integer id,String fileType, HttpServletRequest request)
       throws IOException {
     Attachment attachment = getByIdAndType(id, fileType);
     return  getAttachmentByIdFromS3(attachment);
@@ -106,8 +106,8 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
     return attachmentOptional.get();
   }
-  public Attachment getByIdAndType(Long id,String fileType) {
-    Optional<Attachment> attachmentOptional = attachmentRepository.findById(id);
+  public Attachment getByIdAndType(Integer id,String fileType) {
+    Optional<Attachment> attachmentOptional = attachmentRepository.findAllByIdAndFileType(id,fileType);
     if (Objects.isNull(attachmentOptional)) {
       throw new IllegalArgumentException((ExceptionUtils.ATTACHMENT_NOT_EXIST));
     }
