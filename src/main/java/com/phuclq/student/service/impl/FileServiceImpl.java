@@ -173,7 +173,9 @@ public class FileServiceImpl implements FileService {
       File byId = fileRepository.findById(dto.getId()).get();
       File file = updateFile(byId, dto, login);
       fileRepository.save(file);
-      attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(), file.getId(), login);
+      if(Objects.nonNull(dto.getFiles())) {
+        attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(), file.getId(), login);
+      }
       return file;
     }
 

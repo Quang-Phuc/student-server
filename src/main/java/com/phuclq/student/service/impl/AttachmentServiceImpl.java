@@ -7,10 +7,12 @@ import com.phuclq.student.common.Constants;
 import com.phuclq.student.domain.Attachment;
 import com.phuclq.student.dto.AttachmentDTO;
 import com.phuclq.student.dto.RequestFileDTO;
+import com.phuclq.student.exception.BusinessHandleException;
 import com.phuclq.student.exception.ExceptionUtils;
 import com.phuclq.student.repository.AttachmentRepository;
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.S3StorageService;
+import com.phuclq.student.service.UserService;
 import com.phuclq.student.types.FileType;
 import com.phuclq.student.utils.Base64ToMultipartFile;
 import com.phuclq.student.utils.FileUtils;
@@ -38,6 +40,7 @@ public class AttachmentServiceImpl implements AttachmentService {
   private final S3StorageService s3StorageService;
 
   private final AttachmentRepository attachmentRepository;
+  private final UserService userService ;
 
 
   @Override
@@ -87,9 +90,12 @@ public class AttachmentServiceImpl implements AttachmentService {
   }
 
   @Override
-  public AttachmentDTO getAttachmentByIdFromS3(Long id,String fileType, HttpServletRequest request)
+  public AttachmentDTO getAttachmentByIdFromS3Update(Long id,String fileType, HttpServletRequest request)
       throws IOException {
     Attachment attachment = getByIdAndType(id, fileType);
+    if(!userService.getUserLogin().getId().toString().equals(attachment.getCreatedBy())){
+      throw new BusinessHandleException("SS007");
+    }
     return  getAttachmentByIdFromS3(attachment);
   }
   public AttachmentDTO getAttachmentByIdFromS3(Attachment attachment) throws IOException {

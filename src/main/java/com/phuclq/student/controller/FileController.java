@@ -2,7 +2,6 @@ package com.phuclq.student.controller;
 
 import com.phuclq.student.dto.AttachmentDTO;
 import com.phuclq.student.dto.CategoryHomeFileResult;
-import com.phuclq.student.dto.FileHomeDoFilterDTO;
 import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResultDto;
 import com.phuclq.student.service.AttachmentService;
@@ -10,8 +9,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -63,8 +60,6 @@ import com.phuclq.student.service.UserHistoryService;
 import com.phuclq.student.service.UserService;
 import com.phuclq.student.utils.ActivityConstants;
 import com.phuclq.student.utils.PaginationUtil;
-
-import lombok.Data;
 
 @RestController
 @RequestMapping("/api")
@@ -323,7 +318,7 @@ public class FileController {
   @GetMapping("/file/downloadS3-upload")
   public ResponseEntity<List<File>> downloadS3(@RequestParam Long id,@RequestParam  String fileType, HttpServletRequest request)
       throws IOException {
-    AttachmentDTO attachmentByIdFromS3 = attachmentService.getAttachmentByIdFromS3(id,fileType, request);
+    AttachmentDTO attachmentByIdFromS3 = attachmentService.getAttachmentByIdFromS3Update(id,fileType, request);
 
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(attachmentByIdFromS3)
         .getResponse();
