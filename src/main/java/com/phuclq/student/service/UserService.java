@@ -36,7 +36,7 @@ public interface UserService {
 
     void forgotPassword(String email);
     
-    User changePassword(String password, String passwordNew,String passwordConfirm);
+    boolean changePassword(String password, String passwordNew,String passwordConfirm);
     
     User createAdmin(UserAccountDTO accountDTO);
     

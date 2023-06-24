@@ -92,7 +92,7 @@ public class UserController {
 
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
-        User user = userService.changePassword(changePasswordDTO.getPassword(), changePasswordDTO.getPasswordNew(), changePasswordDTO.getPasswordConfirm());
+        boolean user = userService.changePassword(changePasswordDTO.getPassword(), changePasswordDTO.getPasswordNew(), changePasswordDTO.getPasswordConfirm());
         return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(user).getResponse();
     }
 

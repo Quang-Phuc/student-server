@@ -171,16 +171,17 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User changePassword(String password, String passwordNew, String passwordConfirm) {
+  public boolean changePassword(String password, String passwordNew, String passwordConfirm) {
     User user = getUserLogin();
-    boolean passwordDeffi = passwordEncoder.matches(password, user.getPassword());
-    if (passwordDeffi && passwordNew.equals(passwordConfirm)) {
+    boolean passwordDefine = passwordEncoder.matches(password, user.getPassword());
+    if (passwordDefine && passwordNew.equals(passwordConfirm)) {
       BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
       String hashedPassword = passwordEncoder.encode(passwordNew);
       user.setPassword(hashedPassword);
       userRepository.save(user);
+      return true;
     }
-    return user;
+    throw new BusinessHandleException("SS008");
 
   }
 
