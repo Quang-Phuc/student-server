@@ -35,6 +35,8 @@ public class FileResult {
 	private Integer specializationId;
 
 	List<Attachment> attachmentOptional;
+
+	AttachmentDTO attachmentDTO;
 	public FileResult(Object[] obj) {
 		this.id = (Integer) obj[0];
 		this.title = (String) obj[1];

@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.google.cloud.storage.Storage;
 import com.phuclq.student.component.RestEntityResponse;
 import com.phuclq.student.constant.ErrorCode;
 import com.phuclq.student.domain.File;
@@ -129,16 +128,7 @@ public class FileController {
   }
 
 
-  @PreAuthorize("hasRole('ADMIN')")
-  @PostMapping("/file/approverFile")
-  public String approverFile(FileApproveRequest fileApprove) throws IOException {
-    User user = userService.getUserLogin();
-    String bucketName = gcpService.getBucketName();
-    Storage storage = gcpService.getStorage();
-    fileService.approverFile(user.getId(), fileApprove.getId(), fileApprove.getFileCut(), storage,
-        bucketName);
-    return "download success";
-  }
+
 
   @GetMapping("/file/download-confirm/{code}")
   public ResponseEntity<?> downloadFile(@PathVariable("code") String code) throws Exception {

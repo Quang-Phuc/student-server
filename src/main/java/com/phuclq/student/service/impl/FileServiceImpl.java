@@ -56,7 +56,10 @@ import static com.phuclq.student.utils.ActivityConstants.LIKE;
 public class FileServiceImpl implements FileService {
 
   private final Logger log = LoggerFactory.getLogger(FileServiceImpl.class);
-
+  String sql =
+      " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
+          + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor  "
+          + ", f.school_id as schoolId , f.industry_id as industryId , f.description as description, f.start_page_number as startPageNumber, f.end_page_number as endPageNumber, f.language_id as languageId, f.specialization_id as specializationId ";
   @Autowired
   private FileRepository fileRepository;
   @Autowired
@@ -65,39 +68,26 @@ public class FileServiceImpl implements FileService {
   private FilePriceRepository filePriceRepository;
   @Autowired
   private AttachmentRepository attachmentRepository;
-
   @Autowired
   private UserCoinRepository userCoinRepository;
   @Autowired
   private UserRepository userRepository;
   @Autowired
   private CategoryRepository categoryRepository;
-
   @Autowired
   private UserHistoryRepository userHistoryRepository;
-
   @Autowired
   private UserHistoryFileRepository userHistoryFileRepository;
-
   @PersistenceContext
   private EntityManager entityManager;
-
   @Autowired
   private IndustryRepository industryRepository;
-
   @Autowired
   private AttachmentService attachmentService;
   @Autowired
   private UserHistoryService userHistoryService;
-
   @Value("${coin.vip}")
   private int coinVip;
-
-  String sql = " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-      + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor  "
-      + ", f.school_id as schoolId , f.industry_id as industryId , f.description as description, f.start_page_number as startPageNumber, f.end_page_number as endPageNumber, f.language_id as languageId, f.specialization_id as specializationId ";
-
-
 
   @Override
   public Page<File> findFilesByCategory(Integer categoryId, Pageable pageable) {
@@ -178,43 +168,47 @@ public class FileServiceImpl implements FileService {
       File byId = fileRepository.findById(dto.getId()).get();
       File file = updateFile(byId, dto, login);
       fileRepository.save(file);
-      if(Objects.nonNull(dto.getFiles())) {
+      if (Objects.nonNull(dto.getFiles())) {
         attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(), file.getId(), login);
       }
       return file;
     }
 
   }
-  public File updateFile(File file,FileUploadRequest dto,Integer loginId){
-    if(Objects.nonNull(dto.getTitle())){
+
+  public File updateFile(File file, FileUploadRequest dto, Integer loginId) {
+    if (Objects.nonNull(dto.getTitle())) {
       file.setTitle(dto.getTitle());
     }
-    if(Objects.nonNull(dto.getCategoryId())){
+    if (Objects.nonNull(dto.getCategoryId())) {
       file.setCategoryId(dto.getCategoryId());
     }
-    if(Objects.nonNull(dto.getIndustryId())){
+    if (Objects.nonNull(dto.getIndustryId())) {
       file.setIndustryId(dto.getIndustryId());
     }
-    if(Objects.nonNull(dto.getSpecializationId())){
+    if (Objects.nonNull(dto.getSpecializationId())) {
       file.setSpecializationId(dto.getSpecializationId());
     }
-    if(Objects.nonNull(dto.getLanguageId())){
+    if (Objects.nonNull(dto.getLanguageId())) {
       file.setLanguageId(dto.getLanguageId());
     }
-    if(Objects.nonNull(dto.getSchoolId())){
+    if (Objects.nonNull(dto.getSchoolId())) {
       file.setSchoolId(dto.getSchoolId());
     }
-    if(Objects.nonNull(dto.getFilePrice())){
+    if (Objects.nonNull(dto.getDescription())) {
+      file.setDescription(dto.getDescription());
+    }
+    if (Objects.nonNull(dto.getFilePrice())) {
       FilePrice filePrice = filePriceRepository.findByFileId(dto.getId());
       filePrice.setPrice(dto.getFilePrice());
       filePrice.setLastUpdatedBy(loginId.toString());
       filePrice.setLastUpdatedDate(LocalDateTime.now());
       filePriceRepository.save(filePrice);
     }
-    if(Objects.nonNull(dto.getLanguageId())){
+    if (Objects.nonNull(dto.getLanguageId())) {
       file.setLanguageId(dto.getLanguageId());
     }
-    return  file;
+    return file;
   }
 
   @Override
@@ -278,25 +272,11 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public void approverFile(Integer approverId, Integer id, MultipartFile fileCut, Storage storage,
-      String bucketName) throws IOException {
-    File file = fileRepository.findById(id).get();
-    User userApprove = userRepository.findById(approverId).get();
-    if (file == null || userApprove == null) {
-      throw new NotFoundException("Do not find file or user by id");
-    }
-
-    String fileUploadName = fileCut.getOriginalFilename();
-    Path root = FileSystems.getDefault().getPath("").toAbsolutePath();
-    byte[] bytes = fileCut.getBytes();
-    Path path = Paths.get(root.toString(), "src", "main", "resources", "upload", fileUploadName);
-    Files.write(path, bytes);
-    String fileCutLink = path.toString();
-
-    file.setApproverId(approverId);
+  public void approveFile(Integer id) {
+    File file = fileRepository.findById(id).orElseThrow(NotFoundException::new);
+    file.setApproverId(userService.getUserLogin().getId());
     file.setApprovedDate(DateTimeUtils.timeNow());
-    file.setFileCut(fileCutLink);
-    File fileSave = fileRepository.save(file);
+    fileRepository.save(file);
   }
 
   @Override
@@ -318,13 +298,14 @@ public class FileServiceImpl implements FileService {
   public CategoryHomeFileResult filesPage(FileHomePageRequest request, Pageable pageable) {
     CategoryHomeFileResult categoryHomeFileResult = new CategoryHomeFileResult();
     Page<CategoryFilePageDTO> listCategory =
-        Objects.nonNull(request.getCategoryIds()) && request.getCategoryIds().size()>0 ? categoryRepository.findAllByIdInFile(
-            request.getCategoryIds(),pageable) : categoryRepository.findAllByIdInFile(pageable);
+        Objects.nonNull(request.getCategoryIds()) && request.getCategoryIds().size() > 0
+            ? categoryRepository.findAllByIdInFile(request.getCategoryIds(), pageable)
+            : categoryRepository.findAllByIdInFile(pageable);
     List<FileHomeDoFilterDTO> listFile = new ArrayList<FileHomeDoFilterDTO>();
     User userLogin = userService.getUserLogin();
     List<UserHistoryDTO> fileHistoryHome = new ArrayList<>();
-    if(Objects.nonNull(userLogin.getId())){
-       fileHistoryHome = userHistoryFileRepository.findFileHistoryHome(userLogin.getId());
+    if (Objects.nonNull(userLogin.getId())) {
+      fileHistoryHome = userHistoryFileRepository.findFileHistoryHome(userLogin.getId());
 
     }
 
@@ -333,12 +314,13 @@ public class FileServiceImpl implements FileService {
       FileHomeDoFilterDTO file = new FileHomeDoFilterDTO();
       file.setCategory(category.getName());
       file.setId(category.getId());
-      List<FileResult> fileByCategory = searchFileInCategory(request,category.getId());
-      fileByCategory.parallelStream().forEach(x->{
+      List<FileResult> fileByCategory = searchFileInCategory(request, category.getId());
+      fileByCategory.parallelStream().forEach(x -> {
 
-        if(finalFileHistoryHome.size()>0 ){
-          List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
-          if(collect.size()>0){
+        if (finalFileHistoryHome.size() > 0) {
+          List<UserHistoryDTO> collect = finalFileHistoryHome.stream()
+              .filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
+          if (collect.size() > 0) {
             x.setIsLike(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE)));
             x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
           }
@@ -348,20 +330,25 @@ public class FileServiceImpl implements FileService {
       listFile.add(file);
     });
     categoryHomeFileResult.setFileHomeDoFilterDTOS(listFile);
-    PaginationModel paginationModel = new PaginationModel(listCategory.getPageable().getPageNumber(), listCategory.getPageable().getPageSize(), (int) listCategory.getTotalElements());
+    PaginationModel paginationModel = new PaginationModel(
+        listCategory.getPageable().getPageNumber(), listCategory.getPageable().getPageSize(),
+        (int) listCategory.getTotalElements());
     categoryHomeFileResult.setPaginationModel(paginationModel);
     return categoryHomeFileResult;
   }
 
-  public List<FileResult> searchFileInCategory(FileHomePageRequest request,Integer categoryIds) {
+  public List<FileResult> searchFileInCategory(FileHomePageRequest request, Integer categoryIds) {
     List<Object> objList = null;
 
     StringBuilder sqlStatement = new StringBuilder();
     List<Object> listParam = new ArrayList<Object>();
     sqlStatement.append(
         "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
-            + " inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type = "+"'"+FileType.FILE_AVATAR.getName()+"'"
-            + " inner join user u on f.author_id = u.id left join attachment ab on u.id = ab.request_id and ab.file_type = "+"'"+FileType.USER_AVATAR.getName()+"'"  + "where f.approver_id is not null and f.is_deleted =0  ");
+            + " inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type = "
+            + "'" + FileType.FILE_AVATAR.getName() + "'"
+            + " inner join user u on f.author_id = u.id left join attachment ab on u.id = ab.request_id and ab.file_type = "
+            + "'" + FileType.USER_AVATAR.getName() + "'"
+            + "where f.approver_id is not null and f.is_deleted =0  ");
     sqlStatement.append(" and f.category_id = ? ");
     listParam.add(categoryIds);
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {
@@ -387,27 +374,27 @@ public class FileServiceImpl implements FileService {
       listParam.add(request.getIsVip());
     }
 
-    if(Objects.nonNull(request.getOrderType())){
-      if(request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())){
-        sqlStatement.append(" order by f.dowloading "+request.getOrder());
+    if (Objects.nonNull(request.getOrderType())) {
+      if (request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())) {
+        sqlStatement.append(" order by f.dowloading " + request.getOrder());
       }
-      if(request.getOrderType().equals(OrderFileType.FAVORITES.getCode())){
-        sqlStatement.append(" order by f.total_like "+request.getOrder());
+      if (request.getOrderType().equals(OrderFileType.FAVORITES.getCode())) {
+        sqlStatement.append(" order by f.total_like " + request.getOrder());
       }
-      if(request.getOrderType().equals(OrderFileType.PRICE.getCode())){
-        sqlStatement.append(" order by  fp.price "+request.getOrder());
+      if (request.getOrderType().equals(OrderFileType.PRICE.getCode())) {
+        sqlStatement.append(" order by  fp.price " + request.getOrder());
       }
-      if(request.getOrderType().equals(OrderFileType.VIEW.getCode())){
-        sqlStatement.append(" order by f.view "+request.getOrder());
+      if (request.getOrderType().equals(OrderFileType.VIEW.getCode())) {
+        sqlStatement.append(" order by f.view " + request.getOrder());
       }
-    }else {
+    } else {
       sqlStatement.append(" order by f.created_date desc ");
     }
 
     sqlStatement.append(" LIMIT ? OFFSET ?");
     listParam.add(request.getSizeFile());
     listParam.add(request.getSizeFile() * request.getPage());
-    Query query = entityManager.createNativeQuery(sql+ sqlStatement);
+    Query query = entityManager.createNativeQuery(sql + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
     }
@@ -431,8 +418,11 @@ public class FileServiceImpl implements FileService {
     List<Object> listParam = new ArrayList<Object>();
     sqlStatement.append(
         "from file f    inner join category c on f.category_id = c.id inner join file_price fp on f.id = fp.file_id "
-            + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="+"'"+FileType.FILE_AVATAR.getName()+"'"
-            + " inner join user u on f.author_id = u.id left join attachment ab on u.id = ab.request_id and ab.file_type = "+"'"+FileType.USER_AVATAR.getName()+"'" + "where f.approver_id is not null and f.is_deleted =0  ");
+            + "inner join industry i on f.industry_id = i.id join attachment a on f.id = a.request_id and a.file_type ="
+            + "'" + FileType.FILE_AVATAR.getName() + "'"
+            + " inner join user u on f.author_id = u.id left join attachment ab on u.id = ab.request_id and ab.file_type = "
+            + "'" + FileType.USER_AVATAR.getName() + "'"
+            + "where f.approver_id is not null and f.is_deleted =0  ");
     sqlStatement.append(" and f.category_id = ? ");
     listParam.add(categoryId);
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {
@@ -460,33 +450,30 @@ public class FileServiceImpl implements FileService {
     if (Objects.nonNull(request.getFileId())) {
       sqlStatement.append(" and f.id = ? ");
       listParam.add(request.getFileId());
-     if(Objects.nonNull(request.getIsBase64())&& request.getIsBase64()) {
+      if (Objects.nonNull(request.getIsBase64()) && request.getIsBase64()) {
         sqlStatement.append(" and f.author_id = ? ");
         listParam.add(userService.getUserLogin().getId());
       }
     }
 
-    if(Objects.nonNull(request.getOrderType())){
-      if(request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())){
-        sqlStatement.append(" order by f.dowloading "+request.getOrder());
+    if (Objects.nonNull(request.getOrderType())) {
+      if (request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())) {
+        sqlStatement.append(" order by f.dowloading " + request.getOrder());
       }
-      if(request.getOrderType().equals(OrderFileType.FAVORITES.getCode())){
-        sqlStatement.append(" order by f.total_like "+request.getOrder());
+      if (request.getOrderType().equals(OrderFileType.FAVORITES.getCode())) {
+        sqlStatement.append(" order by f.total_like " + request.getOrder());
       }
-      if(request.getOrderType().equals(OrderFileType.PRICE.getCode())){
-        sqlStatement.append(" order by  fp.price "+request.getOrder());
+      if (request.getOrderType().equals(OrderFileType.PRICE.getCode())) {
+        sqlStatement.append(" order by  fp.price " + request.getOrder());
       }
-      if(request.getOrderType().equals(OrderFileType.VIEW.getCode())){
-        sqlStatement.append(" order by f.view "+request.getOrder());
+      if (request.getOrderType().equals(OrderFileType.VIEW.getCode())) {
+        sqlStatement.append(" order by f.view " + request.getOrder());
       }
-    }else {
+    } else {
       sqlStatement.append(" order by f.created_date desc ");
     }
 
-
-
-    Query queryCount = entityManager.createNativeQuery(
-        " select count(f.id) " + sqlStatement);
+    Query queryCount = entityManager.createNativeQuery(" select count(f.id) " + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       queryCount.setParameter(i + 1, listParam.get(i));
     }
@@ -495,7 +482,7 @@ public class FileServiceImpl implements FileService {
     sqlStatement.append(" LIMIT ? OFFSET ?");
     listParam.add(request.getSize());
     listParam.add(request.getSize() * request.getPage());
-    Query query = entityManager.createNativeQuery(sql+ sqlStatement);
+    Query query = entityManager.createNativeQuery(sql + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
     }
@@ -510,41 +497,45 @@ public class FileServiceImpl implements FileService {
     FileResultDto fileResultDto = new FileResultDto();
     User userLogin = userService.getUserLogin();
     List<UserHistoryDTO> fileHistoryHome = new ArrayList<>();
-    if(Objects.nonNull(userLogin.getId())){
+    if (Objects.nonNull(userLogin.getId())) {
       fileHistoryHome = userHistoryFileRepository.findFileHistoryHome(userLogin.getId());
 
     }
     List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
-    file.stream().parallel().forEach(x->{
+    file.stream().parallel().forEach(x -> {
 
-        if(finalFileHistoryHome.size()>0 ){
-          List<UserHistoryDTO> collect = finalFileHistoryHome.stream().filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
-          if(collect.size()>0){
-            x.setIsLike(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE)));
-            x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
-          }
+      if (finalFileHistoryHome.size() > 0) {
+        List<UserHistoryDTO> collect = finalFileHistoryHome.stream()
+            .filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
+        if (collect.size() > 0) {
+          x.setIsLike(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE)));
+          x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
         }
-        if(Objects.nonNull(request.getFileId())&& Objects.nonNull(request.getIsBase64()) && (request.getIsBase64())){
-          List<Attachment> attachmentOptional = attachmentRepository.findAllByRequestIdAndFileTypeIn(
-                  x.getId(), Arrays.asList(FileType.FILE_AVATAR.getName(),FileType.FILE_UPLOAD.getName(),FileType.FILE_DEMO.getName()));
-          x.setAttachmentOptional(attachmentOptional);
-        }
+      }
+      if (Objects.nonNull(request.getFileId()) && Objects.nonNull(request.getIsBase64())
+          && (request.getIsBase64())) {
+        List<Attachment> attachmentOptional = attachmentRepository.findAllByRequestIdAndFileTypeIn(
+            x.getId(), Arrays.asList(FileType.FILE_AVATAR.getName(), FileType.FILE_UPLOAD.getName(),
+                FileType.FILE_DEMO.getName()));
+        x.setAttachmentOptional(attachmentOptional);
+      }
 
-      if(Objects.nonNull(request.getFileId())&& Objects.nonNull(request.getIsBase64()) && (!request.getIsBase64())){
+      if (Objects.nonNull(request.getFileId()) && Objects.nonNull(request.getIsBase64())
+          && (!request.getIsBase64())) {
         try {
           AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
-                  x.getId(),
-                  FileType.FILE_CUT.getName());
-          x.setFileView(Objects.nonNull(attachmentByRequestIdFromS3)?attachmentByRequestIdFromS3.getMainDocument():null);
+              x.getId(), FileType.FILE_UPLOAD.getName());
+          x.setAttachmentDTO(attachmentByRequestIdFromS3);
         } catch (IOException e) {
         }
         File byId = fileRepository.findById(x.getId()).get();
-        byId.setView(Objects.isNull(byId.getView())?1:byId.getView()+1);
+        byId.setView(Objects.isNull(byId.getView()) ? 1 : byId.getView() + 1);
         fileRepository.save(byId);
       }
-      });
+    });
     fileResultDto.setList(file.getContent());
-    PaginationModel paginationModel = new PaginationModel(file.getPageable().getPageNumber(), file.getPageable().getPageSize(), (int) file.getTotalElements());
+    PaginationModel paginationModel = new PaginationModel(file.getPageable().getPageNumber(),
+        file.getPageable().getPageSize(), (int) file.getTotalElements());
     fileResultDto.setPaginationModel(paginationModel);
     return fileResultDto;
   }

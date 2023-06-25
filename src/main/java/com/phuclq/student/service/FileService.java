@@ -1,6 +1,5 @@
 package com.phuclq.student.service;
 
-import com.google.cloud.storage.Storage;
 import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.CategoryHomeDTO;
@@ -33,8 +32,7 @@ public interface FileService {
 
   File downloadDocument(Integer fileId, User user);
 
-  void approverFile(Integer approverId, Integer id, MultipartFile fileCut, Storage storage,
-      String bucketName) throws IOException;
+  void approveFile( Integer id) throws IOException;
 
   List<CategoryHomeDTO> getCategoriesHome();
 
