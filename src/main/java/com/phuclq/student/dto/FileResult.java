@@ -38,6 +38,7 @@ public class FileResult {
 
 	AttachmentDTO attachmentDTO;
 	List<CommentDTO> commentDTO;
+	private Double totalRate;
 	public FileResult(Object[] obj) {
 		this.id = (Integer) obj[0];
 		this.title = (String) obj[1];

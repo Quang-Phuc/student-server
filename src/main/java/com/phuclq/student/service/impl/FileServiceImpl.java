@@ -547,6 +547,7 @@ public class FileServiceImpl implements FileService {
           commentDTOS.add(commentDTO);
           commentDTOS.add(commentDTO2);
           x.setCommentDTO(commentDTOS);
+          x.setTotalRate(3.5);
         } catch (IOException e) {
         }
         File byId = fileRepository.findById(x.getId()).get();
