@@ -534,6 +534,7 @@ public class FileServiceImpl implements FileService {
           commentDTO.setTotalLike(10);
           commentDTO.setType("COMMENT_FILE");
           commentDTO.setFileId(x.getId());
+          commentDTO.setUserName("Nguyen Van An ");
           commentDTOS.add(commentDTO);
           CommentDTO commentDTO2 = new CommentDTO();
           commentDTO2.setContent("Tài liệu không tốt");
@@ -542,6 +543,7 @@ public class FileServiceImpl implements FileService {
           commentDTO2.setTotalLike(10);
           commentDTO2.setType("COMMENT_FILE");
           commentDTO2.setFileId(x.getId());
+          commentDTO2.setUserName("Nguyen Van Ba ");
           commentDTOS.add(commentDTO);
           commentDTOS.add(commentDTO2);
           x.setCommentDTO(commentDTOS);
