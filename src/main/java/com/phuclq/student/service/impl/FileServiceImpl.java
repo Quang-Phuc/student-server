@@ -526,6 +526,15 @@ public class FileServiceImpl implements FileService {
           AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
               x.getId(), FileType.FILE_UPLOAD.getName());
           x.setAttachmentDTO(attachmentByRequestIdFromS3);
+
+          CommentDTO commentDTO = new CommentDTO();
+          commentDTO.setContent("Tài liệu rất tốt");
+          commentDTO.setCreatedDate(LocalDateTime.now());
+          commentDTO.setImageUser("https://mbal-bpm-dev.s3.ap-southeast-1.amazonaws.com/public/_2023-06-18125958_21_325439602_1341689279705280_1837846539922871578_n.jpg");
+          commentDTO.setTotalLike(10);
+          commentDTO.setType("COMMENT_FILE");
+          commentDTO.setFileId(x.getId());
+          x.setCommentDTO(commentDTO);
         } catch (IOException e) {
         }
         File byId = fileRepository.findById(x.getId()).get();

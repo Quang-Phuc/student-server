@@ -37,6 +37,7 @@ public class FileResult {
 	List<Attachment> attachmentOptional;
 
 	AttachmentDTO attachmentDTO;
+	CommentDTO commentDTO;
 	public FileResult(Object[] obj) {
 		this.id = (Integer) obj[0];
 		this.title = (String) obj[1];
