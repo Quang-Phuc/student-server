@@ -133,7 +133,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     Attachment attachment = attachmentOptional.get(0);
     String base64FromS3 = s3StorageService.downloadFileFromS3(attachment.getFileNameS3());
     AttachmentDTO attachmentDTO = new AttachmentDTO(attachment);
-    attachmentDTO.setMainDocument(base64FromS3);
+    attachmentDTO.setMainDocument(attachment.getDataUir()+Constants.DOT_COMMA_2+base64FromS3);
     return attachmentDTO;
   }
 }
