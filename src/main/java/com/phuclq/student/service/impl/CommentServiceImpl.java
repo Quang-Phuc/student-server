@@ -31,9 +31,11 @@ public class CommentServiceImpl implements CommentService {
   @Override
   public void comment(Comment comment) {
 
-      Integer userLogin = userService.getUserLogin().getId();
-      comment.setCreatedBy(userLogin.toString());
-      comment.setCreatedDate(LocalDateTime.now());
+    Integer userLogin = userService.getUserLogin().getId();
+    comment.setCreatedBy(userLogin.toString());
+    comment.setCreatedDate(LocalDateTime.now());
+    comment.setRequestId(comment.getRequestId());
+    comment.setType(comment.getType());
       commentRepository.save(comment);
   }
 

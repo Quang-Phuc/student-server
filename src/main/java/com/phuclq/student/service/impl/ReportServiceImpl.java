@@ -5,6 +5,7 @@ import com.phuclq.student.dto.ReportDTO;
 import com.phuclq.student.repository.*;
 import com.phuclq.student.service.ReportService;
 import com.phuclq.student.service.UserService;
+import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +26,13 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public void createReport(ReportDTO reportDTO) {
         Report report = new Report();
-        report.setIdFile(reportDTO.getIdFile());
+        report.setRequestId(reportDTO.getRequestId());
 
         Integer idLogin = userService.getUserLogin().getId();
-        report.setIdUser(idLogin);
-        report.setTypeReport(reportDTO.getType());
-        report.setContentReport(reportDTO.getContent());
+        report.setCreatedBy(idLogin.toString());
+        report.setType(reportDTO.getType());
+        report.setContent(reportDTO.getContent());
+        report.setCreatedDate(LocalDateTime.now());
         reportRepository.save(report);
 
 

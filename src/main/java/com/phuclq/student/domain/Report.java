@@ -3,66 +3,36 @@ package com.phuclq.student.domain;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity(name = "REPORT")
+@Getter
+@Setter
+@Builder
+@Table(name = "REPORT")
 public class Report extends Auditable<String>{
-    private Integer id;
-    private Integer idUser;
-    private Integer idFile;
-    private String typeReport;
-    private String contentReport;
-
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    public Integer getId() {
-        return id;
-    }
+    @SequenceGenerator(name = "REPORT_SEQUENCE", sequenceName = "REPORT_SEQUENCE", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "REPORT_SEQUENCE")
+    @Column(name = "ID", nullable = false)
+    private Integer id;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    @Column(name = "ID_FILE", nullable = false)
+    private Integer requestId;
 
-    @Basic
-    @Column(name = "id_user")
-    public Integer getIdUser() {
-        return idUser;
-    }
+    @Column(name = "TYPE", nullable = false)
+    private String type;
 
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
-    }
+    @Column(name = "CONTENT", nullable = false)
+    private String content;
 
-    @Basic
-    @Column(name = "id_file")
-    public Integer getIdFile() {
-        return idFile;
-    }
-
-    public void setIdFile(Integer idFile) {
-        this.idFile = idFile;
-    }
-
-    @Basic
-    @Column(name = "type_report")
-    public String getTypeReport() {
-        return typeReport;
-    }
-
-    public void setTypeReport(String typeReport) {
-        this.typeReport = typeReport;
-    }
-
-    @Basic
-    @Column(name = "content_report")
-    public String getContentReport() {
-        return contentReport;
-    }
-
-    public void setContentReport(String contentReport) {
-        this.contentReport = contentReport;
-    }
 
 
 }

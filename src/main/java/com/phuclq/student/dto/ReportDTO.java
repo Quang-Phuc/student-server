@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class ReportDTO {
     @NotBlank
-    private int idFile;
+    private int requestId;
     @NotBlank
     private String type;
     @NotBlank
