@@ -51,7 +51,7 @@ public class Comment extends Auditable<String>{
   @Column(name = "totalLike")
   private Integer totalLike;
 
-  @Column(name = "", nullable = false)
+  @Column(name = "IS_DELETE")
   private Boolean isDelete;
 
 
