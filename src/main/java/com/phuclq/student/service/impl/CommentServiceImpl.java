@@ -22,12 +22,13 @@ public class CommentServiceImpl implements CommentService {
   public Comment comment(Comment comment) {
 
     Integer userLogin = userService.getUserLogin().getId();
-    comment.setCreatedBy(userLogin.toString());
-    comment.setCreatedDate(LocalDateTime.now());
-    comment.setRequestId(comment.getRequestId());
-    comment.setType(comment.getType());
-    comment.setContent(comment.getContent());
-     return commentRepository.save(comment);
+    Comment commentSave = new Comment();
+    commentSave.setCreatedBy(userLogin.toString());
+    commentSave.setCreatedDate(LocalDateTime.now());
+    commentSave.setRequestId(comment.getRequestId());
+    commentSave.setType(comment.getType());
+    commentSave.setContent(comment.getContent());
+     return commentRepository.save(commentSave);
   }
 
   @Override
