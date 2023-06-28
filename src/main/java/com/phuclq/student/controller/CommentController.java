@@ -28,9 +28,9 @@ public class CommentController {
         return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(comment1).getResponse();
     }
 
-    @PostMapping("/comment/like")
-    public ResponseEntity<?> like(@PathVariable Integer Id) {
-        Comment like = commentService.like(Id);
+    @GetMapping("/comment/like")
+    public ResponseEntity<?> like(@PathVariable Integer id) {
+        Comment like = commentService.like(id);
         return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(like).getResponse();
     }
 
