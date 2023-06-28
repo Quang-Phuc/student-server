@@ -1,6 +1,7 @@
 package com.phuclq.student.dto;
 
 import com.phuclq.student.domain.Attachment;
+import com.phuclq.student.domain.Comment;
 import lombok.Data;
 
 import java.util.List;
@@ -38,6 +39,7 @@ public class FileResult {
 
 	AttachmentDTO attachmentDTO;
 	List<CommentDTO> commentDTO;
+	List<Comment> comments;
 	private Double totalRate;
 	public FileResult(Object[] obj) {
 		this.id = (Integer) obj[0];

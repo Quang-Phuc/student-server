@@ -6,8 +6,10 @@ import com.phuclq.student.exception.BusinessHandleException;
 import com.phuclq.student.repository.*;
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.UserHistoryService;
+import com.phuclq.student.types.CommentType;
 import com.phuclq.student.types.FileType;
 import com.phuclq.student.types.OrderFileType;
+import com.phuclq.student.types.RateType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -27,6 +29,7 @@ import javax.persistence.Query;
 import com.phuclq.student.domain.*;
 import com.phuclq.student.dto.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -56,10 +59,6 @@ import static com.phuclq.student.utils.ActivityConstants.LIKE;
 public class FileServiceImpl implements FileService {
 
   private final Logger log = LoggerFactory.getLogger(FileServiceImpl.class);
-  String sql =
-      " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-          + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor  "
-          + ", f.school_id as schoolId , f.industry_id as industryId , f.description as description, f.start_page_number as startPageNumber, f.end_page_number as endPageNumber, f.language_id as languageId, f.specialization_id as specializationId ";
   @Autowired
   private FileRepository fileRepository;
   @Autowired
@@ -85,9 +84,18 @@ public class FileServiceImpl implements FileService {
   @Autowired
   private AttachmentService attachmentService;
   @Autowired
+  private CommentRepository commentRepository;
+  @Autowired
+  RateRepository rateRepository;
+  @Autowired
   private UserHistoryService userHistoryService;
   @Value("${coin.vip}")
   private int coinVip;
+
+  String sql =
+      " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
+          + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor  "
+          + ", f.school_id as schoolId , f.industry_id as industryId , f.description as description, f.start_page_number as startPageNumber, f.end_page_number as endPageNumber, f.language_id as languageId, f.specialization_id as specializationId ";
 
   @Override
   public Page<File> findFilesByCategory(Integer categoryId, Pageable pageable) {
@@ -413,6 +421,7 @@ public class FileServiceImpl implements FileService {
   public FileResultDto searchFileCategory(FileHomePageRequest request, Integer categoryId,
       Pageable pageable) {
     List<Object> objList = null;
+    Integer loginId = userService.getUserLogin().getId();
 
     StringBuilder sqlStatement = new StringBuilder();
     List<Object> listParam = new ArrayList<Object>();
@@ -452,7 +461,7 @@ public class FileServiceImpl implements FileService {
       listParam.add(request.getFileId());
       if (Objects.nonNull(request.getIsBase64()) && request.getIsBase64()) {
         sqlStatement.append(" and f.author_id = ? ");
-        listParam.add(userService.getUserLogin().getId());
+        listParam.add(loginId);
       }
     }
 
@@ -495,10 +504,9 @@ public class FileServiceImpl implements FileService {
 
     Page<FileResult> file = new PageImpl<FileResult>(list, pageable, count);
     FileResultDto fileResultDto = new FileResultDto();
-    User userLogin = userService.getUserLogin();
     List<UserHistoryDTO> fileHistoryHome = new ArrayList<>();
-    if (Objects.nonNull(userLogin.getId())) {
-      fileHistoryHome = userHistoryFileRepository.findFileHistoryHome(userLogin.getId());
+    if (Objects.nonNull(loginId)) {
+      fileHistoryHome = userHistoryFileRepository.findFileHistoryHome(loginId);
 
     }
     List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
@@ -526,6 +534,23 @@ public class FileServiceImpl implements FileService {
           AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
               x.getId(), FileType.FILE_UPLOAD.getName());
           x.setAttachmentDTO(attachmentByRequestIdFromS3);
+
+          // get comment
+          List<Comment> listComment = commentRepository.findAllByRequestIdAndType(
+              x.getId(),
+              CommentType.COMMENT_FILE.getName());
+          listComment.forEach(y->{
+            y.setIsDelete(loginId.toString().equals(y.getCreatedBy()));
+          });
+          x.setComments(listComment);
+
+          // get rate
+
+          x.setTotalRate(Arrays.stream(ArrayUtils.toPrimitive(rateRepository.findAllByRequestIdAndType(x.getId(),
+                  RateType.RATE_FILE.getName()).stream().map(Rate::getRate)
+              .toArray(Double[]::new))).average().orElse(Double.NaN));
+
+//          Phuc fake data
           List<CommentDTO> commentDTOS = new ArrayList<>();
           CommentDTO commentDTO = new CommentDTO();
           commentDTO.setContent("Tài liệu rất tốt");
@@ -548,6 +573,7 @@ public class FileServiceImpl implements FileService {
           commentDTOS.add(commentDTO2);
           x.setCommentDTO(commentDTOS);
           x.setTotalRate(3.5);
+          //          Phuc end data
         } catch (IOException e) {
         }
         File byId = fileRepository.findById(x.getId()).get();
