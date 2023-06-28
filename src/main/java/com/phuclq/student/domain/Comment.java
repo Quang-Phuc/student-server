@@ -30,25 +30,25 @@ public class Comment extends Auditable<String>{
   @Id
   @SequenceGenerator(name = "COMMENT_SEQUENCE", sequenceName = "COMMENT_SEQUENCE", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COMMENT_SEQUENCE")
-  @Column(name = "ID", nullable = false)
+  @Column(name = "ID")
   private Long id;
 
   @Column(name = "IMAGE_USER")
   private String imageUser;
 
-  @Column(name = "REQUEST_ID", nullable = false)
+  @Column(name = "REQUEST_ID")
   private Integer requestId;
 
-  @Column(name = "USER_NAME", nullable = false)
+  @Column(name = "USER_NAME")
   private String userName;
 
-  @Column(name = "CONTENT", nullable = false)
+  @Column(name = "CONTENT")
   private String content;
 
-  @Column(name = "TYPE", nullable = false)
+  @Column(name = "TYPE")
   private String type;
 
-  @Column(name = "totalLike", nullable = false)
+  @Column(name = "totalLike")
   private Integer totalLike;
 
   @Column(name = "", nullable = false)
