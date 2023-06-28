@@ -9,9 +9,6 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-
 @Service
 public class ReportServiceImpl implements ReportService {
 
@@ -24,7 +21,7 @@ public class ReportServiceImpl implements ReportService {
 
 
     @Override
-    public void createReport(ReportDTO reportDTO) {
+    public Report createReport(ReportDTO reportDTO) {
         Report report = new Report();
         report.setRequestId(reportDTO.getRequestId());
 
@@ -33,7 +30,7 @@ public class ReportServiceImpl implements ReportService {
         report.setType(reportDTO.getType());
         report.setContent(reportDTO.getContent());
         report.setCreatedDate(LocalDateTime.now());
-        reportRepository.save(report);
+        return reportRepository.save(report);
 
 
     }

@@ -4,9 +4,9 @@ import com.phuclq.student.domain.Comment;
 
 public interface CommentService {
 
-  void comment(Comment comment);
+  Comment comment(Comment comment);
 
-  void like(Integer id);
+  Comment like(Integer id);
 
 
 }

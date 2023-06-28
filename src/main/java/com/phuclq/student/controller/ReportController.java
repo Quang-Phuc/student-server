@@ -1,6 +1,7 @@
 package com.phuclq.student.controller;
 
 import com.phuclq.student.component.RestEntityResponse;
+import com.phuclq.student.domain.Report;
 import com.phuclq.student.dto.HistoryFileResult;
 import com.phuclq.student.dto.ReportDTO;
 import com.phuclq.student.service.ActivityService;
@@ -22,9 +23,9 @@ public class ReportController {
     private ReportService reportService;
 
     @PostMapping("/report")
-    public ResponseEntity<?> getFileWithUser(@RequestBody ReportDTO reportDTO){
-        reportService.createReport(reportDTO);
-        return restEntityRes.setHttpStatus(HttpStatus.OK).getResponse();
+    public ResponseEntity<?> report(@RequestBody ReportDTO reportDTO){
+        Report report = reportService.createReport(reportDTO);
+        return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(report).getResponse();
     }
 
 

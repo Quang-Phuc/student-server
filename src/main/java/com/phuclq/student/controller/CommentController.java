@@ -23,14 +23,14 @@ public class CommentController {
 
     @PostMapping("/comment")
     public ResponseEntity<?> comment(Comment comment) {
-        commentService.comment(comment);
-        return restEntityRes.setHttpStatus(HttpStatus.OK).getResponse();
+        Comment comment1 = commentService.comment(comment);
+        return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(comment1).getResponse();
     }
 
     @PostMapping("/comment/like")
     public ResponseEntity<?> like(@PathVariable int Id) {
-        commentService.like(Id);
-        return restEntityRes.setHttpStatus(HttpStatus.OK).getResponse();
+        Comment like = commentService.like(Id);
+        return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(like).getResponse();
     }
 
 
