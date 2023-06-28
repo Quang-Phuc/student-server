@@ -142,6 +142,7 @@ public class HistoryFileServiceImpl implements HistoryFileService {
         Instant instant = Instant.now();
         Timestamp timestamp = Timestamp.from(instant);
         fileOptional.setDeleteDate(timestamp);
+        attachmentRepository.deleteAll(attachmentRepository.findAllByRequestId(y));
         fileRepo.save(fileOptional);
       }
     });

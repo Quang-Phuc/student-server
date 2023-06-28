@@ -2,6 +2,9 @@ package com.phuclq.student.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.phuclq.student.common.Constants;
 import com.phuclq.student.exception.BusinessHandleException;
 import com.phuclq.student.exception.ExceptionUtils;
@@ -12,6 +15,7 @@ import com.phuclq.student.types.CommentType;
 import com.phuclq.student.types.FileType;
 import com.phuclq.student.types.OrderFileType;
 import com.phuclq.student.types.RateType;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -667,6 +671,13 @@ public class FileServiceImpl implements FileService {
           }
         });
   }
-
+//public void cutPdf(String base64) throws DocumentException, IOException {
+//  PdfReader reader = new PdfReader(Base64.decodeBase64(base64));
+//  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//  PdfStamper stamper = new PdfStamper(reader, baos);
+//// do stuff with stamper
+//  stamper.close();
+//  String base64 = Base64.encode(baos.toByteArray());
+//}
 
 }
