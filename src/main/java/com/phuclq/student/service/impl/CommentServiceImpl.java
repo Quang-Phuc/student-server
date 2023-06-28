@@ -1,6 +1,8 @@
 package com.phuclq.student.service.impl;
 
 import com.phuclq.student.domain.Comment;
+import com.phuclq.student.domain.User;
+import com.phuclq.student.dto.UserDTO;
 import com.phuclq.student.exception.NotFoundException;
 import com.phuclq.student.repository.CommentRepository;
 import com.phuclq.student.service.CommentService;
@@ -21,14 +23,16 @@ public class CommentServiceImpl implements CommentService {
   @Override
   public Comment comment(Comment comment) {
 
-    Integer userLogin = userService.getUserLogin().getId();
+    UserDTO userLogin1 = userService.getUserResultLogin();
     Comment commentSave = new Comment();
-    commentSave.setCreatedBy(userLogin.toString());
+    commentSave.setCreatedBy(userLogin1.getId().toString());
     commentSave.setCreatedDate(LocalDateTime.now());
     commentSave.setRequestId(comment.getRequestId());
     commentSave.setType(comment.getType());
     commentSave.setContent(comment.getContent());
     commentSave.setIsDelete(false);
+    commentSave.setUserName(userLogin1.getUserName());
+    commentSave.setImageUser(userLogin1.getImage());
      return commentRepository.save(commentSave);
   }
 

@@ -29,7 +29,7 @@ public class CommentController {
     }
 
     @PostMapping("/comment/like")
-    public ResponseEntity<?> like(@PathVariable int Id) {
+    public ResponseEntity<?> like(@PathVariable Integer Id) {
         Comment like = commentService.like(Id);
         return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(like).getResponse();
     }
