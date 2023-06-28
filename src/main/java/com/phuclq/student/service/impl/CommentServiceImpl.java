@@ -28,6 +28,7 @@ public class CommentServiceImpl implements CommentService {
     commentSave.setRequestId(comment.getRequestId());
     commentSave.setType(comment.getType());
     commentSave.setContent(comment.getContent());
+    commentSave.setIsDelete(false);
      return commentRepository.save(commentSave);
   }
 

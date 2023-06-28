@@ -25,16 +25,16 @@ public class Rate extends Auditable<String>{
   @Id
   @SequenceGenerator(name = "RATE_SEQUENCE", sequenceName = "RATE_SEQUENCE", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RATE_SEQUENCE")
-  @Column(name = "ID", nullable = false)
+  @Column(name = "ID")
   private Long id;
 
-  @Column(name = "REQUEST_ID", nullable = false)
+  @Column(name = "REQUEST_ID")
   private Integer requestId;
 
-  @Column(name = "RATE", nullable = false)
+  @Column(name = "RATE")
   private Double rate;
 
-  @Column(name = "TYPE", nullable = false)
+  @Column(name = "TYPE")
   private String type;
 
 
