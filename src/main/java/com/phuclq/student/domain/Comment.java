@@ -31,7 +31,7 @@ public class Comment extends Auditable<String>{
   @SequenceGenerator(name = "COMMENT_SEQUENCE", sequenceName = "COMMENT_SEQUENCE", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COMMENT_SEQUENCE")
   @Column(name = "ID")
-  private Long id;
+  private Integer id;
 
   @Column(name = "IMAGE_USER")
   private String imageUser;
