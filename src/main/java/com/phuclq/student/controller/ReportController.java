@@ -21,7 +21,7 @@ public class ReportController {
     @Autowired
     private ReportService reportService;
 
-    @PostMapping("/api/get-file-user")
+    @PostMapping("/report")
     public ResponseEntity<?> getFileWithUser(@RequestBody ReportDTO reportDTO){
         reportService.createReport(reportDTO);
         return restEntityRes.setHttpStatus(HttpStatus.OK).getResponse();

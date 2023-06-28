@@ -29,8 +29,8 @@ public class ReportServiceImpl implements ReportService {
 
         Integer idLogin = userService.getUserLogin().getId();
         report.setIdUser(idLogin);
-        report.setTypeReport(reportDTO.getTypeReport());
-        report.setContentReport(reportDTO.getContentReport());
+        report.setTypeReport(reportDTO.getType());
+        report.setContentReport(reportDTO.getContent());
         reportRepository.save(report);
 
 

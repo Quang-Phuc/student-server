@@ -13,7 +13,8 @@ public class ReportDTO {
     @NotBlank
     private int idFile;
     @NotBlank
-    private String typeReport;
-    private String contentReport;
+    private String type;
+    @NotBlank
+    private String content;
 
 }
