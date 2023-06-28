@@ -540,31 +540,6 @@ public class FileServiceImpl implements FileService {
           x.setTotalRate(Arrays.stream(ArrayUtils.toPrimitive(rateRepository.findAllByRequestIdAndType(x.getId(),
                   RateType.RATE_FILE.getName()).stream().map(Rate::getRate)
               .toArray(Double[]::new))).average().orElse(Double.NaN));
-
-//          Phuc fake data
-          List<CommentDTO> commentDTOS = new ArrayList<>();
-          CommentDTO commentDTO = new CommentDTO();
-          commentDTO.setContent("Tài liệu rất tốt");
-          commentDTO.setCreatedDate(LocalDateTime.now());
-          commentDTO.setImageUser("https://mbal-bpm-dev.s3.ap-southeast-1.amazonaws.com/public/_2023-06-18125958_21_325439602_1341689279705280_1837846539922871578_n.jpg");
-          commentDTO.setTotalLike(10);
-          commentDTO.setType("COMMENT_FILE");
-          commentDTO.setFileId(x.getId());
-          commentDTO.setUserName("Nguyen Van An ");
-          commentDTOS.add(commentDTO);
-          CommentDTO commentDTO2 = new CommentDTO();
-          commentDTO2.setContent("Tài liệu không tốt");
-          commentDTO2.setCreatedDate(LocalDateTime.now());
-          commentDTO2.setImageUser("https://mbal-bpm-dev.s3.ap-southeast-1.amazonaws.com/public/_2023-06-18125958_21_325439602_1341689279705280_1837846539922871578_n.jpg");
-          commentDTO2.setTotalLike(10);
-          commentDTO2.setType("COMMENT_FILE");
-          commentDTO2.setFileId(x.getId());
-          commentDTO2.setUserName("Nguyen Van Ba ");
-          commentDTOS.add(commentDTO);
-          commentDTOS.add(commentDTO2);
-          x.setCommentDTO(commentDTOS);
-          x.setTotalRate(3.5);
-          //          Phuc end data
         } catch (IOException e) {
         }
         File byId = fileRepository.findById(x.getId()).get();
