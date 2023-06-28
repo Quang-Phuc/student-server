@@ -114,6 +114,12 @@ public class File extends Auditable<String> {
   @Column(name = "delete_date")
   private Timestamp deleteDate;
 
+  @Column(name = "IS_DUPLICATE")
+  private Boolean isDuplicate;
+
+  @Column(name = "FILE_DUPLICATE")
+  private Integer fileDuplicate;
+
   public File(Integer loginId) {
     this.dowloading = 0;
     this.view = 0;

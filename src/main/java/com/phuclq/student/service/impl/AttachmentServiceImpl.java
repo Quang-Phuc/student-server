@@ -70,6 +70,10 @@ public class AttachmentServiceImpl implements AttachmentService {
         Attachment attachment = new Attachment(x.getName(), StringUtils.EMPTY, x.getType(),
             requestId, x.getAttachmentTypeCode(),
             s3StorageService.uploadFileToS3(base64ToMultipartFile), url,loginId,x.getExtension(),dataUir);
+        if(x.getType().equals(FileType.FILE_UPLOAD.getName())) {
+          String md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(x.getContent());
+          attachment.setCodeFile(md5);
+        }
         attachments.add(attachment);
 
       } catch (IOException e) {

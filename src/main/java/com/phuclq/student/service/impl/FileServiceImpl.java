@@ -2,7 +2,9 @@ package com.phuclq.student.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.phuclq.student.common.Constants;
 import com.phuclq.student.exception.BusinessHandleException;
+import com.phuclq.student.exception.ExceptionUtils;
 import com.phuclq.student.repository.*;
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.UserHistoryService;
@@ -28,6 +30,7 @@ import javax.persistence.Query;
 
 import com.phuclq.student.domain.*;
 import com.phuclq.student.dto.*;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -38,6 +41,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -92,10 +96,6 @@ public class FileServiceImpl implements FileService {
   @Value("${coin.vip}")
   private int coinVip;
 
-  String sql =
-      " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-          + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor  "
-          + ", f.school_id as schoolId , f.industry_id as industryId , f.description as description, f.start_page_number as startPageNumber, f.end_page_number as endPageNumber, f.language_id as languageId, f.specialization_id as specializationId ";
 
   @Override
   public Page<File> findFilesByCategory(Integer categoryId, Pageable pageable) {
@@ -164,6 +164,7 @@ public class FileServiceImpl implements FileService {
       File file = new File(login);
       BeanUtils.copyProperties(dto, file);
 
+      //Phuc fake data
       file.setApproverId(12);
       File saveFile = fileRepository.save(file);
       Double price = dto.getFilePrice() != null ? dto.getFilePrice() : 0;
@@ -325,14 +326,7 @@ public class FileServiceImpl implements FileService {
       List<FileResult> fileByCategory = searchFileInCategory(request, category.getId());
       fileByCategory.parallelStream().forEach(x -> {
 
-        if (finalFileHistoryHome.size() > 0) {
-          List<UserHistoryDTO> collect = finalFileHistoryHome.stream()
-              .filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
-          if (collect.size() > 0) {
-            x.setIsLike(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE)));
-            x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
-          }
-        }
+        setLikeAndCard(finalFileHistoryHome, x);
       });
       file.setListFile(fileByCategory);
       listFile.add(file);
@@ -384,16 +378,16 @@ public class FileServiceImpl implements FileService {
 
     if (Objects.nonNull(request.getOrderType())) {
       if (request.getOrderType().equals(OrderFileType.DOWNLOADS.getCode())) {
-        sqlStatement.append(" order by f.dowloading " + request.getOrder());
+        sqlStatement.append(" order by f.dowloading ").append(request.getOrder());
       }
       if (request.getOrderType().equals(OrderFileType.FAVORITES.getCode())) {
-        sqlStatement.append(" order by f.total_like " + request.getOrder());
+        sqlStatement.append(" order by f.total_like ").append(request.getOrder());
       }
       if (request.getOrderType().equals(OrderFileType.PRICE.getCode())) {
-        sqlStatement.append(" order by  fp.price " + request.getOrder());
+        sqlStatement.append(" order by  fp.price ").append(request.getOrder());
       }
       if (request.getOrderType().equals(OrderFileType.VIEW.getCode())) {
-        sqlStatement.append(" order by f.view " + request.getOrder());
+        sqlStatement.append(" order by f.view ").append(request.getOrder());
       }
     } else {
       sqlStatement.append(" order by f.created_date desc ");
@@ -402,7 +396,7 @@ public class FileServiceImpl implements FileService {
     sqlStatement.append(" LIMIT ? OFFSET ?");
     listParam.add(request.getSizeFile());
     listParam.add(request.getSizeFile() * request.getPage());
-    Query query = entityManager.createNativeQuery(sql + sqlStatement);
+    Query query = entityManager.createNativeQuery(Constants.SQL_FILE + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
     }
@@ -491,7 +485,7 @@ public class FileServiceImpl implements FileService {
     sqlStatement.append(" LIMIT ? OFFSET ?");
     listParam.add(request.getSize());
     listParam.add(request.getSize() * request.getPage());
-    Query query = entityManager.createNativeQuery(sql + sqlStatement);
+    Query query = entityManager.createNativeQuery(Constants.SQL_FILE + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
     }
@@ -512,14 +506,7 @@ public class FileServiceImpl implements FileService {
     List<UserHistoryDTO> finalFileHistoryHome = fileHistoryHome;
     file.stream().parallel().forEach(x -> {
 
-      if (finalFileHistoryHome.size() > 0) {
-        List<UserHistoryDTO> collect = finalFileHistoryHome.stream()
-            .filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
-        if (collect.size() > 0) {
-          x.setIsLike(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE)));
-          x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
-        }
-      }
+      setLikeAndCard(finalFileHistoryHome, x);
       if (Objects.nonNull(request.getFileId()) && Objects.nonNull(request.getIsBase64())
           && (request.getIsBase64())) {
         List<Attachment> attachmentOptional = attachmentRepository.findAllByRequestIdAndFileTypeIn(
@@ -588,6 +575,17 @@ public class FileServiceImpl implements FileService {
     return fileResultDto;
   }
 
+  private void setLikeAndCard(List<UserHistoryDTO> finalFileHistoryHome, FileResult x) {
+    if (finalFileHistoryHome.size() > 0) {
+      List<UserHistoryDTO> collect = finalFileHistoryHome.stream()
+          .filter(f -> f.getFileId().equals(x.getId())).collect(Collectors.toList());
+      if (collect.size() > 0) {
+        x.setIsLike(collect.stream().anyMatch(f -> f.getActivityId().equals(LIKE)));
+        x.setIsCard(collect.stream().anyMatch(f -> f.getActivityId().equals(CARD)));
+      }
+    }
+  }
+
 
   @Override
   public Page<FileApprove> getFileUnApprove(Pageable pageable) {
@@ -648,6 +646,26 @@ public class FileServiceImpl implements FileService {
 
     Page<FileResult> pageTotal = new PageImpl<FileResult>(lst, pageable, lst.size());
     return pageTotal;
+  }
+
+  @Scheduled(fixedRate = 2 * 60 * 1000)
+  @Transactional
+  public void jobCompareFile(){
+    List<Attachment> allByCodeFileNotNull = attachmentRepository.findAllByCodeFileNotNull();
+    log.info("total file {}",allByCodeFileNotNull.size());
+    allByCodeFileNotNull.forEach(x -> {
+          Optional<Attachment> first = allByCodeFileNotNull.stream()
+              .filter(i -> i.getCodeFile().equals(x.getCodeFile()) && !x.getId().equals(i.getId())).findFirst();
+          if (first.isPresent()) {
+            log.info("file is duplicate is {}",first);
+            File file = fileRepository.findById(x.getRequestId()).orElseThrow(() -> new BusinessException(
+                ExceptionUtils.ATTACHMENT_NOT_EXIST));
+            assert file != null;
+            file.setIsDuplicate(true);
+            file.setFileDuplicate(first.get().getRequestId());
+
+          }
+        });
   }
 
 

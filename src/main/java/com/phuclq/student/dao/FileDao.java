@@ -3,6 +3,7 @@ package com.phuclq.student.dao;
 import static com.phuclq.student.utils.ActivityConstants.CARD;
 import static com.phuclq.student.utils.ActivityConstants.LIKE;
 
+import com.phuclq.student.common.Constants;
 import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResult;
@@ -65,9 +66,6 @@ public class FileDao {
   @PersistenceContext
   private EntityManager entityManager;
 
-  String sql = " select f.id as id, f.title as title, f.view as view, f.dowloading as download, fp.price as price "
-      + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor  "
-      + ", f.school_id as schoolId , f.industry_id as industryId , f.description as description, f.start_page_number as startPageNumber, f.end_page_number as endPageNumber, f.language_id as languageId, f.specialization_id as specializationId ";
 
 
   public FileResultDto myFile(FileHomePageRequest request, Pageable pageable) {
@@ -177,7 +175,7 @@ public class FileDao {
     sqlStatement.append(" LIMIT ? OFFSET ?");
     listParam.add(pageable.getPageSize());
     listParam.add(pageable.getPageSize() * pageable.getPageNumber());
-    Query query = entityManager.createNativeQuery(sql+ sqlStatement);
+    Query query = entityManager.createNativeQuery(Constants.SQL_FILE + sqlStatement);
     for (int i = 0; i < listParam.size(); i++) {
       query.setParameter(i + 1, listParam.get(i));
     }
