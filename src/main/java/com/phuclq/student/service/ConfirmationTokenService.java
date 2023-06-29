@@ -10,8 +10,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.InetAddress;
-
 @Service
 @Transactional
 public class ConfirmationTokenService {
@@ -24,39 +22,24 @@ public class ConfirmationTokenService {
     @Autowired
     Environment environment;
 
-    public SimpleMailMessage sendEmail(User user) {
+    @Autowired
+    private EmailSenderService emailSenderService;
+
+    public void sendEmailRegister(User user) {
         ConfirmationToken confirmationToken = new ConfirmationToken(user);
 
         confirmationTokenRepository.save(confirmationToken);
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(user.getEmail());
 
         String port = environment.getProperty("serverConfig.port");
         String host = environment.getProperty("serverConfig.host");
 
-        // Remote address
-        //String hostAddress =  InetAddress.getLoopbackAddress().getHostAddress();
-        //String hostName = InetAddress.getLoopbackAddress().getHostName();
-
-
-        mailMessage.setSubject("Complete Registration!");
-        mailMessage.setFrom("quang.phuc.777290596@gmail.com");
-        mailMessage.setText("To confirm your account, please click here : "
-                + "http://"+ host +":"+ port +"/api/activate-account?token=" + confirmationToken.getConfirmationToken());
-        System.out.println(mailMessage.getText());
-        return mailMessage;
+       String message = "To confirm your account, please click here : "
+                + "http://"+ host +":"+ port +"/api/activate-account?token=" + confirmationToken.getConfirmationToken();
+        String sub = "Complete Registration!";
+        emailSenderService.sendEmailUser(user.getEmail(), sub, message);
     }
     
-    public SimpleMailMessage sendEmailUser(User user, String mess) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(user.getEmail());
 
-        mailMessage.setSubject("Complete change password!");
-        mailMessage.setFrom("quang.phuc.777290596@gmail.com");
-        mailMessage.setText(mess);
-
-        return mailMessage;
-    }
 
     public User confirmUserAccount(String confirmationToken) {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);

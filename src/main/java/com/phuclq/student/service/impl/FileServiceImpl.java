@@ -1,28 +1,17 @@
 package com.phuclq.student.service.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
 import com.phuclq.student.common.Constants;
 import com.phuclq.student.exception.BusinessHandleException;
 import com.phuclq.student.exception.ExceptionUtils;
 import com.phuclq.student.repository.*;
 import com.phuclq.student.service.AttachmentService;
+import com.phuclq.student.service.EmailSenderService;
 import com.phuclq.student.service.UserHistoryService;
 import com.phuclq.student.types.CommentType;
 import com.phuclq.student.types.FileType;
 import com.phuclq.student.types.OrderFileType;
 import com.phuclq.student.types.RateType;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -34,7 +23,6 @@ import javax.persistence.Query;
 
 import com.phuclq.student.domain.*;
 import com.phuclq.student.dto.*;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
@@ -46,12 +34,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.google.cloud.storage.Storage;
-import com.phuclq.student.constant.ErrorCode;
 import com.phuclq.student.exception.BusinessException;
 import com.phuclq.student.exception.NotFoundException;
 import com.phuclq.student.service.FileService;
@@ -99,6 +85,12 @@ public class FileServiceImpl implements FileService {
   private UserHistoryService userHistoryService;
   @Value("${coin.vip}")
   private int coinVip;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
+  @Autowired
+  private EmailSenderService emailSenderService;
 
 
   @Override
@@ -243,13 +235,20 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public File downloadDocument(Integer fileId, User user) {
-    Optional<File> fileOptional = fileRepository.findById(fileId);
+  public String downloadDocument(DownloadFileDTO downloadFileDTO) {
+    User user = userService.getUserLogin();
 
-    if (!fileOptional.isPresent()) {
-      return null;
-    } else {
-      File file = fileOptional.get();
+    boolean passwordDefine = passwordEncoder.matches(downloadFileDTO.getPassword(),
+        user.getPassword());
+
+    userHistoryService.activateFileHistory(user.getId(), downloadFileDTO.getId(),
+        ActivityConstants.DOWNLOAD);
+
+    if (passwordDefine) {
+
+      File file = fileRepository.findById(downloadFileDTO.getId())
+          .orElseThrow(() -> new BusinessException(ExceptionUtils.REQUEST_NOT_EXIST));
+
       FilePrice filePrice = filePriceRepository.findByFileId(file.getId());
       UserCoin userCoin = userCoinRepository.findByUserId(user.getId());
       if (userCoin != null) {
@@ -258,14 +257,23 @@ public class FileServiceImpl implements FileService {
         if (userTotalCoin >= fileCost) {
           userCoin.setTotalCoin(userTotalCoin - fileCost);
           userCoinRepository.save(userCoin);
-          return file;
+          sendMailDownload(user.getEmail());
+          return file.getTitle();
         } else {
           return null;
         }
       } else {
         return null;
       }
+    } else {
+      throw new BusinessHandleException("SS008");
     }
+  }
+
+  void sendMailDownload(String email) {
+    String sub = "Tài liệu đã được tải";
+    String message = "Chúc mừng bạn đã download tài liệu";
+    emailSenderService.sendEmailUser(email, sub, message);
   }
 
   private String generateFileName(String fileName) {

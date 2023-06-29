@@ -3,19 +3,16 @@ package com.phuclq.student.controller;
 import com.phuclq.student.component.RestEntityResponse;
 import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.User;
-import com.phuclq.student.dto.AttachmentDTO;
 import com.phuclq.student.dto.ChangePasswordDTO;
 import com.phuclq.student.dto.UserAccountDTO;
 import com.phuclq.student.dto.UserDTO;
 import com.phuclq.student.dto.UserInfoResult;
-import com.phuclq.student.dto.UserInfoResultDto;
 import com.phuclq.student.dto.UserSaveDTO;
 import com.phuclq.student.dto.UsersSearchRequest;
 import com.phuclq.student.service.AttachmentService;
 import com.phuclq.student.service.ConfirmationTokenService;
 import com.phuclq.student.service.EmailSenderService;
 import com.phuclq.student.service.UserService;
-import com.phuclq.student.types.FileType;
 import com.phuclq.student.utils.PaginationUtil;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +43,7 @@ public class UserController {
     @Autowired
     private ConfirmationTokenService confirmationTokenService;
 
-    @Autowired
-    private EmailSenderService emailSenderService;
+
     
     @SuppressWarnings("rawtypes")
 	@Autowired
@@ -57,8 +53,6 @@ public class UserController {
     public ResponseEntity<?> registryUser(@RequestBody @Valid UserAccountDTO accountDTO) {
 
 	        User user = userService.registryUser(accountDTO);
-	        SimpleMailMessage mailMessage = confirmationTokenService.sendEmail(user);
-	        emailSenderService.sendEmail(mailMessage);
 	        return restEntityRes.setHttpStatus(HttpStatus.CREATED).setDataResponse(user.getUserName()).getResponse();
         }
 

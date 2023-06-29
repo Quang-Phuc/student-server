@@ -2,6 +2,7 @@ package com.phuclq.student.controller;
 
 import com.phuclq.student.dto.AttachmentDTO;
 import com.phuclq.student.dto.CategoryHomeFileResult;
+import com.phuclq.student.dto.DownloadFileDTO;
 import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResultDto;
 import com.phuclq.student.service.AttachmentService;
@@ -153,34 +154,12 @@ public class FileController {
         .contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
   }
 
-  @GetMapping("/file/{id}/download")
-  public ResponseEntity<String> downloadDocument(@PathVariable("id") Integer id) throws Exception {
-    User user = userService.getUserLogin();
-    UserHistory userHistory = userHistoryService.activateFileHistory(user.getId(), id,
-        ActivityConstants.DOWNLOAD);
-    String result = "";
-    HttpStatus status;
-    if (userHistory != null) {
-      File file = fileService.downloadDocument(id, user);
-      if (file == null) {
-        status = HttpStatus.ACCEPTED;
-        result = ErrorCode.ERROR_NOT_ENOUGH_COIN_MESSAGE;
-      } else {
+  @PostMapping("/file/download")
+  public ResponseEntity<String> downloadDocument(@RequestBody DownloadFileDTO downloadFileDTO) {
 
-        status = HttpStatus.OK;
-        result = "Mã tài liệu đã được gửi về email của bạn. Vui lòng kiểm tra email!";
-        String message = "Bạn lấy mã code dưới đây nhập vào mục mã file để hoàn tất việc tải file: "
-            + "file.getFileHashcode()";
-        SimpleMailMessage mailMessage = confirmationTokenService.sendEmailFileHashcode(user,
-            message);
-        emailSenderService.sendEmail(mailMessage);
-      }
-    } else {
-      status = HttpStatus.CREATED;
-      result = "Bạn đã tải tài liệu này rồi. Hãy vào mục tài liệu đã tải để kiểm tra.";
-    }
+    String file = fileService.downloadDocument(downloadFileDTO);
 
-    return restEntityRes.setHttpStatus(status).setDataResponse(result).getResponse();
+    return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(file).getResponse();
   }
 
   @GetMapping("/file/{fileId}/report")

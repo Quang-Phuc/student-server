@@ -1,9 +1,9 @@
 package com.phuclq.student.service;
 
 import com.phuclq.student.domain.File;
-import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.CategoryHomeDTO;
 import com.phuclq.student.dto.CategoryHomeFileResult;
+import com.phuclq.student.dto.DownloadFileDTO;
 import com.phuclq.student.dto.FileApprove;
 import com.phuclq.student.dto.FileDTO;
 import com.phuclq.student.dto.FileHomePageRequest;
@@ -12,7 +12,6 @@ import com.phuclq.student.dto.FileResultDto;
 import com.phuclq.student.dto.FileUploadRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,7 +29,7 @@ public interface FileService {
 
   boolean registryFileVip(Integer userId);
 
-  File downloadDocument(Integer fileId, User user);
+  String downloadDocument(DownloadFileDTO downloadFileDTO);
 
   void approveFile( Integer id) throws IOException;
 

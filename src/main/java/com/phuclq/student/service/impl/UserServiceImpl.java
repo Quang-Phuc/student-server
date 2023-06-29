@@ -73,6 +73,7 @@ public class UserServiceImpl implements UserService {
     user.setCreatedDate(new Timestamp(System.currentTimeMillis()));
     userRepository.save(user);
     User saveUser = userRepository.findByEmailIgnoreCaseAndIsDeleted(user.getEmail(), false);
+    confirmationTokenService.sendEmailRegister(user);
     return saveUser;
   }
 
@@ -166,7 +167,8 @@ public class UserServiceImpl implements UserService {
     existingUser.setPassword(passwordEncoder.encode(pass));
     userRepository.save(existingUser);
     String message = "Please check your email password account: " + pass;
-    SimpleMailMessage mailMessage = confirmationTokenService.sendEmailUser(existingUser, message);
+    String sub ="Thông tin passowrd ";
+    SimpleMailMessage mailMessage = emailSenderService.sendEmailUser(existingUser.getEmail(),sub, message);
     emailSenderService.sendEmail(mailMessage);
   }
 

@@ -52,7 +52,7 @@ public class EmailSenderService {
 		mailMessage.setTo(user.getEmail());
 
 		mailMessage.setSubject("Complete Registration!");
-		mailMessage.setFrom("quang.phuc.777290596@gmail.com");
+		mailMessage.setFrom(emailFrom);
 		mailMessage.setText("OTP of you : " + otp);
 
 		return mailMessage;
@@ -86,5 +86,15 @@ public class EmailSenderService {
 			return false;
 		}
 		return true;
+	}
+	public SimpleMailMessage sendEmailUser(String email,String sub, String mess) {
+		SimpleMailMessage mailMessage = new SimpleMailMessage();
+		mailMessage.setTo(email);
+
+		mailMessage.setSubject(sub);
+		mailMessage.setFrom(emailFrom);
+		mailMessage.setText(mess);
+		sendEmail(mailMessage);
+		return mailMessage;
 	}
 }
