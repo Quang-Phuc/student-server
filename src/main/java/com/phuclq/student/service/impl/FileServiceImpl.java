@@ -86,6 +86,10 @@ public class FileServiceImpl implements FileService {
   @Value("${coin.vip}")
   private int coinVip;
 
+  @Value("${coin.percent.file}")
+  private int percentFile;
+
+
   @Autowired
   private PasswordEncoder passwordEncoder;
 
@@ -248,15 +252,20 @@ public class FileServiceImpl implements FileService {
 
       File file = fileRepository.findById(downloadFileDTO.getId())
           .orElseThrow(() -> new BusinessException(ExceptionUtils.REQUEST_NOT_EXIST));
-
+      file.setDowloading(Objects.isNull(file.getDowloading()) ? 1 : file.getDowloading() + 1);
       FilePrice filePrice = filePriceRepository.findByFileId(file.getId());
-      UserCoin userCoin = userCoinRepository.findByUserId(user.getId());
-      if (userCoin != null) {
+      UserCoin userCoinDownload = userCoinRepository.findByUserId(user.getId());
+      if (userCoinDownload != null) {
         Double fileCost = filePrice.getPrice() != null ? filePrice.getPrice() : 0;
-        Double userTotalCoin = userCoin.getTotalCoin() != null ? userCoin.getTotalCoin() : 0;
+        Double userTotalCoin =
+            userCoinDownload.getTotalCoin() != null ? userCoinDownload.getTotalCoin() : 0;
         if (userTotalCoin >= fileCost) {
-          userCoin.setTotalCoin(userTotalCoin - fileCost);
-          userCoinRepository.save(userCoin);
+          userCoinDownload.setTotalCoin(userTotalCoin - fileCost);
+          UserCoin userUpload = userCoinRepository.findByUserId(file.getAuthorId());
+          userUpload.setTotalCoin(userUpload.getTotalCoin() != null ? userUpload.getTotalCoin()
+              : 0 + (fileCost * percentFile) / 100);
+          userCoinRepository.save(userCoinDownload);
+          userCoinRepository.save(userUpload);
           sendMailDownload(user.getEmail());
           return file.getTitle();
         } else {
@@ -539,7 +548,7 @@ public class FileServiceImpl implements FileService {
               x.getId(),
               CommentType.COMMENT_FILE.getName());
           listComment.forEach(y->{
-            y.setIsDelete(loginId.toString().equals(y.getCreatedBy()));
+       //     y.setIsDelete(Objects.nonNull(loginId)||loginId.toString().equals(y.getCreatedBy()));
           });
           x.setComments(listComment);
 
