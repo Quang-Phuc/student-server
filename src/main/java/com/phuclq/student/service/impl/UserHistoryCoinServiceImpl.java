@@ -44,16 +44,16 @@ public class UserHistoryCoinServiceImpl implements UserHistoryCoinService{
 		
 		Page<UserHistoryCoin> page = null;
 		if (historyCoinRequest.getTransaction() == null) {
-			page = StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) 
-					|| StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) ? 
-					repository.findByActiveDate(user.getId(), dateFrom, dateTo, pageable)
-					: repository.findByUserId(user.getId(), pageable);
+//			page = StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom())
+//					|| StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) ?
+//					repository.findByActiveDate(user.getId(), dateFrom, dateTo, pageable)
+//					: repository.findByUserId(user.getId(), pageable);
 		}
 		else {
-			page = StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) 
-					|| StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) ? 
-					repository.findByTransactionAndActiveDate(historyCoinRequest.getTransaction(), user.getId(), dateFrom, dateTo, pageable)
-					: repository.findByTransactionAndUserId(historyCoinRequest.getTransaction(), user.getId(), pageable);
+//			page = StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom())
+//					|| StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) ?
+//					repository.findByTransactionAndActiveDate(historyCoinRequest.getTransaction(), user.getId(), dateFrom, dateTo, pageable)
+//					: repository.findByTransactionAndUserId(historyCoinRequest.getTransaction(), user.getId(), pageable);
 		}
 		return page;
 	}
@@ -75,16 +75,16 @@ public class UserHistoryCoinServiceImpl implements UserHistoryCoinService{
 		}
 		Page<UserHistoryCoinResult> page = null;
 		if (historyCoinRequest.getTransaction() == null) {
-			page = StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) 
-					|| StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) ? 
-					repository.getManagerTransaction(dateFrom, dateTo, historyCoinRequest.getEmail(), pageable)
-					: repository.getManagerTransaction(historyCoinRequest.getEmail(), pageable);
+//			page = StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom())
+//					|| StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) ?
+//					repository.getManagerTransaction(dateFrom, dateTo, historyCoinRequest.getEmail(), pageable)
+//					: repository.getManagerTransaction(historyCoinRequest.getEmail(), pageable);
 		}
 		else {
-			page = StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) 
-					|| StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) ? 
-					repository.getManagerTransaction(historyCoinRequest.getTransaction(), dateFrom, dateTo, historyCoinRequest.getEmail(), pageable)
-					: repository.getManagerTransaction(historyCoinRequest.getTransaction(), historyCoinRequest.getEmail(), pageable);
+//			page = StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom())
+//					|| StringUtils.isStringNotNullAndHasValue(historyCoinRequest.getDateFrom()) ?
+//					repository.getManagerTransaction(historyCoinRequest.getTransaction(), dateFrom, dateTo, historyCoinRequest.getEmail(), pageable)
+//					: repository.getManagerTransaction(historyCoinRequest.getTransaction(), historyCoinRequest.getEmail(), pageable);
 		}
 		return page;
 	}

@@ -1,109 +1,51 @@
 package com.phuclq.student.domain;
 
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import java.sql.Timestamp;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Entity
-@Table(name = "user_history_coin", schema = "smdb", catalog = "")
-public class UserHistoryCoin extends Auditable<String>{
-    
 
-	private Integer id;
-    private Integer userId;
-    private Integer coin;
-    private Timestamp activityDate;
-    private Integer transaction;
-    private String description;
+@NoArgsConstructor
+@Entity(name = "USER_HISTORY_COIN")
+@Getter
+@Setter
+@Table(name = "USER_HISTORY_COIN")
+public class UserHistoryCoin extends Auditable<String> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    public Integer getId() {
-        return id;
-    }
+  @Id
+  @SequenceGenerator(name = "USER_HISTORY_COIN_SEQUENCE", sequenceName = "USER_HISTORY_COIN_SEQUENCE", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USER_HISTORY_COIN_SEQUENCE")
+  @Column(name = "ID", nullable = false)
+  private Integer id;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+  @Column(name = "USER_ID", nullable = false)
+  private Integer userId;
 
-    @Basic
-    @Column(name = "user_id")
-    public Integer getUserId() {
-        return userId;
-    }
+  @Column(name = "COIN", nullable = false)
+  private Double coin;
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
+  @Column(name = "TRANSACTION", nullable = false)
+  private Integer transaction;
 
-    @Basic
-    @Column(name = "coin")
-    public Integer getCoin() {
-        return coin;
-    }
+  @Column(name = "DESCRIPTION", nullable = false)
+  private String description;
 
-    public void setCoin(Integer coin) {
-        this.coin = coin;
-    }
+  @Column(name = "TYPE", nullable = false)
+  private String type;
 
-    @Basic
-    @Column(name = "activity_date")
-    public Timestamp getActivityDate() {
-        return activityDate;
-    }
-
-    public void setActivityDate(Timestamp activityDate) {
-        this.activityDate = activityDate;
-    }
-    
-    @Basic
-    @Column(name = "transaction")
-    public Integer getTransaction() {
-		return transaction;
-	}
-
-	public void setTransaction(Integer transaction) {
-		this.transaction = transaction;
-	}
-	
-	@Basic
-	@Column(name = "description")
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-    
-    
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UserHistoryCoin that = (UserHistoryCoin) o;
-
-        if (id != that.id) return false;
-        if (userId != null ? !userId.equals(that.userId) : that.userId != null)
-            return false;
-        if (coin != null ? !coin.equals(that.coin) : that.coin != null) return false;
-        if (activityDate != null ? !activityDate.equals(that.activityDate) : that.activityDate != null) return false;
-        if (transaction != null ? !transaction.equals(that.transaction) : that.transaction != null) return false;
-        if (description != null ? !description.equals(that.description) : that.description != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (userId != null ? userId.hashCode() : 0);
-        result = 31 * result + (coin != null ? coin.hashCode() : 0);
-        result = 31 * result + (activityDate != null ? activityDate.hashCode() : 0);
-        result = 31 * result + (transaction != null ? transaction.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        return result;
-    }
+  public UserHistoryCoin( Integer userId, Double coin, Integer transaction,
+      String description,Integer loginId,String type) {
+    this.userId = userId;
+    this.coin = coin;
+    this.transaction = transaction;
+    this.description = description;
+    this.type = type;
+    this.setCreatedBy(loginId.toString());
+    this.setCreatedDate(LocalDateTime.now());
+  }
 }

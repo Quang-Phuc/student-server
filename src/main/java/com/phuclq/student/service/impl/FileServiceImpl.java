@@ -9,6 +9,7 @@ import com.phuclq.student.service.EmailSenderService;
 import com.phuclq.student.service.UserHistoryService;
 import com.phuclq.student.types.CommentType;
 import com.phuclq.student.types.FileType;
+import com.phuclq.student.types.HistoryCoinType;
 import com.phuclq.student.types.OrderFileType;
 import com.phuclq.student.types.RateType;
 import java.io.IOException;
@@ -83,6 +84,10 @@ public class FileServiceImpl implements FileService {
   RateRepository rateRepository;
   @Autowired
   private UserHistoryService userHistoryService;
+
+  @Autowired
+  UserHistoryCoinRepository userHistoryCoinRepository;
+
   @Value("${coin.vip}")
   private int coinVip;
 
@@ -239,7 +244,7 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public String downloadDocument(DownloadFileDTO downloadFileDTO) {
+  public List<AttachmentDTO> downloadDocument(DownloadFileDTO downloadFileDTO) {
     User user = userService.getUserLogin();
 
     boolean passwordDefine = passwordEncoder.matches(downloadFileDTO.getPassword(),
@@ -252,6 +257,7 @@ public class FileServiceImpl implements FileService {
 
       File file = fileRepository.findById(downloadFileDTO.getId())
           .orElseThrow(() -> new BusinessException(ExceptionUtils.REQUEST_NOT_EXIST));
+
       file.setDowloading(Objects.isNull(file.getDowloading()) ? 1 : file.getDowloading() + 1);
       FilePrice filePrice = filePriceRepository.findByFileId(file.getId());
       UserCoin userCoinDownload = userCoinRepository.findByUserId(user.getId());
@@ -262,12 +268,21 @@ public class FileServiceImpl implements FileService {
         if (userTotalCoin >= fileCost) {
           userCoinDownload.setTotalCoin(userTotalCoin - fileCost);
           UserCoin userUpload = userCoinRepository.findByUserId(file.getAuthorId());
-          userUpload.setTotalCoin(userUpload.getTotalCoin() != null ? userUpload.getTotalCoin()
-              : 0 + (fileCost * percentFile) / 100);
+
+          Double costMoney = (fileCost * percentFile) / 100;
+          Double totalCoinUpload =
+              Objects.isNull(userUpload.getTotalCoin()) ? 0 : userUpload.getTotalCoin();
+          userUpload.setTotalCoin(totalCoinUpload + costMoney);
+
           userCoinRepository.save(userCoinDownload);
           userCoinRepository.save(userUpload);
+
+          historyCoin(user, file, fileCost, costMoney);
+
           sendMailDownload(user.getEmail());
-          return file.getTitle();
+
+          return attachmentService.getAttachmentByRequestIdFromS3AndTypes(file.getId(),
+              Arrays.asList(FileType.FILE_UPLOAD.getName(), FileType.FILE_DEMO.getName()));
         } else {
           return null;
         }
@@ -277,6 +292,19 @@ public class FileServiceImpl implements FileService {
     } else {
       throw new BusinessHandleException("SS008");
     }
+  }
+
+  private void historyCoin(User user, File file, Double fileCost, Double costMoney) {
+    // history coin
+    UserHistoryCoin historyCoinDownload = new UserHistoryCoin(user.getId(), fileCost,
+        HistoryCoinType.DOWNLOAD_FILE.getCode(), HistoryCoinType.DOWNLOAD_FILE.getName(),
+        user.getId(), HistoryCoinType.DOWNLOAD_FILE.getType());
+    userHistoryCoinRepository.save(historyCoinDownload);
+
+    UserHistoryCoin historyCoinUpload = new UserHistoryCoin(file.getAuthorId(), costMoney,
+        HistoryCoinType.DOWNLOADED_FILE.getCode(), HistoryCoinType.DOWNLOADED_FILE.getName(),
+        user.getId(), HistoryCoinType.DOWNLOADED_FILE.getType());
+    userHistoryCoinRepository.save(historyCoinUpload);
   }
 
   void sendMailDownload(String email) {

@@ -157,7 +157,7 @@ public class FileController {
   @PostMapping("/file/download")
   public ResponseEntity<String> downloadDocument(@RequestBody DownloadFileDTO downloadFileDTO) {
 
-    String file = fileService.downloadDocument(downloadFileDTO);
+    List<AttachmentDTO> file = fileService.downloadDocument(downloadFileDTO);
 
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(file).getResponse();
   }

@@ -140,4 +140,27 @@ public class AttachmentServiceImpl implements AttachmentService {
     attachmentDTO.setMainDocument(attachment.getDataUir()+Constants.DOT_COMMA_2+base64FromS3);
     return attachmentDTO;
   }
+
+  @Override
+  public List<AttachmentDTO> getAttachmentByRequestIdFromS3AndTypes(Integer requestId,
+      List<String> fileType) {
+
+    List<Attachment> attachmentOptional = attachmentRepository.findAllByRequestIdAndFileTypeIn(
+        requestId, fileType);
+
+    List<AttachmentDTO> attachmentDTOList = new ArrayList<>();
+    attachmentOptional.forEach(attachment -> {
+      String base64FromS3 = null;
+      try {
+        base64FromS3 = s3StorageService.downloadFileFromS3(attachment.getFileNameS3());
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+      AttachmentDTO attachmentDTO = new AttachmentDTO(attachment);
+      attachmentDTO.setMainDocument(attachment.getDataUir() + Constants.DOT_COMMA_2 + base64FromS3);
+      attachmentDTOList.add(attachmentDTO);
+    });
+
+    return attachmentDTOList;
+  }
 }

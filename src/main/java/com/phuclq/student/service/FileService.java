@@ -1,6 +1,7 @@
 package com.phuclq.student.service;
 
 import com.phuclq.student.domain.File;
+import com.phuclq.student.dto.AttachmentDTO;
 import com.phuclq.student.dto.CategoryHomeDTO;
 import com.phuclq.student.dto.CategoryHomeFileResult;
 import com.phuclq.student.dto.DownloadFileDTO;
@@ -29,7 +30,7 @@ public interface FileService {
 
   boolean registryFileVip(Integer userId);
 
-  String downloadDocument(DownloadFileDTO downloadFileDTO);
+  List<AttachmentDTO> downloadDocument(DownloadFileDTO downloadFileDTO);
 
   void approveFile( Integer id) throws IOException;
 
