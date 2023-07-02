@@ -11,6 +11,7 @@ import com.phuclq.student.dto.FileHomePageRequest;
 import com.phuclq.student.dto.FileResult;
 import com.phuclq.student.dto.FileResultDto;
 import com.phuclq.student.dto.FileUploadRequest;
+import org.dom4j.DocumentException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -26,11 +27,13 @@ public interface FileService {
   Page<File> searchFiles(Integer category, Integer specialization, Integer school, String title,
       Boolean isVip, Float price, Pageable pageable);
 
-  File uploadFile(FileUploadRequest fileUploadRequest) throws IOException;
+  File uploadFile(FileUploadRequest fileUploadRequest)
+      throws IOException, com.itextpdf.text.DocumentException;
 
   boolean registryFileVip(Integer userId);
 
-  List<AttachmentDTO> downloadDocument(DownloadFileDTO downloadFileDTO);
+  List<AttachmentDTO> downloadDocument(DownloadFileDTO downloadFileDTO)
+      throws DocumentException, com.itextpdf.text.DocumentException, IOException;
 
   void approveFile( Integer id) throws IOException;
 

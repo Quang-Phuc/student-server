@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 
 import com.phuclq.student.domain.UserHistory;
+import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -155,7 +156,8 @@ public class FileController {
   }
 
   @PostMapping("/file/download")
-  public ResponseEntity<String> downloadDocument(@RequestBody DownloadFileDTO downloadFileDTO) {
+  public ResponseEntity<String> downloadDocument(@RequestBody DownloadFileDTO downloadFileDTO)
+      throws DocumentException, com.itextpdf.text.DocumentException, IOException {
 
     List<AttachmentDTO> file = fileService.downloadDocument(downloadFileDTO);
 

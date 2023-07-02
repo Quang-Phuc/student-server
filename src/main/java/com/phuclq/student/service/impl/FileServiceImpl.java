@@ -1,5 +1,8 @@
 package com.phuclq.student.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.phuclq.student.common.Constants;
 import com.phuclq.student.exception.BusinessHandleException;
 import com.phuclq.student.exception.ExceptionUtils;
@@ -12,7 +15,9 @@ import com.phuclq.student.types.FileType;
 import com.phuclq.student.types.HistoryCoinType;
 import com.phuclq.student.types.OrderFileType;
 import com.phuclq.student.types.RateType;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -24,8 +29,10 @@ import javax.persistence.Query;
 
 import com.phuclq.student.domain.*;
 import com.phuclq.student.dto.*;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -156,14 +163,24 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public File uploadFile(FileUploadRequest dto) throws IOException {
-
+  public File uploadFile(FileUploadRequest dto)
+      throws IOException, com.itextpdf.text.DocumentException {
+//    dto.setEndPageNumber(3);
     Integer login = userService.getUserLogin().getId();
     if (dto.getIsVip()) {
       boolean status = registryFileVip(login);
       if (!status) {
         throw new BusinessHandleException("SS006");
       }
+    }
+    List<RequestFileDTO> files = dto.getFiles();
+      RequestFileDTO requestFileDTO = files.stream()
+          .filter(x -> x.getType().equals(FileType.FILE_UPLOAD.getName())).findFirst()
+          .get();
+    if(requestFileDTO.getExtension().equalsIgnoreCase(".PDF")) {
+      RequestFileDTO cutFileShow = cutFileShow(dto.getStartPageNumber(), dto.getEndPageNumber(),
+          requestFileDTO);
+      files.add(cutFileShow);
     }
     if (Objects.isNull(dto.getId())) {
       File file = new File(login);
@@ -175,7 +192,7 @@ public class FileServiceImpl implements FileService {
       Double price = dto.getFilePrice() != null ? dto.getFilePrice() : 0;
       FilePrice filePrice = new FilePrice(saveFile.getId(), price, login);
       filePriceRepository.save(filePrice);
-      attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(), saveFile.getId(), login);
+      attachmentService.createListAttachmentsFromBase64S3(files, saveFile.getId(), login);
       userHistoryService.activateFileHistory(login, file.getId(), ActivityConstants.UPLOAD);
       return saveFile;
     } else {
@@ -183,7 +200,7 @@ public class FileServiceImpl implements FileService {
       File file = updateFile(byId, dto, login);
       fileRepository.save(file);
       if (Objects.nonNull(dto.getFiles())) {
-        attachmentService.createListAttachmentsFromBase64S3(dto.getFiles(), file.getId(), login);
+        attachmentService.createListAttachmentsFromBase64S3(files, file.getId(), login);
       }
       return file;
     }
@@ -246,7 +263,6 @@ public class FileServiceImpl implements FileService {
   @Override
   public List<AttachmentDTO> downloadDocument(DownloadFileDTO downloadFileDTO) {
     User user = userService.getUserLogin();
-
     boolean passwordDefine = passwordEncoder.matches(downloadFileDTO.getPassword(),
         user.getPassword());
 
@@ -568,7 +584,7 @@ public class FileServiceImpl implements FileService {
           && (!request.getIsBase64())) {
         try {
           AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
-              x.getId(), FileType.FILE_UPLOAD.getName());
+              x.getId(), FileType.FILE_CUT.getName());
           x.setAttachmentDTO(attachmentByRequestIdFromS3);
 
           // get comment
@@ -691,13 +707,28 @@ public class FileServiceImpl implements FileService {
           }
         });
   }
-//public void cutPdf(String base64) throws DocumentException, IOException {
-//  PdfReader reader = new PdfReader(Base64.decodeBase64(base64));
-//  ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//  PdfStamper stamper = new PdfStamper(reader, baos);
-//// do stuff with stamper
-//  stamper.close();
-//  String base64 = Base64.encode(baos.toByteArray());
-//}
+public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber, RequestFileDTO dto)
+    throws IOException, com.itextpdf.text.DocumentException {
+
+  PdfReader reader = new PdfReader(Base64.decodeBase64(dto.getContent().split(Constants.DOT_COMMA_2)[1]));
+  ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  PdfStamper stamper = new PdfStamper(reader, baos);
+  int n = reader.getNumberOfPages();
+  int endPage = endPageNumber> n ? n: endPageNumber;
+  String viewPage = startPageNumber+"-"+endPage;
+  reader.selectPages(viewPage);
+// do stuff with stamper
+  stamper.close();
+  String base64cutFile = com.itextpdf.text.pdf.codec.Base64.encodeBytes(baos.toByteArray());
+  RequestFileDTO requestFileDTO = new RequestFileDTO();
+  requestFileDTO.setContent(dto.getContent().split(Constants.DOT_COMMA_2)[0]+Constants.DOT_COMMA_2+base64cutFile.replace("\n",""));
+  requestFileDTO.setType(FileType.FILE_CUT.getName());
+  requestFileDTO.setName(FileType.FILE_CUT.getName()+dto.getName());
+  requestFileDTO.setExtension(dto.getExtension());
+
+  return requestFileDTO;
+}
+
+
 
 }
