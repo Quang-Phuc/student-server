@@ -262,7 +262,7 @@ public class FileServiceImpl implements FileService {
   }
 
   @Override
-  public List<AttachmentDTO> downloadDocument(DownloadFileDTO downloadFileDTO) {
+  public AttachmentDTO downloadDocument(DownloadFileDTO downloadFileDTO) {
     User user = userService.getUserLogin();
     boolean passwordDefine = passwordEncoder.matches(downloadFileDTO.getPassword(),
         user.getPassword());
@@ -299,7 +299,7 @@ public class FileServiceImpl implements FileService {
           sendMailDownload(user.getEmail());
 
           return attachmentService.getAttachmentByRequestIdFromS3AndTypes(file.getId(),
-              Arrays.asList(FileType.FILE_UPLOAD.getName(), FileType.FILE_DEMO.getName()));
+              Arrays.asList(FileType.FILE_UPLOAD.getName(), FileType.FILE_DEMO.getName())).get(0);
         } else {
           return null;
         }

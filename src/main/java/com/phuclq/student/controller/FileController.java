@@ -159,7 +159,7 @@ public class FileController {
   public ResponseEntity<String> downloadDocument(@RequestBody DownloadFileDTO downloadFileDTO)
       throws DocumentException, com.itextpdf.text.DocumentException, IOException {
 
-    List<AttachmentDTO> file = fileService.downloadDocument(downloadFileDTO);
+    AttachmentDTO file = fileService.downloadDocument(downloadFileDTO);
 
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(file).getResponse();
   }

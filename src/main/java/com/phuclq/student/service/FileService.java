@@ -31,8 +31,7 @@ public interface FileService {
       throws IOException, com.itextpdf.text.DocumentException;
 
   boolean registryFileVip(Integer userId);
-
-  List<AttachmentDTO> downloadDocument(DownloadFileDTO downloadFileDTO)
+   AttachmentDTO downloadDocument(DownloadFileDTO downloadFileDTO)
       throws DocumentException, com.itextpdf.text.DocumentException, IOException;
 
   void approveFile( Integer id) throws IOException;
