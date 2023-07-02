@@ -593,7 +593,8 @@ public class FileServiceImpl implements FileService {
               x.getId(),
               CommentType.COMMENT_FILE.getName());
           listComment.forEach(y->{
-       //     y.setIsDelete(Objects.nonNull(loginId)||loginId.toString().equals(y.getCreatedBy()));
+            y.setIsDelete(Objects.nonNull(loginId)&&y.getCreatedBy().equals(
+                Objects.requireNonNull(loginId).toString()));
           });
           x.setComments(listComment);
 
