@@ -227,6 +227,12 @@
 			<artifactId>android-json</artifactId>
 			<version>0.0.20131108.vaadin1</version>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>com.aspose</groupId>-->
+<!--			<artifactId>aspose-words</artifactId>-->
+<!--			<version>20.1</version>-->
+<!--			<classifier>jdk17</classifier>-->
+<!--		</dependency>-->
 		<!-- MOMO -->
 
 

@@ -1,5 +1,6 @@
 package com.phuclq.student.service.impl;
 
+//import com.aspose.words.Document;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
@@ -584,7 +585,7 @@ public class FileServiceImpl implements FileService {
           && (!request.getIsBase64())) {
         try {
           AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
-              x.getId(), FileType.FILE_CUT.getName());
+              x.getId(), FileType.FILE_UPLOAD.getName());
           x.setAttachmentDTO(attachmentByRequestIdFromS3);
 
           // get comment
@@ -728,6 +729,12 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
 
   return requestFileDTO;
 }
+//public void convertWordToPdf() throws Exception {
+//  // Load the Word document from disk
+//  Document doc = new Document("word.docx");
+//// Save as PDF
+//  doc.save("output.pdf");
+//}
 
 
 
