@@ -17,6 +17,7 @@ import com.phuclq.student.types.HistoryCoinType;
 import com.phuclq.student.types.OrderFileType;
 import com.phuclq.student.types.RateType;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -24,6 +25,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -53,6 +56,7 @@ import com.phuclq.student.service.FileService;
 import com.phuclq.student.service.UserService;
 import com.phuclq.student.utils.ActivityConstants;
 import com.phuclq.student.utils.DateTimeUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import static com.phuclq.student.utils.ActivityConstants.CARD;
 import static com.phuclq.student.utils.ActivityConstants.LIKE;
@@ -492,8 +496,18 @@ public class FileServiceImpl implements FileService {
             + " inner join user u on f.author_id = u.id left join attachment ab on u.id = ab.request_id and ab.file_type = "
             + "'" + FileType.USER_AVATAR.getName() + "'"
             + "where f.approver_id is not null and f.is_deleted =0  ");
-    sqlStatement.append(" and f.category_id = ? ");
-    listParam.add(categoryId);
+    if(Objects.nonNull(categoryId)) {
+      sqlStatement.append(" and f.category_id = ? ");
+      listParam.add(categoryId);
+    }
+    if(Objects.nonNull(request.getIsApprove())&& request.getIsApprove()) {
+      sqlStatement.append(" and f.approver_id is not null ");
+      listParam.add(categoryId);
+    }
+    if(Objects.nonNull(request.getIsApprove())&& !request.getIsApprove()) {
+      sqlStatement.append(" and f.approver_id is  null ");
+      listParam.add(categoryId);
+    }
     if (request.getSearch() != null && !request.getSearch().isEmpty()) {
       sqlStatement.append(" and (LOWER(f.title) like LOWER(?) ");
       sqlStatement.append(" or LOWER(i.value) like LOWER(?) ");
@@ -736,7 +750,29 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
 //// Save as PDF
 //  doc.save("output.pdf");
 //}
-
+//MultipartFile attachFile = com.phuclq.student.utils.FileUtils.uploadFile(filterCheckinModel.getImageLive());
+//  private static String zipB64(List<RequestFileDTO> dtos) throws IOException {
+//    dtos.forEach(x->{
+//      dtos
+//    });
+//    byte[] buffer = new byte[1024];
+//    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//    try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+//      for (File f : files) {
+//        try (FileInputStream fis = new FileInputStream(f)) {
+//          zos.putNextEntry(new ZipEntry(f.getName()));
+//          int length;
+//          while ((length = fis.read(buffer)) > 0) {
+//            zos.write(buffer, 0, length);
+//          }
+//          zos.closeEntry();
+//        }
+//      }
+//    }
+//    byte[] bytes = baos.toByteArray();
+//    encodedBase64 = new String(Base64.getEncoder().encodeToString(bytes));
+//    return encodedBase64;
+//  }
 
 
 }

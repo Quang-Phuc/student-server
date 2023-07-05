@@ -33,5 +33,6 @@ public class FileHomePageRequest {
   private Integer activityId;
   private Integer fileId;
   private Boolean isBase64;
+  private Boolean isApprove;
 
 }
