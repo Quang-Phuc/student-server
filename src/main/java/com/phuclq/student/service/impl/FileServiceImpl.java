@@ -19,6 +19,7 @@ import com.phuclq.student.utils.Base64ToMultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -181,7 +182,7 @@ public class FileServiceImpl implements FileService {
       }
     }
     List<RequestFileDTO> files = dto.getFiles();
-    String s = zipB64(files);
+//    String s = zipB64(files);
 
     RequestFileDTO requestFileDTO = files.stream()
           .filter(x -> x.getType().equals(FileType.FILE_UPLOAD.getName())).findFirst()
@@ -758,7 +759,10 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
 
   private static String zipB64(List<RequestFileDTO> dto) throws IOException {
     List<java.io.File> files = convertBase64toFile(dto);
-    filesZip(files);
+    String s = filesZip(files);
+    FileWriter fw = new FileWriter("D:\\testout.txt");
+    fw.write(s);
+    fw.close();
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     byte[] buffer = new byte[1024];
 
@@ -816,19 +820,21 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
   static String filesZip(List<java.io.File> files) throws IOException {
     java.io.File dir = new  java.io.File("./");
 
-    String zipFileName = "PhucDz".concat(".zip");
+    FileOutputStream  fos = new FileOutputStream(new java.io.File("myFile.zip"));
     ByteArrayOutputStream bo = new ByteArrayOutputStream();
+    bo.writeTo(fos);
     ZipOutputStream zipOut= new ZipOutputStream(bo);
 //    zipOut.
 //    ZipOutputStream zipOut= new ZipOutputStream(new FileOutputStream(zipFileName));
     for(java.io.File xlsFile:files){
       if(!xlsFile.isFile())continue;
-      ZipEntry zipEntry = new ZipEntry("aaaaa"+".zip");
+      ZipEntry zipEntry = new ZipEntry(xlsFile.getName());
       zipOut.putNextEntry(zipEntry);
       zipOut.write(IOUtils.toByteArray(new FileInputStream(xlsFile)));
       zipOut.closeEntry();
     }
     zipOut.close();
+//    bo.
     return new String(Base64.encodeBase64(bo.toByteArray()));
   }
 

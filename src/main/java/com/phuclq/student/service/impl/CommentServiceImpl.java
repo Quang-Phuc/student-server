@@ -1,7 +1,6 @@
 package com.phuclq.student.service.impl;
 
 import com.phuclq.student.domain.Comment;
-import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.UserDTO;
 import com.phuclq.student.exception.NotFoundException;
 import com.phuclq.student.repository.CommentRepository;
@@ -41,6 +40,12 @@ public class CommentServiceImpl implements CommentService {
     Comment comment = commentRepository.findById(id).orElseThrow(NotFoundException::new);
     comment.setTotalLike(Objects.nonNull(comment.getTotalLike())?comment.getTotalLike()+1:1);
    return commentRepository.save(comment);
+  }
+
+  @Override
+  public void delete(Integer id) {
+    commentRepository.delete(commentRepository.findById(id).get());
+
   }
 }
 

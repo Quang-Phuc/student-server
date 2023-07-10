@@ -9,4 +9,5 @@ public interface CommentService {
   Comment like(Integer id);
 
 
+  void delete(Integer id);
 }
