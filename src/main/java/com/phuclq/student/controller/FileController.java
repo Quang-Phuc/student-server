@@ -27,7 +27,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,12 +40,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.phuclq.student.component.RestEntityResponse;
-import com.phuclq.student.constant.ErrorCode;
 import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.CategoryHomeDTO;
 import com.phuclq.student.dto.FileApprove;
-import com.phuclq.student.dto.FileApproveRequest;
 import com.phuclq.student.dto.FileDTO;
 import com.phuclq.student.dto.FileResult;
 import com.phuclq.student.dto.FileSearchRequest;
@@ -290,6 +287,16 @@ public class FileController {
   public ResponseEntity<List<File>> downloadS3(@RequestParam Long id,@RequestParam  String fileType, HttpServletRequest request)
       throws IOException {
     AttachmentDTO attachmentByIdFromS3 = attachmentService.getAttachmentByIdFromS3Update(id,fileType, request);
+
+    return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(attachmentByIdFromS3)
+        .getResponse();
+  }
+
+  @GetMapping("/file/downloadS3-request")
+  public ResponseEntity<List<File>> downloadS3Request(@RequestParam Integer id,@RequestParam  String fileType, HttpServletRequest request)
+      throws IOException {
+    List<AttachmentDTO> attachmentByIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3AndTypes(
+        id,Arrays.asList(fileType));
 
     return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(attachmentByIdFromS3)
         .getResponse();

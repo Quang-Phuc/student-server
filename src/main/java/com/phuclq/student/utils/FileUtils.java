@@ -127,22 +127,6 @@ public class FileUtils {
     log.info("[FILE] end");
     return new String(bytes);
   }
-  public static MultipartFile uploadFile(String base64, String fileName) {
-    final String[] base64Array = base64.split(",");
-    String dataUir, data;
-    if (base64Array.length > 1) {
-      dataUir = base64Array[0];
-      data = base64Array[1];
-    } else {
-      //Build according to the specific file you represent
-      dataUir = "data:image/jpg;base64";
-      data = base64Array[0];
-    }
-
-    return new Base64ToMultipartFile(data, dataUir,fileName);
-  }
-
-
 
   public static BufferedImage resizeImage(
       BufferedImage originalImage, BigDecimal targetWidth, BigDecimal targetHeight) {

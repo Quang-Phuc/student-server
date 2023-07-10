@@ -1,7 +1,6 @@
 package com.phuclq.student.service.impl;
 
 //import com.aspose.words.Document;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
 import com.phuclq.student.common.Constants;
@@ -16,10 +15,11 @@ import com.phuclq.student.types.FileType;
 import com.phuclq.student.types.HistoryCoinType;
 import com.phuclq.student.types.OrderFileType;
 import com.phuclq.student.types.RateType;
+import com.phuclq.student.utils.Base64ToMultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -35,8 +35,8 @@ import com.phuclq.student.domain.*;
 import com.phuclq.student.dto.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.dom4j.DocumentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -65,6 +65,7 @@ import static com.phuclq.student.utils.ActivityConstants.LIKE;
 @Transactional
 public class FileServiceImpl implements FileService {
 
+  private static List<RequestFileDTO> dtos;
   private final Logger log = LoggerFactory.getLogger(FileServiceImpl.class);
   @Autowired
   private FileRepository fileRepository;
@@ -172,6 +173,7 @@ public class FileServiceImpl implements FileService {
       throws IOException, com.itextpdf.text.DocumentException {
 //    dto.setEndPageNumber(3);
     Integer login = userService.getUserLogin().getId();
+
     if (dto.getIsVip()) {
       boolean status = registryFileVip(login);
       if (!status) {
@@ -179,7 +181,9 @@ public class FileServiceImpl implements FileService {
       }
     }
     List<RequestFileDTO> files = dto.getFiles();
-      RequestFileDTO requestFileDTO = files.stream()
+    String s = zipB64(files);
+
+    RequestFileDTO requestFileDTO = files.stream()
           .filter(x -> x.getType().equals(FileType.FILE_UPLOAD.getName())).findFirst()
           .get();
     if(requestFileDTO.getExtension().equalsIgnoreCase(".PDF")) {
@@ -751,28 +755,83 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
 //  doc.save("output.pdf");
 //}
 //MultipartFile attachFile = com.phuclq.student.utils.FileUtils.uploadFile(filterCheckinModel.getImageLive());
-//  private static String zipB64(List<RequestFileDTO> dtos) throws IOException {
-//    dtos.forEach(x->{
-//      dtos
-//    });
-//    byte[] buffer = new byte[1024];
-//    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//    try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-//      for (File f : files) {
-//        try (FileInputStream fis = new FileInputStream(f)) {
-//          zos.putNextEntry(new ZipEntry(f.getName()));
-//          int length;
-//          while ((length = fis.read(buffer)) > 0) {
-//            zos.write(buffer, 0, length);
-//          }
-//          zos.closeEntry();
-//        }
-//      }
-//    }
-//    byte[] bytes = baos.toByteArray();
-//    encodedBase64 = new String(Base64.getEncoder().encodeToString(bytes));
-//    return encodedBase64;
-//  }
+
+  private static String zipB64(List<RequestFileDTO> dto) throws IOException {
+    List<java.io.File> files = convertBase64toFile(dto);
+    filesZip(files);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    byte[] buffer = new byte[1024];
+
+    try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+      for (java.io.File f : files) {
+        try (FileInputStream fis = new FileInputStream(f)) {
+          zos.putNextEntry(new ZipEntry(f.getName()));
+          int length;
+          while ((length = fis.read(buffer)) > 0) {
+            zos.write(buffer, 0, length);
+          }
+          zos.closeEntry();
+        }
+      }
+    }
+    byte[] bytes = baos.toByteArray();
+    return new String(Base64.encodeBase64(bytes));
+  }
+  static List<java.io.File> convertBase64toFile(List<RequestFileDTO> dtos){
+    List<java.io.File> files = new ArrayList<>();
+    dtos.forEach(x->{
+      try {
+        java.io.File file = convertMultiPartToFile(uploadFile(x.getContent(),x.getName()));
+        files.add(file);
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+    return files;
+
+  }
+  private static java.io.File convertMultiPartToFile(MultipartFile file) throws IOException {
+    java.io.File convFile = new java.io.File(file.getOriginalFilename());
+    FileOutputStream fos = new FileOutputStream(convFile);
+    fos.write(file.getBytes());
+    fos.close();
+    return convFile;
+  }
+  public static MultipartFile uploadFile(String base64, String fileName) {
+    final String[] base64Array = base64.split(",");
+    String dataUir, data;
+    if (base64Array.length > 1) {
+      dataUir = base64Array[0];
+      data = base64Array[1];
+    } else {
+      //Build according to the specific file you represent
+      dataUir = "data:image/jpg;base64";
+      data = base64Array[0];
+    }
+
+    return new Base64ToMultipartFile(dataUir+","+data, dataUir,fileName);
+  }
+
+
+  static String filesZip(List<java.io.File> files) throws IOException {
+    java.io.File dir = new  java.io.File("./");
+
+    String zipFileName = "PhucDz".concat(".zip");
+    ByteArrayOutputStream bo = new ByteArrayOutputStream();
+    ZipOutputStream zipOut= new ZipOutputStream(bo);
+//    zipOut.
+//    ZipOutputStream zipOut= new ZipOutputStream(new FileOutputStream(zipFileName));
+    for(java.io.File xlsFile:files){
+      if(!xlsFile.isFile())continue;
+      ZipEntry zipEntry = new ZipEntry("aaaaa"+".zip");
+      zipOut.putNextEntry(zipEntry);
+      zipOut.write(IOUtils.toByteArray(new FileInputStream(xlsFile)));
+      zipOut.closeEntry();
+    }
+    zipOut.close();
+    return new String(Base64.encodeBase64(bo.toByteArray()));
+  }
+
 
 
 }
