@@ -30,4 +30,8 @@ public interface UserHistoryFileRepository extends JpaRepository<UserHistoryFile
 	List<UserHistoryFile> findFileHistoryByUser(@Param("activityId") Integer activityId, @Param("fileId") List<Integer> fileIds,
 			@Param("userId") Integer userId);
 
+	@Query(value = "select uhf.* from user_history_file uhf inner join user_history uh on uhf.user_hisoty_id = uh.id "
+			+ "where uhf.file_id in :fileId  and uh.activity_id = :activityId", nativeQuery = true)
+	List<UserHistoryFile> findFileHistory(@Param("activityId") Integer activityId, @Param("fileId") List<Integer> fileIds);
+
 }

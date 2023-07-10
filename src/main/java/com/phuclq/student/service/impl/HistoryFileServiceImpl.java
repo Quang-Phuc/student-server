@@ -12,9 +12,12 @@ import com.phuclq.student.dto.TotalMyFileDTO;
 import com.phuclq.student.repository.AttachmentRepository;
 import com.phuclq.student.repository.UserHistoryFileRepository;
 import com.phuclq.student.repository.UserHistoryRepository;
+import com.phuclq.student.repository.UserRoleRepository;
+import com.phuclq.student.security.AuthoritiesConstants;
 import java.sql.Timestamp;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,8 @@ public class HistoryFileServiceImpl implements HistoryFileService {
   private UserHistoryFileRepository userHistoryFileRepository;
   @Autowired
   private UserHistoryRepository userHistoryRepository;
+  @Autowired
+  private UserRoleRepository userRoleRepository;
 
   @Override
   public FileResultDto getFile(FileHomePageRequest request, Pageable pageable) {
@@ -125,9 +130,15 @@ public class HistoryFileServiceImpl implements HistoryFileService {
   @Override
   public Page<HistoryFileResult> deleteFileHistory(FileHomePageRequest request) {
     User user = userService.getUserLogin();
-    List<UserHistoryFile> fileHistoryByUser = userHistoryFileRepository.findFileHistoryByUser(
-        request.getActivityId(), request.getFileIds(),
-        user.getId());
+    List<UserHistoryFile>  fileHistoryByUser =  new ArrayList<>();
+    if(userRoleRepository.findByRole(AuthoritiesConstants.ADMIN).get().getId().equals(user.getRoleId())){
+      userHistoryFileRepository.findFileHistory(
+          request.getActivityId(), request.getFileIds());
+    }else {
+       userHistoryFileRepository.findFileHistoryByUser(
+          request.getActivityId(), request.getFileIds(),user.getId());
+    }
+
     fileHistoryByUser.forEach(x->{{
       Optional<UserHistory> history = userHistoryRepository.findById(x.getUserHisotyId());
       userHistoryFileRepository.delete(x);
