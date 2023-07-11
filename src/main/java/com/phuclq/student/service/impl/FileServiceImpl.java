@@ -181,23 +181,28 @@ public class FileServiceImpl implements FileService {
       }
     }
     List<RequestFileDTO> files = dto.getFiles();
-    String zipB64 = zipB64(files.stream().filter(x->!x.getType().equals(FileType.FILE_AVATAR.getName())).collect(
-        Collectors.toList()));
-    RequestFileDTO requestFileDTOZip =  new RequestFileDTO();
-    requestFileDTOZip.setType(FileType.FILE_ZIP.getName());
-    requestFileDTOZip.setType(FileType.FILE_ZIP.getName());
-    requestFileDTOZip.setName(com.phuclq.student.utils.StringUtils.getSearchableString(generateFileName(dto.getTitle()+FileType.FILE_ZIP.getName())).replace(" ",""));
-    requestFileDTOZip.setExtension(".zip");
-    requestFileDTOZip.setContent(zipB64);
-    files.add(requestFileDTOZip);
 
-    RequestFileDTO requestFileDTO = files.stream()
+    if(Objects.nonNull(dto.getFiles())) {
+      String zipB64 = zipB64(
+          files.stream().filter(x -> !x.getType().equals(FileType.FILE_AVATAR.getName())).collect(
+              Collectors.toList()));
+      RequestFileDTO requestFileDTOZip = new RequestFileDTO();
+      requestFileDTOZip.setType(FileType.FILE_ZIP.getName());
+      requestFileDTOZip.setType(FileType.FILE_ZIP.getName());
+      requestFileDTOZip.setName(com.phuclq.student.utils.StringUtils.getSearchableString(
+          generateFileName(dto.getTitle() + FileType.FILE_ZIP.getName())).replace(" ", ""));
+      requestFileDTOZip.setExtension(".zip");
+      requestFileDTOZip.setContent(zipB64);
+      files.add(requestFileDTOZip);
+
+      RequestFileDTO requestFileDTO = files.stream()
           .filter(x -> x.getType().equals(FileType.FILE_UPLOAD.getName())).findFirst()
           .get();
-    if(requestFileDTO.getExtension().equalsIgnoreCase(".PDF")) {
-      RequestFileDTO cutFileShow = cutFileShow(dto.getStartPageNumber(), dto.getEndPageNumber(),
-          requestFileDTO);
-      files.add(cutFileShow);
+      if (requestFileDTO.getExtension().equalsIgnoreCase(".PDF")) {
+        RequestFileDTO cutFileShow = cutFileShow(dto.getStartPageNumber(), dto.getEndPageNumber(),
+            requestFileDTO);
+        files.add(cutFileShow);
+      }
     }
     if (Objects.isNull(dto.getId())) {
       File file = new File(login);
