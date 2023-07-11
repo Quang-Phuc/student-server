@@ -611,7 +611,7 @@ public class FileServiceImpl implements FileService {
           && (!request.getIsBase64())) {
         try {
           AttachmentDTO attachmentByRequestIdFromS3 = attachmentService.getAttachmentByRequestIdFromS3(
-              x.getId(), FileType.FILE_UPLOAD.getName());
+              x.getId(), FileType.FILE_CUT.getName());
           x.setAttachmentDTO(attachmentByRequestIdFromS3);
 
           // get comment
