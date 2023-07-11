@@ -317,10 +317,10 @@ public class FileServiceImpl implements FileService {
           return attachmentService.getAttachmentByRequestIdFromS3AndTypes(file.getId(),
               Collections.singletonList(FileType.FILE_ZIP.getName())).get(0);
         } else {
-          return null;
+          throw new BusinessHandleException("SS008");
         }
       } else {
-        return null;
+        throw new BusinessHandleException("SS008");
       }
     } else {
       throw new BusinessHandleException("SS008");
