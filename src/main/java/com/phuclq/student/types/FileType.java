@@ -3,6 +3,7 @@ package com.phuclq.student.types;
 
 public enum FileType {
     FILE_AVATAR (1, "FILE_AVATAR"),
+    FILE_ZIP (1, "FILE_ZIP"),
 
     FILE_CUT (1, "FILE_CUT"),
     FILE_DEMO(2, "FILE_DEMO"),

@@ -172,7 +172,6 @@ public class FileServiceImpl implements FileService {
   @Override
   public File uploadFile(FileUploadRequest dto)
       throws IOException, com.itextpdf.text.DocumentException {
-//    dto.setEndPageNumber(3);
     Integer login = userService.getUserLogin().getId();
 
     if (dto.getIsVip()) {
@@ -182,7 +181,15 @@ public class FileServiceImpl implements FileService {
       }
     }
     List<RequestFileDTO> files = dto.getFiles();
-//    String s = zipB64(files);
+    String zipB64 = zipB64(files.stream().filter(x->!x.getType().equals(FileType.FILE_AVATAR.getName())).collect(
+        Collectors.toList()));
+    RequestFileDTO requestFileDTOZip =  new RequestFileDTO();
+    requestFileDTOZip.setType(FileType.FILE_ZIP.getName());
+    requestFileDTOZip.setType(FileType.FILE_ZIP.getName());
+    requestFileDTOZip.setName(com.phuclq.student.utils.StringUtils.getSearchableString(generateFileName(dto.getTitle()+FileType.FILE_ZIP.getName())).replace(" ",""));
+    requestFileDTOZip.setExtension(".zip");
+    requestFileDTOZip.setContent(zipB64);
+    files.add(requestFileDTOZip);
 
     RequestFileDTO requestFileDTO = files.stream()
           .filter(x -> x.getType().equals(FileType.FILE_UPLOAD.getName())).findFirst()
@@ -308,7 +315,7 @@ public class FileServiceImpl implements FileService {
           sendMailDownload(user.getEmail());
 
           return attachmentService.getAttachmentByRequestIdFromS3AndTypes(file.getId(),
-              Arrays.asList(FileType.FILE_UPLOAD.getName(), FileType.FILE_DEMO.getName())).get(0);
+              Collections.singletonList(FileType.FILE_ZIP.getName())).get(0);
         } else {
           return null;
         }
@@ -340,19 +347,14 @@ public class FileServiceImpl implements FileService {
   }
 
   private String generateFileName(String fileName) {
-    fileName = fileName.replace(".", ";;");
     String time = Instant.now().toString();
-    time = time.replace(":", "-");
-    time = time.replace(".", "-");
+    time = time.replace(":", "");
+    time = time.replace(".", "");
     time = time.replace("T", "");
     time = time.replace("Z", "");
-    String[] fileNameArr = fileName.split(";;");
-    String newFileName = "";
-    if (fileNameArr.length >= 2) {
-      newFileName = fileNameArr[0] + "-" + time + "." + fileNameArr[1];
-    }
 
-    return newFileName;
+
+    return time+fileName;
   }
 
   @Override
@@ -759,27 +761,7 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
 
   private static String zipB64(List<RequestFileDTO> dto) throws IOException {
     List<java.io.File> files = convertBase64toFile(dto);
-    String s = filesZip(files);
-    FileWriter fw = new FileWriter("D:\\testout.txt");
-    fw.write(s);
-    fw.close();
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    byte[] buffer = new byte[1024];
-
-    try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-      for (java.io.File f : files) {
-        try (FileInputStream fis = new FileInputStream(f)) {
-          zos.putNextEntry(new ZipEntry(f.getName()));
-          int length;
-          while ((length = fis.read(buffer)) > 0) {
-            zos.write(buffer, 0, length);
-          }
-          zos.closeEntry();
-        }
-      }
-    }
-    byte[] bytes = baos.toByteArray();
-    return new String(Base64.encodeBase64(bytes));
+    return  filesZip(files);
   }
   static List<java.io.File> convertBase64toFile(List<RequestFileDTO> dtos){
     List<java.io.File> files = new ArrayList<>();
@@ -818,14 +800,14 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
 
 
   static String filesZip(List<java.io.File> files) throws IOException {
-    java.io.File dir = new  java.io.File("./");
 
-    FileOutputStream  fos = new FileOutputStream(new java.io.File("myFile.zip"));
+    FileOutputStream  fos = new FileOutputStream("myFile.zip");
     ByteArrayOutputStream bo = new ByteArrayOutputStream();
     bo.writeTo(fos);
+
+
     ZipOutputStream zipOut= new ZipOutputStream(bo);
-//    zipOut.
-//    ZipOutputStream zipOut= new ZipOutputStream(new FileOutputStream(zipFileName));
+
     for(java.io.File xlsFile:files){
       if(!xlsFile.isFile())continue;
       ZipEntry zipEntry = new ZipEntry(xlsFile.getName());
@@ -833,9 +815,9 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
       zipOut.write(IOUtils.toByteArray(new FileInputStream(xlsFile)));
       zipOut.closeEntry();
     }
+    zipOut.setComment("myFile.zip");
     zipOut.close();
-//    bo.
-    return new String(Base64.encodeBase64(bo.toByteArray()));
+    return "data:application/x-zip-compressed;base64,"+new String(Base64.encodeBase64(bo.toByteArray()));
   }
 
 
