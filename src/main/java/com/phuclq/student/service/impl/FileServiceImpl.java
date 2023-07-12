@@ -745,7 +745,6 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
   int endPage = endPageNumber> n ? n: endPageNumber;
   String viewPage = startPageNumber+"-"+endPage;
   reader.selectPages(viewPage);
-// do stuff with stamper
   stamper.close();
   String base64cutFile = com.itextpdf.text.pdf.codec.Base64.encodeBytes(baos.toByteArray());
   RequestFileDTO requestFileDTO = new RequestFileDTO();
@@ -756,13 +755,7 @@ public RequestFileDTO cutFileShow(Integer startPageNumber,Integer endPageNumber,
 
   return requestFileDTO;
 }
-//public void convertWordToPdf() throws Exception {
-//  // Load the Word document from disk
-//  Document doc = new Document("word.docx");
-//// Save as PDF
-//  doc.save("output.pdf");
-//}
-//MultipartFile attachFile = com.phuclq.student.utils.FileUtils.uploadFile(filterCheckinModel.getImageLive());
+
 
   private static String zipB64(List<RequestFileDTO> dto) throws IOException {
     List<java.io.File> files = convertBase64toFile(dto);
