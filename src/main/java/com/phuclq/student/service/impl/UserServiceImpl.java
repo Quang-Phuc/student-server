@@ -1,5 +1,6 @@
 package com.phuclq.student.service.impl;
 
+import com.phuclq.student.dao.UsersDao;
 import com.phuclq.student.domain.File;
 import com.phuclq.student.domain.User;
 import com.phuclq.student.dto.*;
@@ -54,6 +55,8 @@ public class UserServiceImpl implements UserService {
 
   @Autowired
   private AttachmentService attachmentService;
+  @Autowired
+  UsersDao usersDao;
 
   @Override
   public User registryUser(UserAccountDTO accountDTO) {
@@ -98,6 +101,18 @@ public class UserServiceImpl implements UserService {
       list.add(userDTO);
     });
     return new PageImpl<UserDTO>(list, pageable, page.getTotalElements());
+  }
+
+  @Override
+  public UserResultDto getUser2(FileHomePageRequest request,Pageable pageable) {
+    Page<UserAdminResult> fileResultDto = usersDao.myFile(request, pageable);
+    UserResultDto userResultDto = new UserResultDto();
+    userResultDto.setList(fileResultDto.getContent());
+    PaginationModel paginationModel = new PaginationModel(
+        fileResultDto.getPageable().getPageNumber(), fileResultDto.getPageable().getPageSize(),
+        (int) fileResultDto.getTotalElements());
+    userResultDto.setPaginationModel(paginationModel);
+    return userResultDto;
   }
 
   @Override
@@ -287,6 +302,18 @@ public class UserServiceImpl implements UserService {
   @Override
   public User save(UserSaveDTO accountDTO) throws IOException {
     User userLogin = userRepository.findById(getUserLogin().getId()).get();
+    setUser(accountDTO, userLogin);
+    return userRepository.save(userLogin);
+  }
+
+  @Override
+  public User saveAdmin(UserSaveDTO accountDTO) throws IOException {
+    User userLogin = userRepository.findById(accountDTO.getId()).get();
+    setUser(accountDTO, userLogin);
+    return userRepository.save(userLogin);
+  }
+
+  private void setUser(UserSaveDTO accountDTO, User userLogin) throws IOException {
     if (Objects.nonNull(accountDTO.getBirthDay())) {
       userLogin.setBirthDay(accountDTO.getBirthDay());
     }
@@ -307,8 +334,7 @@ public class UserServiceImpl implements UserService {
     }
     if (Objects.nonNull(accountDTO.getFiles())) {
       Long listAttachmentsFromBase64S3 = attachmentService.createListAttachmentsFromBase64S3(
-          accountDTO.getFiles(), userLogin.getId(),userLogin.getId());
+          accountDTO.getFiles(), userLogin.getId(), userLogin.getId());
     }
-    return userRepository.save(userLogin);
   }
 }

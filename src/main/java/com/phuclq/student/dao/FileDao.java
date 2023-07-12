@@ -260,7 +260,7 @@ public class FileDao {
     totalMyFileDTO.setIsUser(queryCount2);
     totalMyFileDTO.setIsLike(queryCount);
     totalMyFileDTO.setIsDownload(queryCount3);
-    totalMyFileDTO.setIsDownload(queryCount3);
+
     totalMyFileDTO.setIsCard(queryCountCard);
     return  totalMyFileDTO;
 

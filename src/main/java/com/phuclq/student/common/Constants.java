@@ -399,6 +399,53 @@ public class Constants {
       + "    		, a.url as image, date_format(f.created_date, '%d/%m/%Y') as createDate,f.total_comment as totalComment,c.category as category,f.total_like as  totalLike , f.is_like as isLike,f.is_Card as isCard, f.is_vip as isVip,c.id as categoryId,u.user_name as userName,ab.url as urlAuthor  "
       + ", f.school_id as schoolId , f.industry_id as industryId , f.description as description, f.start_page_number as startPageNumber, f.end_page_number as endPageNumber, f.language_id as languageId, f.specialization_id as specializationId ";
 
+  public static final String SQL_USER ="select u.id           as id,\n"
+      + "       u.user_name    as userName,\n"
+      + "       u.email,\n"
+      + "       u.phone,\n"
+      + "       u.role_id,\n"
+      + "       u.created_date as createdDate,\n"
+      + "       u.address,\n"
+      + "       u.full_name    as fullName,\n"
+      + "       u.gender,\n"
+      + "       u.introduction,\n"
+      + "       u.birth_day    as birthDay,\n"
+      + "       count(abc.id)  as isUpload,\n"
+      + "       count(dcb.id)  as isDownload \n";
+  public static final String SQL_USER_JOIN =
+      " from user u\n"
+      + "         left join user_coin uc on u.id = uc.user_id\n"
+      + "         left join\n"
+      + "     (select u.id\n"
+      + "      from file f\n"
+      + "               inner join category c on f.category_id = c.id\n"
+      + "               inner join file_price fp on f.id = fp.file_id\n"
+      + "               inner join industry i on f.industry_id = i.id\n"
+      + "               join attachment a on f.id = a.request_id and a.file_type = 'FILE_AVATAR'\n"
+      + "               inner join user u on f.author_id = u.id) abc on abc.id = u.id\n"
+      + "         left join\n"
+      + "     (select uh.user_id as id\n"
+      + "      from file f\n"
+      + "               inner join category c on f.category_id = c.id\n"
+      + "               inner join file_price fp on f.id = fp.file_id\n"
+      + "               inner join industry i on f.industry_id = i.id\n"
+      + "               join attachment a on f.id = a.request_id and a.file_type ='FILE_AVATAR'\n"
+      + "               inner join user u on f.author_id = u.id\n"
+      + "               join user_history_file uhf on f.id = uhf.file_id\n"
+      + "               inner join user_history uh on uhf.user_hisoty_id = uh.id and uh.activity_id = 1\n"
+      + "      where f.is_deleted = 0) dcb on dcb.id = u.id\n";
+  public static final String SQL_USER_GROUP =
+      "group by u.id, u.user_name,\n"
+      + "       u.email,\n"
+      + "       u.phone,\n"
+      + "       u.role_id,\n"
+      + "       u.created_date,\n"
+      + "       u.address,\n"
+      + "       u.full_name,\n"
+      + "       u.gender,\n"
+      + "       u.introduction,\n"
+      + "       u.birth_day";
+
 
   private Constants() {
     throw new IllegalStateException("Constant class");

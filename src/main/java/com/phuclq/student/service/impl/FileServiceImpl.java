@@ -203,6 +203,12 @@ public class FileServiceImpl implements FileService {
             requestFileDTO);
         files.add(cutFileShow);
       }
+//      List<String> docs = Doc, Docx.
+      if (requestFileDTO.getExtension().equalsIgnoreCase(".PDF")) {
+        RequestFileDTO cutFileShow = cutFileShow(dto.getStartPageNumber(), dto.getEndPageNumber(),
+            requestFileDTO);
+        files.add(cutFileShow);
+      }
     }
     if (Objects.isNull(dto.getId())) {
       File file = new File(login);
