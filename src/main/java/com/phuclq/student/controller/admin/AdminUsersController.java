@@ -96,7 +96,7 @@ public class AdminUsersController {
     }
 
     @PreAuthorize("hasRole('ADMIN') || hasRole('ADMINSYSTEM')")
-    @GetMapping("/get-user")
+    @PostMapping("/get-user")
     public ResponseEntity<?> getUser(@RequestBody FileHomePageRequest request,Pageable pageable) {
         UserResultDto list = userService.getUser2(request,pageable);
         return restEntityRes.setHttpStatus(HttpStatus.OK).setDataResponse(list).getResponse();
