@@ -25,7 +25,7 @@ public class UsersDao  {
 
 
 
-    public Page<UserAdminResult> myFile(FileHomePageRequest request, Pageable pageable) {
+    public Page<UserAdminResult> listUserAdmin(FileHomePageRequest request, Pageable pageable) {
         List<Object> objList = null;
 
         StringBuilder sqlStatement = new StringBuilder();
@@ -33,7 +33,25 @@ public class UsersDao  {
         List<Object> listParam = new ArrayList<Object>();
             sqlStatement.append(SQL_USER_JOIN);
 
-
+        sqlStatement.append(" where 1 = 1  ");
+        if (request.getDateFrom() != null) {
+            sqlStatement.append(" and u.created_date >= ? ");
+            listParam.add(request.getDateFrom());
+        }
+        if (request.getDateTo() != null) {
+            sqlStatement.append(" and u.created_date <= ? ");
+            listParam.add(request.getDateTo());
+        }
+        if (request.getSearch() != null && !request.getSearch().isEmpty()) {
+            sqlStatement.append(" and (LOWER(u.user_name) like LOWER(?) ");
+            sqlStatement.append(" or LOWER( u.email) like LOWER(?) ");
+            sqlStatement.append(" or LOWER(u.phone) like LOWER(?) ");
+            sqlStatement.append(" or LOWER(u.full_name) like LOWER(?)) ");
+            listParam.add("%" + request.getSearch() + "%");
+            listParam.add("%" + request.getSearch() + "%");
+            listParam.add("%" + request.getSearch() + "%");
+            listParam.add("%" + request.getSearch() + "%");
+        }
         Query queryCount = entityManager.createNativeQuery(" select count(*) " + sqlStatement);
         for (int i = 0; i < listParam.size(); i++) {
             queryCount.setParameter(i + 1, listParam.get(i));

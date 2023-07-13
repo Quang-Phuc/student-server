@@ -105,7 +105,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserResultDto getUser2(FileHomePageRequest request,Pageable pageable) {
-    Page<UserAdminResult> fileResultDto = usersDao.myFile(request, pageable);
+    Page<UserAdminResult> fileResultDto = usersDao.listUserAdmin(request, pageable);
     UserResultDto userResultDto = new UserResultDto();
     userResultDto.setList(fileResultDto.getContent());
     PaginationModel paginationModel = new PaginationModel(
